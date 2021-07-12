@@ -1,0 +1,21 @@
+{
+    "enableConfigurationSquiggles": true,
+    "configurations": [
+        {
+            "name": "Linux",
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-clang-x64",
+            "includePath": [
+                "${workspaceFolder}",
+                "${workspaceFolder}/p4runtime/pb/**",
+                "${workspaceFolder}/p4runtime/grpc/**",
+                "${env:GRPC_HOME}/src/cpp/**",
+                "${env:GRPC_HOME}/third_party/abseil-cpp/**"
+            ]
+        }
+    ],
+    "version": 4
+}
