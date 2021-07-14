@@ -11,8 +11,8 @@
             "program": "${workspaceFolder}/exec/controller",
             "args": [
                 "10.0.2.5:50051",
-                "${workspaceFolder}/p4c/program.p4info.txt",
-                "${workspaceFolder}/p4c/program.json"
+                "${workspaceFolder}/p4c/main.p4info.txt",
+                "${workspaceFolder}/p4c/main.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

@@ -14,16 +14,17 @@ StreamListener::StreamListener(conn_ptr_t connector,
   env->stream = std::move(connector->stub->AsyncStreamChannel(
       context.get(), queue.get(),
       static_cast<void *>(&env->tags.tagConnected)));
+  env->request = nullptr;
+  env->response = nullptr;
   env->connector = connector;
   env->update_buffer = new upd_buff_t(connector->helper);
 
   // Instantiate the user-space environment.
-  user_env = new user_env_t();
-  user_env->helper = connector->helper;
-  user_env->info_helper = connector->info_helper;
-  user_env->update_buffer = env->update_buffer;
-
-  env->user_env = user_env;
+  auto userEnv = new user_env_t();
+  userEnv->helper = connector->helper;
+  userEnv->info_helper = connector->info_helper;
+  userEnv->update_buffer = env->update_buffer;
+  env->user_env = userEnv;
 }
 
 void StreamListener::listen() {

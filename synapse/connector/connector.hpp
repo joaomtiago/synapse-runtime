@@ -4,6 +4,8 @@
 #include <thread>
 
 #include "synapse/connector/connector_params.hpp"
+#include "synapse/protobuf/p4runtime_info_wrapper.h"
+#include "synapse/protobuf/p4runtime_wrapper.h"
 #include "synapse/utils/typedefs.hpp"
 
 namespace synapse::p4runtime {
@@ -16,6 +18,7 @@ class Connector {
    * build the Protobuf helpers, and create the stub.
    */
   Connector(const std::string &grpcAddr, const std::string &p4InfoFilepath);
+  virtual ~Connector() {}
 
   /**
    * Create the asycnhronous bi-directional stream handler, launch the gRPC
@@ -31,6 +34,8 @@ class Connector {
   helper_ptr_t helper;
 
   stub_ptr_t stub;
+  p4_write_request_t *request;
+  p4_write_response_t *response;
 
  private:
   std::thread stream_listener_;

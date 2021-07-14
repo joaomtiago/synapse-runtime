@@ -9,11 +9,9 @@ namespace synapse::p4runtime {
 P4RuntimeInfoHelper::P4RuntimeInfoHelper(const std::string &p4InfoFilepath) {
   std::string _file = readFile(p4InfoFilepath);
   auto _obj = new p4::config::v1::P4Info();
-  std::cout << "[*] created P4 info configuration" << std::endl;
 
   google::protobuf::TextFormat::MergeFromString(_file, _obj);
   p4Info_.reset(_obj);
-  std::cout << "[*] created P4 info configuration" << std::endl;
 }
 
 p4::config::v1::MatchField *P4RuntimeInfoHelper::matchFieldInfo(

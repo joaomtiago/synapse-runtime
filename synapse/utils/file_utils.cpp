@@ -6,23 +6,19 @@
 
 namespace synapse::p4runtime {
 
-std::string readFile(std::ifstream stream) {
+std::string readFile(const std::string &filename) {
+  std::ifstream stream(filename);
   if (!stream.good()) {
-    std::cerr << "[-] could not open file" << std::endl;
+    std::cerr << "[-] could not open file `" << filename << "`" << std::endl;
     exit(1);
   }
 
-  std::stringstream _buffer;
-  _buffer << stream.rdbuf();
-  return _buffer.str();
-}
-
-std::string readFile(const std::string &filename) {
-  return readFile(std::ifstream(filename));
+  return std::string((std::istreambuf_iterator<char>(stream)),
+                     (std::istreambuf_iterator<char>()));
 }
 
 std::string readFile(std::string *filename) {
-  return readFile(std::ifstream(*filename));
+  return readFile(static_cast<const std::string>(*filename));
 }
 
 }  // namespace synapse::p4runtime

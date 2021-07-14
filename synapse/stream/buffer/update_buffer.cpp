@@ -6,24 +6,25 @@ UpdateBuffer::UpdateBuffer(const helper_ptr_t& helper) : buffer_() {
   helper_ = helper;
 }
 
-void UpdateBuffer::buffer(p4::v1::Update* update) {
-  if (update) {
-    std::cout << "[*] buffering update:" << std::endl;
-    update->PrintDebugString();
-    buffer_.push(update);
+bool UpdateBuffer::buffer(p4_update_t* update) {
+  if (nullptr == update) {
+    return false;
   }
+
+  buffer_.push(update);
+  return true;
 }
 
-p4::v1::WriteRequest* UpdateBuffer::flush() {
-  auto _updates = new std::vector<p4::v1::Update*>();
+p4_write_request_t* UpdateBuffer::flush() {
+  auto updates = new std::vector<p4_update_t*>();
 
   while (!buffer_.empty()) {
-    _updates->push_back(buffer_.front());
+    updates->push_back(buffer_.front());
     buffer_.pop();
   }
 
   return helper_->writeRequest(
-      0, _updates, p4::v1::WriteRequest_Atomicity_CONTINUE_ON_ERROR, 1, 0);
+      0, updates, p4::v1::WriteRequest_Atomicity_CONTINUE_ON_ERROR, 1, 0);
 }
 
 }  // namespace synapse::p4runtime

@@ -1,6 +1,6 @@
 #include "connector.hpp"
 
-#include <grpc++/create_channel.h>
+#include <grpcpp/grpcpp.h>
 
 #include <thread>
 
@@ -15,10 +15,8 @@ namespace synapse::p4runtime {
 
 Connector::Connector(const std::string &grpcAddr,
                      const std::string &p4InfoFilepath) {
-  std::cout << "[*] connecting to " << grpcAddr << std::endl;
   auto credentials = grpc::InsecureChannelCredentials();
   auto channel = grpc::CreateChannel(grpcAddr, credentials);
-  std::cout << "[*] gRPC channel created" << std::endl;
 
   // Wait 30 s for the connection to be established.
   if (!channel->WaitForConnected(DEADLINE)) {
@@ -27,10 +25,8 @@ Connector::Connector(const std::string &grpcAddr,
     exit(1);
   }
 
-  helper = std::make_shared<helper_t>();
-  std::cout << "[*] helper created" << std::endl;
-  info_helper = std::make_shared<info_helper_t>(p4InfoFilepath);
-  std::cout << "[*] info helper created" << std::endl;
+  helper = new helper_t();
+  info_helper = new info_helper_t(p4InfoFilepath);
 
   params = new ConnectorParams();
 

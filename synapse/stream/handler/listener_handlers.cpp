@@ -23,7 +23,7 @@ bool handleConnected(listener_env_t* env) {
 bool handleMakePrimarySent(listener_env_t* env) {
   env->tags.tagMakePrimaryReceived.next_handler = &handleMakePrimaryReceived;
 
-  env->response = new stream_response_t();
+  env->response = new p4_stream_message_response_t();
   env->read(env->response, &env->tags.tagMakePrimaryReceived);
 
   return true;
@@ -31,8 +31,10 @@ bool handleMakePrimarySent(listener_env_t* env) {
 
 bool installProgram(listener_env_t* env);
 
+bool handleWriteResponse(listener_env_t* env);
+
 bool handleMakePrimaryReceived(listener_env_t* env) {
-  stream_response_t* response = env->response;
+  p4_stream_message_response_t* response = env->response;
   if (response->has_error()) {
     std::cerr << "[-] received the following error during arbitration:"
               << std::endl;
@@ -55,18 +57,21 @@ bool handleMakePrimaryReceived(listener_env_t* env) {
         return false;
       }
 
-      if (!preConfigure(env->user_env)) {
+      if (!synapse_user_handle_pre_configure(env->user_env)) {
         std::cerr << "[-] could not preconfigure the processing environment"
                   << std::endl;
         return false;
       }
 
-      // TODO Flush pending updates.
-      p4::v1::WriteRequest* request = env->user_env->update_buffer->flush();
-      request->PrintDebugString();
+      ctx_t context;
+      env->connector->response = new p4_write_response_t();
+      std::cout << "[*] flushing updates and writing to the switch"
+                << std::endl;
+      env->connector->stub->Write(&context, *env->update_buffer->flush(),
+                                  env->connector->response);
 
-      // Pass the control to the natural tag handler successor.
-      return handleMessageReceived(env);
+      // Process response, and pass control to the natural handler successor.
+      return handleWriteResponse(env) && handleMessageReceived(env);
 
     } else {
       std::cerr << "[-] a controller already exists" << std::endl;
@@ -86,12 +91,13 @@ bool handleMessageReceived(listener_env_t* env) {
   if (nullptr != _msg) {
     switch (_msg->update_case()) {
       case p4::v1::StreamMessageResponse::UpdateCase::kPacket: {
-        _proceed = handlePacketReceived(env->user_env);
+        _proceed = synapse_user_handle_packet_received(env->user_env);
       } break;
 
       case p4::v1::StreamMessageResponse::UpdateCase::
           kIdleTimeoutNotification: {
-        _proceed = handleIdleTimeoutNotificationReceived(env->user_env);
+        _proceed =
+            synapse_user_handle_idle_timeout_notification_received(env->user_env);
       } break;
 
       case p4::v1::StreamMessageResponse::UpdateCase::kArbitration: {
@@ -125,7 +131,7 @@ bool handleMessageReceived(listener_env_t* env) {
   if (_proceed) {
     // queue the first read
     env->tags.tagMessageReceived.next_handler = &handleMessageReceived;
-    env->response = new stream_response_t();
+    env->response = new p4_stream_message_response_t();
     env->read(env->response, (&env->tags.tagMessageReceived));
 
     return true;
@@ -162,6 +168,16 @@ bool installProgram(listener_env_t* env) {
   }
 
   std::cout << "[+] installed the program on the switch" << std::endl;
+  return true;
+}
+
+/**
+ * This auxiliary function processes a write response generated in response to a
+ * previous write request on the gRPC stub. The Protobuf response message is
+ * empty, so return true;
+ */
+bool handleWriteResponse(listener_env_t* env) {
+  // The write response is available at `env->connector->response`.
   return true;
 }
 

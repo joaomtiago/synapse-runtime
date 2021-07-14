@@ -70,20 +70,20 @@ typedef struct {
 } tags_t;
 
 typedef struct ListenerEnvironment {
-  void read(stream_response_t* response, tag_t* tag);
-  void write(stream_request_t* request, tag_t* tag);
+  void read(p4_stream_message_response_t* response, tag_t* tag);
+  void write(p4_stream_message_request_t* request, tag_t* tag);
 
   tags_t tags;
 
   stream_ptr_t stream;
-  stream_request_t* request;
-  stream_response_t* response;
+  p4_stream_message_request_t* request;
+  p4_stream_message_response_t* response;
 
   conn_ptr_t connector;
   upd_buff_ptr_t update_buffer;
 
   // Keep a pointer to the user-space environment.
-  user_env_t* user_env;
+  user_env_ptr_t user_env;
 
 } listener_env_t;
 

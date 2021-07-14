@@ -1,12 +1,15 @@
 #ifndef SYNAPSE_P4RUNTIME_PROTOBUF_P4RUNTIME_INFO_HPP_
 #define SYNAPSE_P4RUNTIME_PROTOBUF_P4RUNTIME_INFO_HPP_
 
-#include <memory>
+#include "synapse/utils/typedefs.hpp"
+
+#ifdef __cplusplus
 #include <stdexcept>
 
 #include "google/protobuf/text_format.h"
-#include "p4/config/v1/p4info.pb.h"
+#endif  // __cplusplus
 
+#ifdef __cplusplus
 namespace synapse::p4runtime {
 
 class P4RuntimeInfoHelper {
@@ -14,58 +17,58 @@ class P4RuntimeInfoHelper {
   P4RuntimeInfoHelper(const std::string& p4InfoFilepath);
 
   // todo
-  p4::config::v1::Extern* externInfo();
+  p4_config_extern_t* externInfo();
 
   // todo
-  p4::config::v1::ExternInstance* externInstanceInfo();
+  p4_config_extern_instance_t* externInstanceInfo();
 
-  p4::config::v1::MatchField* matchFieldInfo(p4::config::v1::Table table,
-                                             std::string matchFieldName);
+  p4_config_match_field_t* matchFieldInfo(p4_config_table_t table,
+                                          std::string matchFieldName);
 
-  p4::config::v1::Table* tableInfo(std::string tableName);
-
-  // todo
-  p4::config::v1::ActionRef* actionRefInfo();
-
-  p4::config::v1::Action* actionInfo(std::string actionName);
-
-  p4::config::v1::Action_Param* actionParamInfo(p4::config::v1::Action action,
-                                                std::string paramName);
+  p4_config_table_t* tableInfo(std::string tableName);
 
   // todo
-  p4::config::v1::ActionProfile* actionProfileInfo();
+  p4_config_action_ref_t* actionRefInfo();
+
+  p4_config_action_t* actionInfo(std::string actionName);
+
+  p4_config_action_param_t* actionParamInfo(p4_config_action_t action,
+                                            std::string paramName);
 
   // todo
-  p4::config::v1::CounterSpec* counterSpecInfo();
+  p4_config_action_profile_t* actionProfileInfo();
 
   // todo
-  p4::config::v1::Counter* counterInfo();
+  p4_config_counter_spec_t* counterSpecInfo();
 
   // todo
-  p4::config::v1::DirectCounter* directCounterInfo();
+  p4_config_counter_t* counterInfo();
 
   // todo
-  p4::config::v1::MeterSpec* meterSpecInfo();
+  p4_config_direct_counter_t* directCounterInfo();
 
   // todo
-  p4::config::v1::DirectMeter* directMeterInfo();
+  p4_config_meter_spec_t* meterSpecInfo();
 
-  p4::config::v1::ControllerPacketMetadata* controllerPacketMetadataInfo(
+  // todo
+  p4_config_direct_meter_t* directMeterInfo();
+
+  p4_config_controller_packet_metadata_t* controllerPacketMetadataInfo(
       std::string controllerPacketMetadataName);
 
   p4::config::v1::ControllerPacketMetadata_Metadata*
   controllerPacketMetadataMetadataInfo(
-      p4::config::v1::ControllerPacketMetadata controllerPacketMetadata,
+      p4_config_controller_packet_metadata_t controllerPacketMetadata,
       std::string metadataName);
 
   // todo
-  p4::config::v1::ValueSet* valueSetInfo();
+  p4_config_value_set_t* valueSetInfo();
 
   // todo
-  p4::config::v1::Register* externRegister();
+  p4_config_register_t* externRegister();
 
   // todo
-  p4::config::v1::Digest* digestInfo();
+  p4_config_digest_t* digestInfo();
 
   p4::config::v1::P4Info* p4Info();
 
@@ -73,6 +76,10 @@ class P4RuntimeInfoHelper {
   std::shared_ptr<p4::config::v1::P4Info> p4Info_;
 };
 
+typedef P4RuntimeInfoHelper info_helper_t;
+typedef info_helper_t* info_helper_ptr_t;
+
 }  // namespace synapse::p4runtime
+#endif  // __cplusplus
 
 #endif  // SYNAPSE_P4RUNTIME_PROTOBUF_P4RUNTIME_INFO_HPP_
