@@ -49,12 +49,11 @@ install(
   PATTERN "synapse_p4runtime.h" EXCLUDE)
 
 # ##############################################################################
-# Build the example controller.
+# Build the example `controller`.
 # ##############################################################################
 
-# Include files in `pb` and `grpc`.
-include_directories(${p4runtime_pb_path} ${p4runtime_grpc_path})
-# Build the example controller.
-add_executable(controller ${root_path}/controller.cpp)
-# Link the SyNAPSE P4Runtime library.
-target_link_libraries(controller PUBLIC synapse_p4runtime)
+# Subdirectory working directory.
+set(controller_path ${root_path}/controller)
+
+# Build the executable.
+add_subdirectory(${controller_path})
