@@ -17,7 +17,7 @@ get_target_property(grpc_cpp_plugin_location gRPC::grpc_cpp_plugin LOCATION)
 # Include absl. find_package(absl REQUIRED)
 
 # p4runtime uses proto files from the googleapis, which also need to be compiled
-set(googleapis_path "/home/user/googleapis")
+set(googleapis_path "/home/user/grpc/third_party/googleapis")
 
 # Make directories `p4runtime_pb_path` and `p4runtime_grpc_path` at build time.
 add_custom_target(
