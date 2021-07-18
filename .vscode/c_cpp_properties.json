@@ -10,8 +10,8 @@
             "intelliSenseMode": "linux-clang-x64",
             "includePath": [
                 "${workspaceFolder}",
-                "${workspaceFolder}/p4runtime/pb/**",
-                "${workspaceFolder}/p4runtime/grpc/**",
+                "${workspaceFolder}/p4runtime_cpp/pb/**",
+                "${workspaceFolder}/p4runtime_cpp/grpc/**",
                 "${env:GRPC_HOME}/src/cpp/**",
                 "${env:GRPC_HOME}/third_party/abseil-cpp/**"
             ]

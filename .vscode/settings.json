@@ -76,5 +76,6 @@
         "variant": "cpp",
         "queue": "cpp"
     },
-    "clang-format.fallbackStyle": "Google"
+    "clang-format.language.typescript.fallbackStyle": "",
+    "clang-format.language.javascript.fallbackStyle": ""
 }

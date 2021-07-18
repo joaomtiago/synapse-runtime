@@ -12,12 +12,10 @@ _deps
 
 # CMake directories
 build
-exec
-lib
 
 # Keep compiled protobuf files out of the repo
-p4runtime/**/*.cc
-p4runtime/**/*.h
+p4runtime_cpp/**/*.cc
+p4runtime_cpp/**/*.h
 
 # Created by https://www.gitignore.io/api/visualstudiocode
 # Edit at https://www.gitignore.io/?templates=visualstudiocode
