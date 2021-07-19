@@ -18,6 +18,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC p4runtime_cpp)
 # Install the public headers of the library
 install(
   DIRECTORY ${synapse_runtime_path}
-  DESTINATION ${root_path}/synapse/include
+  DESTINATION ${root_path}/include/synapse
   FILES_MATCHING
   PATTERN "*.hpp")
