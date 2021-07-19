@@ -41,13 +41,6 @@ set(synapse_runtime_path ${root_path}/runtime)
 # Build the library
 add_subdirectory(${synapse_runtime_path})
 
-# Install the public headers of the library
-install(
-  DIRECTORY ${synapse_runtime_path}
-  DESTINATION include
-  FILES_MATCHING
-  PATTERN "*.hpp")
-
 # ##############################################################################
 # Build the example `controller`
 # ##############################################################################

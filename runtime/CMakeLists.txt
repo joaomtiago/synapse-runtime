@@ -12,11 +12,12 @@ include_directories(${p4runtime_cpp_grpc_path})
 file(GLOB_RECURSE src_files ${synapse_runtime_path}**/*.cpp)
 add_library(${PROJECT_NAME} SHARED ${src_files})
 
-# Include the interface header
-# set_target_properties(
-#   ${PROJECT_NAME}
-#   PROPERTIES PUBLIC_HEADER
-#              ${synapse_runtime_path}/synapse_p4runtime.h)
-
 # Link the P4Runtime library
 target_link_libraries(${PROJECT_NAME} PUBLIC p4runtime_cpp)
+
+# Install the public headers of the library
+install(
+  DIRECTORY ${synapse_runtime_path}
+  DESTINATION ${root_path}/synapse/include
+  FILES_MATCHING
+  PATTERN "*.hpp")
