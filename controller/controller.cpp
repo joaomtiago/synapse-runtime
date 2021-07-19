@@ -1,5 +1,5 @@
-#include "runtime/connector.hpp"
-#include "runtime/p4runtime/stream/handler/custom.hpp"
+#include "synapse/runtime/connector.hpp"
+#include "synapse/runtime/p4runtime/stream/handler/custom.hpp"
 
 using synapse::runtime::conn_ptr_t;
 using synapse::runtime::conn_t;

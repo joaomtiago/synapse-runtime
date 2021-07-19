@@ -1,5 +1,5 @@
 #include "update_buffer.hpp"
-#include "runtime/utils/constants.hpp"
+#include "synapse/runtime/utils/constants.hpp"
 
 namespace synapse::runtime {
 

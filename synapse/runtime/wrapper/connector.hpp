@@ -1,7 +1,7 @@
 #ifndef SYNAPSE_RUNTIME_WRAPPER_CONNECTOR_HPP_
 #define SYNAPSE_RUNTIME_WRAPPER_CONNECTOR_HPP_
 
-#include "runtime/connector.hpp"
+#include "synapse/runtime/connector.hpp"
 
 #ifndef __cplusplus
 #include <stdbool.h>

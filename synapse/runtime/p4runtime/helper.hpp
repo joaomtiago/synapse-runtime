@@ -5,7 +5,7 @@
  * SyNAPSE Runtime 2021 ©
  */
 
-#include "runtime/p4runtime/typedefs.hpp"
+#include "synapse/runtime/p4runtime/typedefs.hpp"
 
 #ifdef __cplusplus
 namespace synapse::runtime {

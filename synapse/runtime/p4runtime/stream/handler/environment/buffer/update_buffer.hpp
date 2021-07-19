@@ -5,7 +5,7 @@
 #include <queue>
 #endif // __cplusplus
 
-#include "runtime/wrapper/p4runtime/helper.hpp"
+#include "synapse/runtime/wrapper/p4runtime/helper.hpp"
 
 #ifdef __cplusplus
 namespace synapse::runtime {

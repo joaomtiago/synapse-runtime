@@ -2,7 +2,7 @@
 #define SYNAPSE_RUNTIME_P4RUNTIME_STREAM_HANDLER_ENVIRONMENT_CUSTOM_HPP_
 
 #include "buffer/update_buffer.hpp"
-#include "runtime/utils/logger.hpp"
+#include "synapse/runtime/utils/logger.hpp"
 
 #ifdef __cplusplus
 namespace synapse::runtime {

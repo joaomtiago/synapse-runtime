@@ -1,7 +1,7 @@
 #ifndef SYNAPSE_RUNTIME_WRAPPER_P4RUNTIME_STREAM_HANDLER_ENVIRONMENT_BUFFER_UPDATE_BUFFER_HPP_S
 #define SYNAPSE_RUNTIME_WRAPPER_P4RUNTIME_STREAM_HANDLER_ENVIRONMENT_BUFFER_UPDATE_BUFFER_HPP_S
 
-#include "runtime/p4runtime/stream/handler/environment/buffer/update_buffer.hpp"
+#include "synapse/runtime/p4runtime/stream/handler/environment/buffer/update_buffer.hpp"
 
 #ifdef __cplusplus
 namespace synapse::runtime {

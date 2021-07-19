@@ -1,6 +1,6 @@
 #include "connector.hpp"
-#include "runtime/p4runtime/stream/listener.hpp"
-#include "runtime/utils/runtime_exception.hpp"
+#include "synapse/runtime/p4runtime/stream/listener.hpp"
+#include "synapse/runtime/utils/runtime_exception.hpp"
 #include <grpcpp/grpcpp.h>
 #include <thread>
 

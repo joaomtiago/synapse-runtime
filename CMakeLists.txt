@@ -36,7 +36,7 @@ add_subdirectory(${p4runtime_cpp_path})
 # ##############################################################################
 
 # Subdirectory working directory
-set(synapse_runtime_path ${root_path}/runtime)
+set(synapse_runtime_path ${root_path}/synapse/runtime)
 
 # Build the library
 add_subdirectory(${synapse_runtime_path})

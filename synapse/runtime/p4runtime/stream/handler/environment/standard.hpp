@@ -2,9 +2,9 @@
 #define SYNAPSE_RUNTIME_P4RUNTIME_STREAM_HANDLER_ENVIRONMENT_STANDARD_HPP_
 
 #include "custom.hpp"
-#include "runtime/utils/logger.hpp"
-#include "runtime/wrapper/connector.hpp"
-#include "runtime/wrapper/p4runtime/stream/handler/environment/buffer/update_buffer.hpp"
+#include "synapse/runtime/utils/logger.hpp"
+#include "synapse/runtime/wrapper/connector.hpp"
+#include "synapse/runtime/wrapper/p4runtime/stream/handler/environment/buffer/update_buffer.hpp"
 
 namespace synapse::runtime {
 

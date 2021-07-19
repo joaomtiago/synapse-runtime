@@ -2,8 +2,8 @@
 #define SYNAPSE_RUNTIME_P4RUNTIME_STREAM_LISTENER_HPP_
 
 #include "handler/standard.hpp"
-#include "runtime/connector.hpp"
-#include "runtime/utils/logger.hpp"
+#include "synapse/runtime/connector.hpp"
+#include "synapse/runtime/utils/logger.hpp"
 
 namespace synapse::runtime {
 

@@ -1,7 +1,7 @@
 #ifndef SYNAPSE_RUNTIME_WRAPPER_P4RUNTIME_HELPER_HPP_
 #define SYNAPSE_RUNTIME_WRAPPER_P4RUNTIME_HELPER_HPP_
 
-#include "runtime/p4runtime/helper.hpp"
+#include "synapse/runtime/p4runtime/helper.hpp"
 
 #ifdef __cplusplus
 namespace synapse::runtime {

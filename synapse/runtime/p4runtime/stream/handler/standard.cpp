@@ -1,7 +1,7 @@
 #include "environment/standard.hpp"
 #include "custom.hpp"
-#include "runtime/utils/constants.hpp"
-#include "runtime/utils/file.hpp"
+#include "synapse/runtime/utils/constants.hpp"
+#include "synapse/runtime/utils/file.hpp"
 #include "standard.hpp"
 
 namespace synapse::runtime {

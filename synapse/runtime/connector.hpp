@@ -1,8 +1,8 @@
 #ifndef SYNAPSE_RUNTIME_CONNECTOR_CONNECTOR_HPP_
 #define SYNAPSE_RUNTIME_CONNECTOR_CONNECTOR_HPP_
 
-#include "runtime/utils/logger.hpp"
-#include "runtime/wrapper/p4runtime/helper.hpp"
+#include "synapse/runtime/utils/logger.hpp"
+#include "synapse/runtime/wrapper/p4runtime/helper.hpp"
 
 #ifdef __cplusplus
 #include <thread>

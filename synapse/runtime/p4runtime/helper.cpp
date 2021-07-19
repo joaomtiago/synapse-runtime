@@ -1,7 +1,7 @@
 #include "helper.hpp"
 #include "google/protobuf/text_format.h"
-#include "runtime/utils/file.hpp"
-#include "runtime/utils/runtime_exception.hpp"
+#include "synapse/runtime/utils/file.hpp"
+#include "synapse/runtime/utils/runtime_exception.hpp"
 
 namespace synapse::runtime {
 RuntimeHelper::RuntimeHelper(const std::string &p4InfoFilepath) {
