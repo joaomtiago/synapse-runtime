@@ -33,6 +33,6 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  conn_ptr_t connector = new conn_t(argv[1], argv[2], logging_level_t::Info);
+  conn_ptr_t connector = new conn_t(argv[1], argv[2], logging_level_t::Debug);
   return connector->startAndWait(argv[3]);
 }

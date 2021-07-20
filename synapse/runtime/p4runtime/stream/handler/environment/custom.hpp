@@ -17,6 +17,9 @@ typedef struct CustomEnvironment {
   upd_buff_ptr_t update_buffer;
   logger_ptr_t logger;
 
+  uint8_t **packet_in;
+  uint16_t packet_in_length;
+
 } custom_env_t;
 
 #ifdef __cplusplus

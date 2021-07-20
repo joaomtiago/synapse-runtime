@@ -83,16 +83,21 @@ bool handleMessageReceived(standard_env_ptr_t env) {
 
   if (nullptr != _msg) {
     switch (_msg->update_case()) {
-    case p4::v1::StreamMessageResponse::UpdateCase::kPacket: {
+    case p4_stream_message_response_t::UpdateCase::kPacket: {
+      env->custom_env->packet_in = reinterpret_cast<uint8_t **>(
+          _msg->mutable_packet()->mutable_payload());
+      env->custom_env->packet_in_length = static_cast<uint16_t>(
+          _msg->mutable_packet()->mutable_payload()->size());
+
       _proceed = synapse_runtime_handle_packet_received(env->custom_env);
     } break;
 
-    case p4::v1::StreamMessageResponse::UpdateCase::kIdleTimeoutNotification: {
+    case p4_stream_message_response_t::UpdateCase::kIdleTimeoutNotification: {
       _proceed = synapse_runtime_handle_idle_timeout_notification_received(
           env->custom_env);
     } break;
 
-    case p4::v1::StreamMessageResponse::UpdateCase::kArbitration: {
+    case p4_stream_message_response_t::UpdateCase::kArbitration: {
       auto _arbitration = _msg->arbitration();
 
       if (grpc::OK != _arbitration.status().code()) {
@@ -110,9 +115,9 @@ bool handleMessageReceived(standard_env_ptr_t env) {
       }
     } break;
 
-    case p4::v1::StreamMessageResponse::UpdateCase::kOther:
-    case p4::v1::StreamMessageResponse::UpdateCase::kError:
-    case p4::v1::StreamMessageResponse::UpdateCase::kDigest:
+    case p4_stream_message_response_t::UpdateCase::kOther:
+    case p4_stream_message_response_t::UpdateCase::kError:
+    case p4_stream_message_response_t::UpdateCase::kDigest:
     default: { // unsupported
       env->logger->error("Received an unsupported message type");
       _proceed = true;

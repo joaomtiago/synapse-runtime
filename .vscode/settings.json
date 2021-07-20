@@ -79,7 +79,9 @@
         "custom.hpp": "c",
         "helper.hpp": "c",
         "stdlib.h": "c",
-        "logger.hpp": "c"
+        "logger.hpp": "c",
+        "update_buffer.hpp": "c",
+        "typedefs.hpp": "c"
     },
     "clang-format.language.typescript.fallbackStyle": "",
     "clang-format.language.javascript.fallbackStyle": ""
