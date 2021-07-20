@@ -1,8 +1,12 @@
 #ifndef SYNAPSE_RUNTIME_P4RUNTIME_STREAM_HANDLER_ENVIRONMENT_CUSTOM_HPP_
 #define SYNAPSE_RUNTIME_P4RUNTIME_STREAM_HANDLER_ENVIRONMENT_CUSTOM_HPP_
 
-#include "buffer/update_buffer.hpp"
+#include "synapse/runtime/p4runtime/stream/handler/environment/buffer/update_buffer.hpp"
 #include "synapse/runtime/utils/logger.hpp"
+
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif // __cplusplus
 
 #ifdef __cplusplus
 namespace synapse::runtime {

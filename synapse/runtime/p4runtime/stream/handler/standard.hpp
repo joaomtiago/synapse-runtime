@@ -1,7 +1,7 @@
 #ifndef SYNAPSE_RUNTIME_P4RUNTIME_STREAM_HANDLER_STANDARD_HPP_
 #define SYNAPSE_RUNTIME_P4RUNTIME_STREAM_HANDLER_STANDARD_HPP_
 
-#include "environment/standard.hpp"
+#include "synapse/runtime/p4runtime/stream/handler/environment/standard.hpp"
 
 namespace synapse::runtime {
 

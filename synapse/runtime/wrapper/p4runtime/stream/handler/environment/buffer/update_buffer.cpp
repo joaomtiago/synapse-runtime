@@ -1,4 +1,4 @@
-#include "update_buffer.hpp"
+#include "synapse/runtime/wrapper/p4runtime/stream/handler/environment/buffer/update_buffer.hpp"
 
 namespace synapse::runtime {
 

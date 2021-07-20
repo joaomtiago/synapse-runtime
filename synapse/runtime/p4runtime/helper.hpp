@@ -1,10 +1,6 @@
 #ifndef SYNAPSE_RUNTIME_P4RUNTIME_HELPER_HPP_
 #define SYNAPSE_RUNTIME_P4RUNTIME_HELPER_HPP_
 
-/**
- * SyNAPSE Runtime 2021 ©
- */
-
 #include "synapse/runtime/p4runtime/typedefs.hpp"
 
 #ifdef __cplusplus

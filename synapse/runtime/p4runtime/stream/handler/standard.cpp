@@ -1,8 +1,8 @@
-#include "environment/standard.hpp"
-#include "custom.hpp"
+#include "synapse/runtime/p4runtime/stream/handler/environment/standard.hpp"
+#include "synapse/runtime/p4runtime/stream/handler/custom.hpp"
+#include "synapse/runtime/p4runtime/stream/handler/standard.hpp"
 #include "synapse/runtime/utils/constants.hpp"
 #include "synapse/runtime/utils/file.hpp"
-#include "standard.hpp"
 
 namespace synapse::runtime {
 

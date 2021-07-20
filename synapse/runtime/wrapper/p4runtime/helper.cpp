@@ -1,4 +1,4 @@
-#include "helper.hpp"
+#include "synapse/runtime/wrapper/p4runtime/helper.hpp"
 
 namespace synapse::runtime {
 

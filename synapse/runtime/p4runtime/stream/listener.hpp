@@ -1,8 +1,8 @@
 #ifndef SYNAPSE_RUNTIME_P4RUNTIME_STREAM_LISTENER_HPP_
 #define SYNAPSE_RUNTIME_P4RUNTIME_STREAM_LISTENER_HPP_
 
-#include "handler/standard.hpp"
 #include "synapse/runtime/connector.hpp"
+#include "synapse/runtime/p4runtime/stream/handler/standard.hpp"
 #include "synapse/runtime/utils/logger.hpp"
 
 namespace synapse::runtime {

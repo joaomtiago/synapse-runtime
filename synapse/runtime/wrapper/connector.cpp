@@ -1,4 +1,4 @@
-#include "connector.hpp"
+#include "synapse/runtime/wrapper/connector.hpp"
 
 namespace synapse::runtime {
 

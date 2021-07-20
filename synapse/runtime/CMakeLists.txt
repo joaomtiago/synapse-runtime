@@ -14,10 +14,3 @@ add_library(${PROJECT_NAME} SHARED ${src_files})
 
 # Link the P4Runtime library
 target_link_libraries(${PROJECT_NAME} PUBLIC p4runtime_cpp)
-
-# Install the public headers of the library
-install(
-  DIRECTORY ${synapse_runtime_path}
-  DESTINATION ${root_path}/synapse/include
-  FILES_MATCHING
-  PATTERN "*.hpp")

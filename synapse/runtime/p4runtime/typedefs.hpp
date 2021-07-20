@@ -2,8 +2,6 @@
 #define SYNAPSE_RUNTIME_P4RUNTIME_TYPEDEFS_HPP_
 
 /**
- * SyNAPSE Runtime 2021 ©
- *
  * All P4Runtime-related type definitions (typedef) should be declared here.
  * This file is required by the majority of the project, and makes it easier to
  * dynamically add new typedefs on-the-fly.

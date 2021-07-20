@@ -1,4 +1,4 @@
-#include "helper.hpp"
+#include "synapse/runtime/p4runtime/helper.hpp"
 #include "google/protobuf/text_format.h"
 #include "synapse/runtime/utils/file.hpp"
 #include "synapse/runtime/utils/runtime_exception.hpp"
