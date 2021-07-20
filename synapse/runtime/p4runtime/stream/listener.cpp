@@ -4,11 +4,11 @@ namespace synapse::runtime {
 
 Listener::Listener(conn_ptr_t connector, standard_handler_ptr_t handler,
                    logger_ptr_t logger) {
-  // Create gRPC client context, and completion queue.
+  // Create gRPC client context, and completion queue
   context = std::make_shared<grpc_cctx_t>();
   queue = std::make_shared<grpc_cqueue_t>();
 
-  // Instantiate the standard environment.
+  // Prepare the standard environment
   standard_env = new standard_env_t();
   standard_env->tags.tagConnected.next_handler = handler;
   standard_env->stream = std::move(connector->stub->AsyncStreamChannel(
@@ -20,7 +20,7 @@ Listener::Listener(conn_ptr_t connector, standard_handler_ptr_t handler,
   standard_env->update_buffer = new upd_buff_t(connector->helper);
   standard_env->logger = logger;
 
-  // Instantiate the user-space environment.
+  // Prepare the custom environment
   custom_env = new custom_env_t();
   custom_env->helper = connector->helper;
   custom_env->update_buffer = standard_env->update_buffer;
@@ -46,7 +46,7 @@ bool Listener::dispatch(tag_t *tag) {
     return tag->next_handler(standard_env);
   }
 
-  // there's no function to run, assume everything went fine
+  // There's no function to run, assume everything went fine
   return true;
 }
 

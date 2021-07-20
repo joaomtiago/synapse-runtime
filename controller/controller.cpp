@@ -12,7 +12,9 @@ bool synapse_runtime_handle_pre_configure(custom_env_ptr_t env) {
   return true;
 }
 
-bool synapse_runtime_handle_packet_received(custom_env_ptr_t env) {
+bool synapse_runtime_handle_packet_received(custom_env_ptr_t env,
+                                            uint8_t *packet_in,
+                                            uint16_t packet_in_length) {
   std::cout << "Received a packet..." << std::endl;
   return true;
 }
@@ -27,9 +29,9 @@ bool synapse_runtime_handle_idle_timeout_notification_received(
 
 int main(int argc, char *argv[]) {
   if (argc != 4) {
-    std::cout
-        << "usage: ./controller <grpcAddr> <p4InfoFilepath> <bmv2JsonFilepath>"
-        << std::endl;
+    std::cout << "usage: ./cpp_controller <grpcAddr> <p4InfoFilepath> "
+                 "<bmv2JsonFilepath>"
+              << std::endl;
     exit(1);
   }
 

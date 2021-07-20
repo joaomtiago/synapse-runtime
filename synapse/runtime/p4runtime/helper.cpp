@@ -178,9 +178,9 @@ p4_master_arbitration_update_t *RuntimeHelper::p4MasterArbitrationUpdate(
 
   obj->set_device_id(deviceId);
 
-  // the role for which the primary client is being arbitrated. for use-cases
+  // the role for which the primary client is being arbitrated for use-cases
   // where multiple roles are not needed, the controller can leave this unset,
-  // implying default role and full pipeline access.
+  // implying default role and full pipeline access
   // obj->mutable_role()->CopyFrom(role);
 
   obj->mutable_election_id()->set_low(electionIdLow);

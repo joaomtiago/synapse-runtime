@@ -34,20 +34,20 @@ void Connector::ConnectorParams::erase(const std::string &key) {
 Connector::Connector(const std::string &grpcAddr,
                      const std::string &p4InfoFilepath,
                      logging_level_t loggingLevel) {
-  // Instantiate logger with specified loggin level.
+  // Instantiate logger with specified loggin level
   logger_ = new logger_t(loggingLevel);
 
   auto credentials = grpc::InsecureChannelCredentials();
   auto channel = grpc::CreateChannel(grpcAddr, credentials);
 
-  // Wait 30 s for the connection to be established.
+  // Wait 30 s for the connection to be established
   if (!channel->WaitForConnected(DEADLINE)) {
     throw RuntimeException("Waited 30 s for the connection to be established");
   }
 
   helper = new helper_t(p4InfoFilepath);
 
-  // The stub may have to be used before the listener starts.
+  // The stub may have to be used before the listener starts
   stub = p4::v1::P4Runtime::NewStub(channel);
 }
 

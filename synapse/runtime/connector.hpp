@@ -18,7 +18,7 @@ typedef class Connector {
 public:
   typedef class ConnectorParams {
     /**
-     * This is very basic key-value dictionary.
+     * This is a very basic key-value dictionary.
      * It quashes the need for passing string parameters in the tag.
      * Just add them to the dictionary, and retrieve them when needed.
      */

@@ -63,7 +63,7 @@ bool handleMakePrimaryReceived(standard_env_ptr_t env) {
       env->connector->stub->Write(&context, *env->update_buffer->flush(),
                                   env->connector->response);
 
-      // Process response, and pass control to the natural handler successor.
+      // Process response, and pass control to the natural handler successor
       return handleWriteResponse(env) && handleMessageReceived(env);
 
     } else {
@@ -84,12 +84,12 @@ bool handleMessageReceived(standard_env_ptr_t env) {
   if (nullptr != _msg) {
     switch (_msg->update_case()) {
     case p4_stream_message_response_t::UpdateCase::kPacket: {
-      env->custom_env->packet_in = reinterpret_cast<uint8_t *>(
-          _msg->mutable_packet()->mutable_payload());
-      env->custom_env->packet_in_length = static_cast<uint16_t>(
-          _msg->mutable_packet()->mutable_payload()->size());
-
-      _proceed = synapse_runtime_handle_packet_received(env->custom_env);
+      _proceed = synapse_runtime_handle_packet_received(
+          env->custom_env,
+          reinterpret_cast<uint8_t *>(
+              _msg->mutable_packet()->mutable_payload()),
+          static_cast<uint16_t>(
+              _msg->mutable_packet()->mutable_payload()->size()));
     } break;
 
     case p4_stream_message_response_t::UpdateCase::kIdleTimeoutNotification: {
@@ -172,7 +172,7 @@ bool installProgram(standard_env_ptr_t env) {
  * empty, so return true;
  */
 bool handleWriteResponse(standard_env_ptr_t env) {
-  // The write response is available at `env->connector->response`.
+  // The write response is available at `env->connector->response`
   return true;
 }
 

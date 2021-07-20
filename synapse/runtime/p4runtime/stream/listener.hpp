@@ -12,7 +12,7 @@ public:
   /**
    * Prepare the environment for the creation of the asynchronous bi-directional
    * stream between the connector and the gRPC server,create the P4Runtime
-   * updates, and set the first listener-space handler to be invoked on the
+   * updates, and set the first standard handler to be invoked on the
    * start state of the completion queue state machine.
    */
   Listener(conn_ptr_t connector, standard_handler_ptr_t handler,
@@ -33,14 +33,12 @@ private:
   bool dispatch(tag_t *tag);
 
 public:
-  // The gRPC client context used exclusively for the stream.
+  // The gRPC client context used exclusively for the stream
   grpc_cctx_ptr_t context;
-  // Queue bound to the stream that stores completion tags.
+  // Queue bound to the stream that stores completion tags
   grpc_cqueue_ptr_t queue;
 
-  // Listener-space environment.
   standard_env_ptr_t standard_env;
-  // User-space environment.
   custom_env_ptr_t custom_env;
 };
 

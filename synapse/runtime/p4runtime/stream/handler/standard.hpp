@@ -5,10 +5,6 @@
 
 namespace synapse::runtime {
 
-/**
- * Below we declare the multiple listener-space handlers (which all take a
- * reference to a listener-space environment as argument).
- */
 bool handleConnected(standard_env_ptr_t env);
 
 bool handleMakePrimarySent(standard_env_ptr_t env);

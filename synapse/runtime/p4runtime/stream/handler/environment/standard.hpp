@@ -20,23 +20,22 @@ namespace synapse::runtime {
  * message that was sent, for instance.
  *
  * The mechanism is similar to a finite state machine, in the sense that, when
- * you consume a tag from the queue, if you have to tell gRPC which tag you
- * expect next to exist on the queue for you to consume. In other words, you are
+ * you consume a tag from the queue, you have to tell gRPC which tag you expect
+ * next to exist on the queue for you to consume. In other words, you are
  * telling gRPC the next state you transition to after consuming that tag.
  *
  * Each tag has an associated handler. In the example above, we would invoke
- * `handleReadCompleted`. This is a listener-space handler (i.e. it is a raw
- * handler meant to process messages that come directly from the completion
- * queue). Listener-space handlers, in turn, may invoke user-space handlers
- * (i.e. user-defined handlers that deal with stream messages that have been
- * previously processed by a listener-space handler). By definition, user-space
- * handlers have limited access to the modifiadble state. That's why we keep two
- * separate environments: a listener-space environment (full control over the
- * mutable state), and user-space environment (to narrow down the scope of
- * user-defined operations).
+ * `handleReadCompleted`. This is a standard handler (i.e. it is a raw handler
+ * meant to process messages that come directly from the completion queue).
+ * Custom handlers, in turn, are controller-defined, and, thus, implement the
+ * controller logic, and drive the controller program. These handlers have
+ * limited access to the modifiable state. That's why we keep two separate
+ * environments: a standard environment (full control over the mutable state),
+ * and custom environment (to narrow down the scope of controller-defined
+ * operations).
  */
 
-// The states of the state machine.
+// The states of the state machine
 typedef enum {
   Connected = 1,
   MakePrimarySent = 2,
@@ -49,9 +48,9 @@ struct StandardEnvironment;
 typedef bool (*standard_handler_ptr_t)(StandardEnvironment *);
 
 typedef struct {
-  // Current state of the tag.
+  // Current state of the tag
   tag_state_t state;
-  // A pointer to the next handler in the state machine.
+  // A pointer to the next handler in the state machine
   standard_handler_ptr_t next_handler;
 
 } tag_t;
@@ -84,7 +83,7 @@ typedef struct StandardEnvironment {
 
   logger_ptr_t logger;
 
-  // Keep a pointer to the custom environment.
+  // Keep a pointer to the custom environment
   custom_env_ptr_t custom_env;
 
 } standard_env_t;
