@@ -84,7 +84,7 @@ bool handleMessageReceived(standard_env_ptr_t env) {
   if (nullptr != _msg) {
     switch (_msg->update_case()) {
     case p4_stream_message_response_t::UpdateCase::kPacket: {
-      env->custom_env->packet_in = reinterpret_cast<uint8_t **>(
+      env->custom_env->packet_in = reinterpret_cast<uint8_t *>(
           _msg->mutable_packet()->mutable_payload());
       env->custom_env->packet_in_length = static_cast<uint16_t>(
           _msg->mutable_packet()->mutable_payload()->size());
