@@ -2,27 +2,16 @@
 #define SYNAPSE_RUNTIME_P4RUNTIME_STREAM_LISTENER_HPP_
 
 #include "synapse/runtime/connector.hpp"
-#include "synapse/runtime/p4runtime/stream/handler/standard.hpp"
-#include "synapse/runtime/utils/logger.hpp"
+#include "synapse/runtime/p4runtime/stream/handler/environment.hpp"
+#include "synapse/runtime/p4runtime/stream/tags.hpp"
+#include "synapse/runtime/logger/logger.hpp"
 
 namespace synapse::runtime {
 
 class Listener {
 public:
-  /**
-   * Prepare the environment for the creation of the asynchronous bi-directional
-   * stream between the connector and the gRPC server,create the P4Runtime
-   * updates, and set the first standard handler to be invoked on the
-   * start state of the completion queue state machine.
-   */
-  Listener(conn_ptr_t connector, standard_handler_ptr_t handler,
-           logger_ptr_t logger);
+  Listener(conn_ptr_t conn, logger_ptr_t logger);
 
-  /**
-   * The thread's run function, that waits for the notification of a new stream
-   * message to be processed. This function calls the handler invocation
-   * mechanism.
-   */
   virtual void listen();
 
 private:
@@ -32,14 +21,22 @@ private:
    */
   bool dispatch(tag_t *tag);
 
-public:
-  // The gRPC client context used exclusively for the stream
-  grpc_cctx_ptr_t context;
-  // Queue bound to the stream that stores completion tags
-  grpc_cqueue_ptr_t queue;
+private:
+  // Environment passed to handlers
+  env_ptr_t env_;
 
-  standard_env_ptr_t standard_env;
-  custom_env_ptr_t custom_env;
+  logger_ptr_t logger_;
+
+  // Singleton structure to reuse tags
+  tags_t tags_;
+
+  // The gRPC client context used exclusively for the stream
+  grpc_cctx_ptr_t context_;
+
+  // Queue bound to the stream that stores completion tags
+  grpc_cqueue_ptr_t queue_;
+
+  stack_ptr_t stack_;
 };
 
 } // namespace synapse::runtime

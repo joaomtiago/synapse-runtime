@@ -81,7 +81,12 @@
         "stdlib.h": "c",
         "logger.hpp": "c",
         "update_buffer.hpp": "c",
-        "typedefs.hpp": "c"
+        "typedefs.hpp": "c",
+        "packet_received.hpp": "c",
+        "custom_packet_received.hpp": "c",
+        "environment.hpp": "c",
+        "wrappers.hpp": "c",
+        "inttypes.h": "c"
     },
     "clang-format.language.typescript.fallbackStyle": "",
     "clang-format.language.javascript.fallbackStyle": ""

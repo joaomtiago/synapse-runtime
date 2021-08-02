@@ -1,5 +1,5 @@
 #include "synapse/runtime/utils/file.hpp"
-#include "synapse/runtime/utils/runtime_exception.hpp"
+#include "synapse/runtime/exception/runtime_exception.hpp"
 #include <fstream>
 #include <iostream>
 #include <sstream>

@@ -1,4 +1,4 @@
-#include "synapse/runtime/wrapper/utils/logger.hpp"
+#include "synapse/runtime/wrapper/logger/logger.hpp"
 
 namespace synapse::runtime {
 

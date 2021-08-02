@@ -1,7 +1,7 @@
-#ifndef SYNAPSE_RUNTIME_WRAPPER_UTILS_LOGGER_HPP_
-#define SYNAPSE_RUNTIME_WRAPPER_UTILS_LOGGER_HPP_
+#ifndef SYNAPSE_RUNTIME_WRAPPER_LOGGER_LOGGER_HPP_
+#define SYNAPSE_RUNTIME_WRAPPER_LOGGER_LOGGER_HPP_
 
-#include "synapse/runtime/utils/logger.hpp"
+#include "synapse/runtime/logger/logger.hpp"
 
 #ifdef __cplusplus
 namespace synapse::runtime {
@@ -27,4 +27,4 @@ void synapse_runtime_logger_debug(logger_ptr_t logger, const char *message);
 }
 #endif // __cplusplus
 
-#endif // SYNAPSE_RUNTIME_WRAPPER_UTILS_LOGGER_HPP_
+#endif // SYNAPSE_RUNTIME_WRAPPER_LOGGER_LOGGER_HPP_

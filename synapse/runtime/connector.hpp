@@ -1,12 +1,13 @@
 #ifndef SYNAPSE_RUNTIME_CONNECTOR_CONNECTOR_HPP_
 #define SYNAPSE_RUNTIME_CONNECTOR_CONNECTOR_HPP_
 
-#include "synapse/runtime/utils/logger.hpp"
-#include "synapse/runtime/wrapper/p4runtime/helper.hpp"
+#include "synapse/runtime/p4runtime/typedefs.hpp"
+#include "synapse/runtime/logger/logger.hpp"
+#include "synapse/runtime/wrapper/utils/wrappers.hpp"
 
 #ifdef __cplusplus
+#include <stack>
 #include <thread>
-#include <unordered_map>
 #endif // __cplusplus
 
 #ifdef __cplusplus
@@ -16,53 +17,38 @@ namespace synapse::runtime {
 #ifdef __cplusplus
 typedef class Connector {
 public:
-  typedef class ConnectorParams {
-    /**
-     * This is a very basic key-value dictionary.
-     * It quashes the need for passing string parameters in the tag.
-     * Just add them to the dictionary, and retrieve them when needed.
-     */
-
-  public:
-    void put(const std::string &key, const std::string &value);
-
-    std::string find(const std::string &key);
-
-    void erase(const std::string &key);
-
-  private:
-    std::unordered_map<std::string, std::string> dict_;
-
-  } conn_params_t;
-
-public:
   /**
    * Create the gRPC channel, using insecure channel credentials, wait for a
    * successful connection to be established, create the key-value dictionary,
    * build the Protobuf helpers, and create the stub.
    */
-  Connector(const std::string &grpcAddr, const std::string &p4InfoFilepath,
-            logging_level_t loggingLevel);
+  Connector(const std::string &grpcAddr, logging_level_t loggingLevel);
+
+  /**
+   * Configure the underlying structure of the connector by providing a path to
+   * the file containing the JSON specification of the program, and a path to
+   * the file containing information about the P4 structures of the said
+   * program.
+   */
+  bool configure(const std::string &bmv2JsonFilepath,
+                 const std::string &p4InfoFilepath);
 
   /**
    * Create the asycnhronous bi-directional stream handler, launch the gRPC
    * thread that dispatches stream messages to the respective handlers, and wait
    * for the gRPC thread to join.
    */
-  bool startAndWait(const std::string &bmv2JsonFilepath);
+  bool startAndWait();
 
 public:
-  conn_params_t params;
-
-  helper_ptr_t helper;
+  stack_ptr_t stack;
 
   p4runtime_stub_ptr_t stub;
 
-  p4_write_request_t *request;
-  p4_write_response_t *response;
-
 private:
+  // Thread that consumes messages from the stream
   std::thread listener_thread_;
+
   logger_ptr_t logger_;
 
 } conn_t;

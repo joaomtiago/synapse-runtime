@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.16.3)
 project(synapse)
 set(CMAKE_VERBOSE_MAKEFILE on)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_BUILD_TYPE Debug)
 
 # Lots of warnings (-Werror to treat warnings as errors)
 add_compile_options(-Wall -Wextra -pedantic -Wconversion -g3)

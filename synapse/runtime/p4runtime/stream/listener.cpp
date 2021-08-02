@@ -2,52 +2,63 @@
 
 namespace synapse::runtime {
 
-Listener::Listener(conn_ptr_t connector, standard_handler_ptr_t handler,
-                   logger_ptr_t logger) {
-  // Create gRPC client context, and completion queue
-  context = std::make_shared<grpc_cctx_t>();
-  queue = std::make_shared<grpc_cqueue_t>();
+Listener::Listener(conn_ptr_t conn, logger_ptr_t logger) {
+  env_ = new env_t();
+  env_->helper = new helper_t(S_CAST(std::string *, conn->stack->pop()));
+  env_->logger = logger;
+  env_->stack = new stack_t();
+  env_->update_buffer = new upd_buff_t(env_->helper);
 
-  // Prepare the standard environment
-  standard_env = new standard_env_t();
-  standard_env->tags.tagConnected.next_handler = handler;
-  standard_env->stream = std::move(connector->stub->AsyncStreamChannel(
-      context.get(), queue.get(),
-      static_cast<void *>(&standard_env->tags.tagConnected)));
-  standard_env->request = nullptr;
-  standard_env->response = nullptr;
-  standard_env->connector = connector;
-  standard_env->update_buffer = new upd_buff_t(connector->helper);
-  standard_env->logger = logger;
+  logger_ = logger;
 
-  // Prepare the custom environment
-  custom_env = new custom_env_t();
-  custom_env->helper = connector->helper;
-  custom_env->update_buffer = standard_env->update_buffer;
-  custom_env->logger = logger;
-  standard_env->custom_env = custom_env;
+  tags_.tagConnected.next_tags = (void **)std::malloc(sizeof(void *));
+  *tags_.tagConnected.next_tags = &tags_.tagMakePrimarySent;
+
+  tags_.tagMakePrimarySent.next_tags = (void **)std::malloc(sizeof(void *));
+  *tags_.tagMakePrimarySent.next_tags = &tags_.tagMakePrimaryReceived;
+
+  tags_.tagMakePrimaryReceived.next_tags = (void **)std::malloc(sizeof(void *));
+  *tags_.tagMakePrimaryReceived.next_tags = &tags_.tagMessageReceived;
+
+  tags_.tagMessageReceived.next_tags = (void **)std::malloc(2 * sizeof(void *));
+  *tags_.tagMessageReceived.next_tags = &tags_.tagMessageReceived;
+  *(tags_.tagMessageReceived.next_tags + 1) = &tags_.tagMessageSent;
+
+  tags_.tagMessageSent.next_tags = (void **)std::malloc(sizeof(void *));
+  *tags_.tagMessageSent.next_tags = &tags_.tagMessageReceived;
+
+  context_ = std::make_shared<grpc_cctx_t>();
+  queue_ = std::make_shared<grpc_cqueue_t>();
+  p4runtime_stream_ptr_t stream =
+      conn->stub
+          ->AsyncStreamChannel(context_.get(), queue_.get(),
+                               &tags_.tagConnected)
+          .release();
+
+  stack_ = new stack_t();
+  stack_->push(conn->stack->pop());
+  stack_->push(conn->stub);
+  stack_->push(stream);
 }
 
 void Listener::listen() {
-  standard_env->logger->info("Started stream listener");
+  logger_->info("Listener: start");
+
   void *rawTag = nullptr;
   bool ok = false;
-  while (queue->Next(&rawTag, &ok) && ok) {
-    if (!dispatch(static_cast<tag_t *>(rawTag))) {
+
+  while (queue_->Next(&rawTag, &ok) && ok) {
+    if (!dispatch(S_CAST(tag_t *, rawTag))) {
       break;
     }
   }
 
-  standard_env->logger->debug("Stream listener has stopped");
+  logger_->debug("Listener: stop");
 }
 
 bool Listener::dispatch(tag_t *tag) {
-  if (tag->next_handler != nullptr) {
-    return tag->next_handler(standard_env);
-  }
-
-  // There's no function to run, assume everything went fine
-  return true;
+  logger_->debug("Listener: dispatching tag " + tag->identifier);
+  return nullptr == tag->handler || tag->handler(env_, stack_, tag->next_tags);
 }
 
 } // namespace synapse::runtime

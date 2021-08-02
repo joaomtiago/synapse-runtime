@@ -15,14 +15,16 @@ namespace synapse::runtime {
 extern "C" {
 #endif // __cplusplus
 
-conn_t *synapse_runtime_connector_new(const char *grpc_addr,
-                                      const char *p4_info_filepath,
-                                      logging_level_t logging_level);
+conn_ptr_t synapse_runtime_connector_new(const char *grpc_addr,
+                                         logging_level_t logging_level);
 
-bool synapse_runtime_connector_start_and_wait(conn_t *connector,
-                                              const char *bmv2_json_filepath);
+bool synapse_runtime_connector_configure(conn_ptr_t connector,
+                                         const char *bmv2JsonFilepath,
+                                         const char *p4InfoFilepath);
 
-void synapse_runtime_connector_destroy(conn_t *connector);
+bool synapse_runtime_connector_start_and_wait(conn_ptr_t connector);
+
+void synapse_runtime_connector_destroy(conn_ptr_t connector);
 
 #ifdef __cplusplus
 } // namespace synapse::runtime

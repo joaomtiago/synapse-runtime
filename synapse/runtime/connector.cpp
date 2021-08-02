@@ -1,6 +1,7 @@
 #include "synapse/runtime/connector.hpp"
+#include "synapse/runtime/exception/runtime_exception.hpp"
+#include "synapse/runtime/p4runtime/stream/handler/standard.hpp"
 #include "synapse/runtime/p4runtime/stream/listener.hpp"
-#include "synapse/runtime/utils/runtime_exception.hpp"
 #include <grpcpp/grpcpp.h>
 #include <thread>
 
@@ -10,31 +11,9 @@
 
 namespace synapse::runtime {
 
-/**
- * Connector::ConnectorParams below
- */
-
-void Connector::ConnectorParams::put(const std::string &key,
-                                     const std::string &value) {
-  dict_[key] = value;
-}
-
-std::string Connector::ConnectorParams::find(const std::string &key) {
-  return dict_.find(key)->second;
-}
-
-void Connector::ConnectorParams::erase(const std::string &key) {
-  dict_.erase(key);
-}
-
-/**
- * Connector below
- */
-
 Connector::Connector(const std::string &grpcAddr,
-                     const std::string &p4InfoFilepath,
                      logging_level_t loggingLevel) {
-  // Instantiate logger with specified loggin level
+  // Instantiate logger with specified logging level
   logger_ = new logger_t(loggingLevel);
 
   auto credentials = grpc::InsecureChannelCredentials();
@@ -45,22 +24,29 @@ Connector::Connector(const std::string &grpcAddr,
     throw RuntimeException("Waited 30 s for the connection to be established");
   }
 
-  helper = new helper_t(p4InfoFilepath);
-
   // The stub may have to be used before the listener starts
-  stub = p4::v1::P4Runtime::NewStub(channel);
+  stub = p4::v1::P4Runtime::NewStub(channel).release();
+
+  // Finally, create the arguments stack
+  stack = new stack_t();
 }
 
-bool Connector::startAndWait(const std::string &bmv2JsonFilepath) {
-  auto listener = new Listener(this, &handleConnected, logger_);
-  params.put("bmv2", bmv2JsonFilepath);
+bool Connector::configure(const std::string &bmv2JsonFilepath,
+                          const std::string &p4InfoFilepath) {
+  stack->empty();
+  stack->push(new std::string(bmv2JsonFilepath));
+  stack->push(new std::string(p4InfoFilepath));
 
-  listener_thread_ = std::thread(&Listener::listen, listener);
-  if (!listener_thread_.joinable()) {
+  return 2 == stack->size();
+}
+
+bool Connector::startAndWait() {
+  auto listener = std::thread(&Listener::listen, new Listener(this, logger_));
+  if (!listener.joinable()) {
     return false;
   }
 
-  listener_thread_.join();
+  listener.join();
   return true;
 }
 

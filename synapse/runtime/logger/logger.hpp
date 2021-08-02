@@ -1,5 +1,5 @@
-#ifndef SYNAPSE_RUNTIME_UTILS_LOGGER_HPP_
-#define SYNAPSE_RUNTIME_UTILS_LOGGER_HPP_
+#ifndef SYNAPSE_RUNTIME_LOGGER_LOGGER_HPP_
+#define SYNAPSE_RUNTIME_LOGGER_LOGGER_HPP_
 
 #ifdef __cplusplus
 #include <string>
@@ -48,4 +48,4 @@ typedef void *logger_ptr_t;
 } // namespace synapse::runtime
 #endif // __cplusplus
 
-#endif // SYNAPSE_RUNTIME_UTILS_LOGGER_HPP_
+#endif // SYNAPSE_RUNTIME_LOGGER_LOGGER_HPP_

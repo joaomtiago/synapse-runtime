@@ -1,52 +1,55 @@
 #include "synapse/runtime/p4runtime/helper.hpp"
 #include "google/protobuf/text_format.h"
+#include "synapse/runtime/exception/runtime_exception.hpp"
 #include "synapse/runtime/utils/file.hpp"
-#include "synapse/runtime/utils/runtime_exception.hpp"
 
 namespace synapse::runtime {
-RuntimeHelper::RuntimeHelper(const std::string &p4InfoFilepath) {
-  std::string _file = readFile(p4InfoFilepath);
-  auto _obj = new p4::config::v1::P4Info();
 
-  google::protobuf::TextFormat::MergeFromString(_file, _obj);
-  p4Info_.reset(_obj);
+RuntimeHelper::RuntimeHelper(const std::string *p4InfoFilepath) {
+  p4_info_p4_info_ptr_t p4Info = new p4_info_p4_info_t();
+
+  if (true != google::protobuf::TextFormat::MergeFromString(
+                  readFile(*p4InfoFilepath), p4Info)) {
+    throw RuntimeException("Could not parse P4 Info file");
+  }
+
+  p4Info_.reset(p4Info);
 }
 
 /**
  * P4Info helpers go below.
  */
 
-p4_info_action_t *RuntimeHelper::p4InfoAction(std::string actionName) {
+p4_info_action_ptr_t RuntimeHelper::p4InfoAction(std::string actionName) {
   for (auto action : p4Info_->actions()) {
     if (action.preamble().name() == actionName) {
-      return new p4::config::v1::Action(action);
+      return new p4_info_action_t(action);
     }
   }
 
   throw RuntimeException("Unknown action `" + actionName + "`");
 }
 
-p4_info_action_param_t *
-RuntimeHelper::p4InfoActionParam(p4_info_action_t action,
+p4_info_action_param_ptr_t
+RuntimeHelper::p4InfoActionParam(p4_info_action_ptr_t action,
                                  std::string paramName) {
-  for (auto param : action.params()) {
+  for (auto param : action->params()) {
     if (param.name() == paramName) {
-      return new p4::config::v1::Action_Param(param);
+      return new p4_info_action_param_t(param);
     }
   }
 
   throw RuntimeException("Unknown parameter `" + paramName + "` for action `" +
-                         action.preamble().name() + "`");
+                         action->preamble().name() + "`");
 }
 
-p4_info_controller_packet_metadata_t *
+p4_info_controller_packet_metadata_ptr_t
 RuntimeHelper::p4InfoControllerPacketMetadata(
     std::string controllerPacketMetadataName) {
   for (auto controllerPacketMetadata : p4Info_->controller_packet_metadata()) {
     if (controllerPacketMetadata.preamble().name() ==
         controllerPacketMetadataName) {
-      return new p4::config::v1::ControllerPacketMetadata(
-          controllerPacketMetadata);
+      return new p4_info_controller_packet_metadata_t(controllerPacketMetadata);
     }
   }
 
@@ -54,13 +57,13 @@ RuntimeHelper::p4InfoControllerPacketMetadata(
                          controllerPacketMetadataName + "`");
 }
 
-p4_info_controller_packet_metadata_metadata_t *
+p4_info_controller_packet_metadata_metadata_ptr_t
 RuntimeHelper::p4InfoControllerPacketMetadataMetadata(
-    p4_info_controller_packet_metadata_t controllerPacketMetadata,
+    p4_info_controller_packet_metadata_ptr_t controllerPacketMetadata,
     std::string metadataName) {
-  for (auto metadata : controllerPacketMetadata.metadata()) {
+  for (auto metadata : controllerPacketMetadata->metadata()) {
     if (metadata.name() == metadataName) {
-      return new p4::config::v1::ControllerPacketMetadata_Metadata(metadata);
+      return new p4_info_controller_packet_metadata_metadata_t(metadata);
     }
   }
 
@@ -68,25 +71,25 @@ RuntimeHelper::p4InfoControllerPacketMetadataMetadata(
                          metadataName + "`");
 }
 
-p4_info_match_field_t *
-RuntimeHelper::p4InfoMatchField(p4_info_table_t table,
+p4_info_match_field_ptr_t
+RuntimeHelper::p4InfoMatchField(p4_info_table_ptr_t table,
                                 std::string matchFieldName) {
-  for (auto matchField : table.match_fields()) {
+  for (auto matchField : table->match_fields()) {
     if (matchField.name() == matchFieldName) {
-      return new p4::config::v1::MatchField(matchField);
+      return new p4_info_match_field_t(matchField);
     }
   }
 
   throw RuntimeException("Unknown match field `" + matchFieldName +
-                         "` for table `" + table.preamble().name() + "`");
+                         "` for table `" + table->preamble().name() + "`");
 }
 
-p4_info_p4_info_t *RuntimeHelper::p4InfoP4Info() { return p4Info_.get(); }
+p4_info_p4_info_ptr_t RuntimeHelper::p4InfoP4Info() { return p4Info_.get(); }
 
-p4_info_table_t *RuntimeHelper::p4InfoTable(std::string tableName) {
+p4_info_table_ptr_t RuntimeHelper::p4InfoTable(std::string tableName) {
   for (auto table : p4Info_->tables()) {
     if (table.preamble().name() == tableName) {
-      return new p4::config::v1::Table(table);
+      return new p4_info_table_t(table);
     }
   }
 
@@ -97,21 +100,24 @@ p4_info_table_t *RuntimeHelper::p4InfoTable(std::string tableName) {
  * P4Runtime helpers go below.
  */
 
-p4_action_t *RuntimeHelper::p4Action(uint32_t actionId,
-                                     std::vector<p4_action_param_t *> *params) {
+p4_action_ptr_t
+RuntimeHelper::p4Action(uint32_t actionId,
+                        std::vector<p4_action_param_ptr_t> *params) {
   auto obj = new p4_action_t();
 
   obj->set_action_id(actionId);
 
-  for (auto actionParam : *params) {
-    obj->mutable_params()->AddAllocated(actionParam);
+  if (nullptr != params) {
+    for (auto param : *params) {
+      obj->mutable_params()->AddAllocated(param);
+    }
   }
 
   return obj;
 }
 
-p4_action_param_t *RuntimeHelper::p4ActionParam(uint32_t paramId,
-                                                const std::string &value) {
+p4_action_param_ptr_t RuntimeHelper::p4ActionParam(uint32_t paramId,
+                                                   const std::string &value) {
   auto obj = new p4_action_param_t();
 
   obj->set_param_id(paramId);
@@ -120,22 +126,22 @@ p4_action_param_t *RuntimeHelper::p4ActionParam(uint32_t paramId,
   return obj;
 }
 
-p4_entity_t *RuntimeHelper::p4Entity(p4_table_entry_t *entry) {
+p4_entity_ptr_t RuntimeHelper::p4Entity(p4_table_entry_ptr_t entry) {
   auto obj = new p4_entity_t();
   obj->set_allocated_table_entry(entry);
   return obj;
 }
 
-p4_entity_t *
-RuntimeHelper::p4Entity(p4_packet_replication_engine_entry_t *entry) {
+p4_entity_ptr_t
+RuntimeHelper::p4Entity(p4_packet_replication_engine_entry_ptr_t entry) {
   auto obj = new p4_entity_t();
   obj->set_allocated_packet_replication_engine_entry(entry);
   return obj;
 }
 
-p4_field_match_t *
+p4_field_match_ptr_t
 RuntimeHelper::p4FieldMatch(uint32_t fieldId,
-                            p4_field_match_exact_t *fieldMatchType) {
+                            p4_field_match_exact_ptr_t fieldMatchType) {
   auto obj = new p4_field_match_t();
 
   obj->set_field_id(fieldId);
@@ -144,15 +150,15 @@ RuntimeHelper::p4FieldMatch(uint32_t fieldId,
   return obj;
 }
 
-p4_field_match_exact_t *
+p4_field_match_exact_ptr_t
 RuntimeHelper::p4FieldMatchExact(const std::string &value) {
   auto obj = new p4_field_match_exact_t();
   obj->set_value(value);
   return obj;
 }
 
-p4_forwarding_pipeline_config_t *
-RuntimeHelper::p4ForwardingPipelineConfig(p4_info_p4_info_t *p4Info,
+p4_forwarding_pipeline_config_ptr_t
+RuntimeHelper::p4ForwardingPipelineConfig(p4_info_p4_info_ptr_t p4Info,
                                           const std::string &p4DeviceConfig) {
   auto obj = new p4_forwarding_pipeline_config_t();
 
@@ -172,7 +178,7 @@ RuntimeHelper::p4ForwardingPipelineConfig(p4_info_p4_info_t *p4Info,
   return obj;
 }
 
-p4_master_arbitration_update_t *RuntimeHelper::p4MasterArbitrationUpdate(
+p4_master_arbitration_update_ptr_t RuntimeHelper::p4MasterArbitrationUpdate(
     uint64_t deviceId, uint64_t electionIdLow, uint64_t electionIdHigh) {
   auto obj = new p4_master_arbitration_update_t();
 
@@ -189,9 +195,9 @@ p4_master_arbitration_update_t *RuntimeHelper::p4MasterArbitrationUpdate(
   return obj;
 }
 
-p4_multicast_group_entry_t *
+p4_multicast_group_entry_ptr_t
 RuntimeHelper::p4MulticastGroupEntry(uint32_t multicastGroupId,
-                                     std::vector<p4_replica_t *> *replicas) {
+                                     std::vector<p4_replica_ptr_t> *replicas) {
   auto obj = new p4_multicast_group_entry_t();
 
   obj->set_multicast_group_id(multicastGroupId);
@@ -205,7 +211,7 @@ RuntimeHelper::p4MulticastGroupEntry(uint32_t multicastGroupId,
   return obj;
 }
 
-p4_packet_metadata_t *
+p4_packet_metadata_ptr_t
 RuntimeHelper::p4PacketMetadata(uint32_t metadataId, const std::string &value) {
   auto obj = new p4_packet_metadata_t();
 
@@ -215,9 +221,9 @@ RuntimeHelper::p4PacketMetadata(uint32_t metadataId, const std::string &value) {
   return obj;
 }
 
-p4_packet_out_t *
+p4_packet_out_ptr_t
 RuntimeHelper::p4PacketOut(const std::string &payload,
-                           std::vector<p4_packet_metadata_t *> *metadata) {
+                           std::vector<p4_packet_metadata_ptr_t> *metadata) {
   auto obj = new p4_packet_out_t();
 
   obj->set_payload(payload);
@@ -231,17 +237,17 @@ RuntimeHelper::p4PacketOut(const std::string &payload,
   return obj;
 }
 
-p4_packet_replication_engine_entry_t *
+p4_packet_replication_engine_entry_ptr_t
 RuntimeHelper::p4PacketReplicationEngineEntry(
-    p4_multicast_group_entry_t *type) {
+    p4_multicast_group_entry_ptr_t type) {
   auto obj = new p4_packet_replication_engine_entry_t();
   obj->set_allocated_multicast_group_entry(type);
   return obj;
 }
 
-p4_read_request_t *
+p4_read_request_ptr_t
 RuntimeHelper::p4ReadRequest(uint64_t deviceId, const std::string &role,
-                             std::vector<p4_entity_t *> *entities) {
+                             std::vector<p4_entity_ptr_t> *entities) {
   auto obj = new p4_read_request_t();
 
   obj->set_device_id(deviceId);
@@ -254,7 +260,8 @@ RuntimeHelper::p4ReadRequest(uint64_t deviceId, const std::string &role,
   return obj;
 }
 
-p4_replica_t *RuntimeHelper::p4Replica(uint32_t egressPort, uint32_t instance) {
+p4_replica_ptr_t RuntimeHelper::p4Replica(uint32_t egressPort,
+                                          uint32_t instance) {
   auto obj = new p4_replica_t();
 
   obj->set_egress_port(egressPort);
@@ -263,11 +270,11 @@ p4_replica_t *RuntimeHelper::p4Replica(uint32_t egressPort, uint32_t instance) {
   return obj;
 }
 
-p4_set_forwarding_pipeline_config_request_t *
+p4_set_forwarding_pipeline_config_request_ptr_t
 RuntimeHelper::p4SetForwardingPipelineConfigRequest(
     uint64_t deviceId, uint64_t electionIdLow, uint64_t electionIdHigh,
     p4_set_forwarding_pipeline_config_request_action_t action,
-    p4_forwarding_pipeline_config_t *config) {
+    p4_forwarding_pipeline_config_ptr_t config) {
   auto obj = new p4_set_forwarding_pipeline_config_request_t();
 
   obj->set_device_id(deviceId);
@@ -280,41 +287,46 @@ RuntimeHelper::p4SetForwardingPipelineConfigRequest(
   return obj;
 }
 
-p4_stream_message_request_t *
-RuntimeHelper::p4StreamMessageRequest(p4_master_arbitration_update_t *update) {
+p4_stream_message_request_ptr_t RuntimeHelper::p4StreamMessageRequest(
+    p4_master_arbitration_update_ptr_t update) {
   auto obj = new p4_stream_message_request_t();
   obj->set_allocated_arbitration(update);
   return obj;
 }
 
-p4_stream_message_request_t *
-RuntimeHelper::p4StreamMessageRequest(p4_packet_out_t *update) {
+p4_stream_message_request_ptr_t
+RuntimeHelper::p4StreamMessageRequest(p4_packet_out_ptr_t update) {
   auto obj = new p4_stream_message_request_t();
   obj->set_allocated_packet(update);
   return obj;
 }
 
-p4_table_action_t *RuntimeHelper::p4TableAction(p4_action_t *type) {
+p4_table_action_ptr_t RuntimeHelper::p4TableAction(p4_action_ptr_t type) {
   auto obj = new p4_table_action_t();
-  obj->set_allocated_action(type);
+
+  if (nullptr != type) {
+    obj->set_allocated_action(type);
+  }
+
   return obj;
 }
 
-p4_table_entry_t *
-RuntimeHelper::p4TableEntry(uint32_t tableId,
-                            std::vector<p4_field_match_t *> *match,
-                            p4_table_action_t *action, uint64_t idleTimeoutNs) {
+p4_table_entry_ptr_t RuntimeHelper::p4TableEntry(
+    uint32_t tableId, std::vector<p4_field_match_ptr_t> *match,
+    p4_table_action_ptr_t action, uint64_t idleTimeoutNs) {
   auto obj = new p4_table_entry_t();
 
   obj->set_table_id(tableId);
 
-  if (match != nullptr) {
+  if (nullptr != match) {
     for (auto fieldMatch : *match) {
       obj->mutable_match()->AddAllocated(fieldMatch);
     }
   }
 
-  obj->set_allocated_action(action);
+  if (nullptr != action) {
+    obj->set_allocated_action(action);
+  }
 
   if (idleTimeoutNs > 0) {
     obj->set_idle_timeout_ns(idleTimeoutNs);
@@ -323,27 +335,32 @@ RuntimeHelper::p4TableEntry(uint32_t tableId,
   return obj;
 }
 
-p4_update_t *RuntimeHelper::p4Update(p4_update_type_t type,
-                                     p4_entity_t *entity) {
+p4_update_ptr_t RuntimeHelper::p4Update(p4_update_type_t type,
+                                        p4_entity_ptr_t entity) {
   auto obj = new p4_update_t();
 
   obj->set_type(type);
-  obj->set_allocated_entity(entity);
+
+  if (nullptr != entity) {
+    obj->set_allocated_entity(entity);
+  }
 
   return obj;
 }
 
-p4_write_request_t *
+p4_write_request_ptr_t
 RuntimeHelper::p4WriteRequest(uint64_t deviceId,
-                              std::vector<p4_update_t *> *updates,
+                              std::vector<p4_update_ptr_t> *updates,
                               p4_write_request_atomicity_t atomicity,
                               uint64_t electionIdLow, uint64_t electionIdHigh) {
   auto obj = new p4_write_request_t();
 
   obj->set_device_id(deviceId);
 
-  for (auto update : *updates) {
-    obj->mutable_updates()->AddAllocated(update);
+  if (nullptr != updates) {
+    for (auto update : *updates) {
+      obj->mutable_updates()->AddAllocated(update);
+    }
   }
 
   obj->set_atomicity(atomicity);

@@ -8,11 +8,11 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/exec/controller",
+            "program": "${workspaceFolder}/build/bin/c_controller",
             "args": [
                 "10.0.2.5:50051",
-                "${workspaceFolder}/p4c/main.p4info.txt",
-                "${workspaceFolder}/p4c/main.json"
+                "${workspaceFolder}/controller/program.p4info.txt",
+                "${workspaceFolder}/controller/program.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
