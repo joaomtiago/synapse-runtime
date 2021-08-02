@@ -10,10 +10,10 @@ namespace synapse::runtime {
 #endif // __cplusplus
 
 typedef enum {
-  Error = 1,
-  Warning = 2,
-  Info = 3,
-  Debug = 4
+  LoggerError = 1,
+  LoggerWarning = 2,
+  LoggerInfo = 3,
+  LoggerDebug = 4
 
 } logging_level_t;
 

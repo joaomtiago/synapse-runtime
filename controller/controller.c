@@ -285,7 +285,7 @@ int main(int argc, char const *argv[]) {
     exit(1);
   }
 
-  conn_ptr_t connector = synapse_runtime_connector_new(argv[1], Debug);
+  conn_ptr_t connector = synapse_runtime_connector_new(argv[1], LoggerDebug);
   if (synapse_runtime_connector_configure(connector, argv[3], argv[2])) {
     synapse_runtime_connector_start_and_wait(connector);
   }
