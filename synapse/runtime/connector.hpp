@@ -22,7 +22,7 @@ public:
    * successful connection to be established, create the key-value dictionary,
    * build the Protobuf helpers, and create the stub.
    */
-  Connector(const std::string &grpcAddr, logging_level_t loggingLevel);
+  Connector(const std::string &grpcAddr, logger_logging_level_t loggingLevel);
 
   /**
    * Configure the underlying structure of the connector by providing a path to

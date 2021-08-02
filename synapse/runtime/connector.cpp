@@ -12,7 +12,7 @@
 namespace synapse::runtime {
 
 Connector::Connector(const std::string &grpcAddr,
-                     logging_level_t loggingLevel) {
+                     logger_logging_level_t loggingLevel) {
   // Instantiate logger with specified logging level
   logger_ = new logger_t(loggingLevel);
 

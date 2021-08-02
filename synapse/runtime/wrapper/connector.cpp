@@ -3,7 +3,7 @@
 namespace synapse::runtime {
 
 conn_ptr_t synapse_runtime_connector_new(const char *grpc_addr,
-                                         logging_level_t logging_level) {
+                                         logger_logging_level_t logging_level) {
   return new Connector(grpc_addr, logging_level);
 }
 

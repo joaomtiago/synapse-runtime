@@ -15,12 +15,12 @@ typedef enum {
   LoggerInfo = 3,
   LoggerDebug = 4
 
-} logging_level_t;
+} logger_logging_level_t;
 
 #ifdef __cplusplus
 class Logger {
 public:
-  Logger(logging_level_t level);
+  Logger(logger_logging_level_t level);
 
   void error(const std::string &message);
 
@@ -31,7 +31,7 @@ public:
   void debug(const std::string &message);
 
 private:
-  logging_level_t level_;
+  logger_logging_level_t level_;
 };
 #endif // __cplusplus
 

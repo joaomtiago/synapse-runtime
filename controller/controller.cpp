@@ -26,7 +26,7 @@ bool synapse_runtime_handle_idle_timeout_notification_received(env_ptr_t env) {
 
 using synapse::runtime::conn_ptr_t;
 using synapse::runtime::conn_t;
-using synapse::runtime::logging_level_t;
+using synapse::runtime::logger_logging_level_t;
 
 int main(int argc, char *argv[]) {
   if (argc != 4) {
@@ -36,6 +36,6 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  conn_ptr_t connector = new conn_t(argv[1], logging_level_t::LoggerDebug);
+  conn_ptr_t connector = new conn_t(argv[1], logger_logging_level_t::LoggerDebug);
   return connector->configure(argv[3], argv[2]) && connector->startAndWait();
 }
