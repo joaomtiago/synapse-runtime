@@ -27,7 +27,12 @@ public:
   p4InfoControllerPacketMetadata(std::string controllerPacketMetadataName);
 
   p4_info_controller_packet_metadata_metadata_ptr_t
-  p4InfoControllerPacketMetadataMetadata(
+  p4InfoControllerPacketMetadataMetadataById(
+      p4_info_controller_packet_metadata_ptr_t controllerPacketMetadata,
+      uint32_t metadataId);
+
+  p4_info_controller_packet_metadata_metadata_ptr_t
+  p4InfoControllerPacketMetadataMetadataByName(
       p4_info_controller_packet_metadata_ptr_t controllerPacketMetadata,
       std::string metadataName);
 

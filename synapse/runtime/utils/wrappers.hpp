@@ -19,6 +19,7 @@
 #endif // __cplusplus
 
 #ifndef __cplusplus
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #endif // __cplusplus
@@ -31,11 +32,15 @@ namespace synapse::runtime {
 
 typedef struct String {
 #ifdef __cplusplus
+  String(std::string *string);
+
+  String(const std::string &string);
+
   String(const char *value, size_t value_sz);
 #endif // __cplusplus
 
   const char *value;
-  size_t value_sz;
+  size_t size;
 
 #ifdef __cplusplus
   std::string toStdString();
@@ -48,45 +53,41 @@ typedef string_t *string_ptr_t;
 
 typedef struct MACAddress {
 #ifdef __cplusplus
-  MACAddress(const std::string &address);
+  MACAddress(const char *address);
+
+  MACAddress(const char *address, const char *raw);
 #endif // __cplusplus
 
   string_ptr_t address;
-
-  string_ptr_t value;
+  string_ptr_t raw;
 
 } mac_addr_t;
 typedef mac_addr_t *mac_addr_ptr_t;
-
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
-
-mac_addr_ptr_t synapse_runtime_wrappers_parse_mac_address(string_ptr_t value);
-
-#ifdef __cplusplus
-}
-#endif // __cplusplus
 
 // Port
 
 typedef struct Port {
 #ifdef __cplusplus
   Port(const uint16_t &port);
+
+  Port(const uint16_t &port, string_ptr_t raw);
 #endif // __cplusplus
 
   uint16_t port;
-
-  string_ptr_t value;
+  string_ptr_t raw;
 
 } port_t;
 typedef port_t *port_ptr_t;
+
+// Decoders
 
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
 
-port_ptr_t synapse_runtime_wrappers_parse_port(string_ptr_t value);
+mac_addr_ptr_t synapse_runtime_wrappers_decode_mac_address(const char *encoded);
+
+port_ptr_t synapse_runtime_wrappers_decode_port(string_ptr_t encoded);
 
 #ifdef __cplusplus
 }

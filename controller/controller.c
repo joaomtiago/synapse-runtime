@@ -13,7 +13,7 @@
 // Helpers
 
 #define S_STRING(var_name, var_value, var_size)                                \
-  static string_t var_name = {.value = var_value, .value_sz = var_size}
+  static string_t var_name = {.value = var_value, .size = var_size}
 
 #define NEW_STRING(var_value, var_size)                                        \
   synapse_runtime_wrappers_string_new(var_value, var_size)
@@ -21,28 +21,45 @@
 #define REALLOC(ptr, var_type, new_size)                                       \
   (var_type *)realloc(ptr, (new_size) * sizeof(var_type));
 
-string_ptr_t get_packet_metadata_by_name(helper_ptr_t helper,
-                                         pair_ptr_t *metadata,
-                                         size_t metadata_size,
-                                         string_ptr_t metadata_name) {
+#define VAR_ALLOC(var_type, var_name, size)                                    \
+  var_type *var_name = (var_type *)malloc((size) * sizeof(var_type));
+
+string_ptr_t *get_packet_in_metadata_by_name(helper_ptr_t helper,
+                                             pair_ptr_t *metadata,
+                                             size_t metadata_size,
+                                             string_ptr_t *metadata_names,
+                                             size_t metadata_names_size) {
   assert(NULL != helper);
   assert(NULL != metadata);
 
-  uint32_t metadata_id =
-      synapse_runtime_p4_info_controller_packet_metadata_metadata_id(
-          synapse_runtime_p4_info_controller_packet_metadata_metadata_new(
-              helper,
-              synapse_runtime_p4_info_controller_packet_metadata_new(
-                  helper, synapse_runtime_wrappers_string_new("packet_in", 9)),
-              metadata_name));
+  S_STRING(packet_in_str, "packet_in", 9);
+  VAR_ALLOC(string_ptr_t, result, metadata_names_size);
 
-  for (uint32_t i = 0; i < metadata_size; i++) {
-    if (metadata_id == *((uint32_t *)metadata[i]->left)) {
-      return metadata[i]->right;
+  p4_info_controller_packet_metadata_ptr_t packet_in_metadata =
+      synapse_runtime_p4_info_controller_packet_metadata_new(helper,
+                                                             &packet_in_str);
+
+  uint32_t metadata_id;
+  size_t i, j;
+
+  for (i = 0; i < metadata_names_size; i++) {
+    metadata_id = synapse_runtime_p4_info_controller_packet_metadata_metadata_id(
+        synapse_runtime_p4_info_controller_packet_metadata_metadata_by_name_new(
+            helper, packet_in_metadata, metadata_names[i]));
+
+    for (j = 0; j < metadata_size; j++) {
+      if (metadata_id == *((uint32_t *)metadata[j]->left)) {
+        result[i] = metadata[j]->right;
+        goto result_found;
+      }
     }
+
+    result[i] = NULL;
+  result_found:
+    continue;
   }
 
-  return NULL;
+  return result;
 }
 
 bool insert_table_entry(env_ptr_t env, string_ptr_t table_name,
@@ -124,6 +141,20 @@ bool insert_table_entry(env_ptr_t env, string_ptr_t table_name,
       synapse_runtime_environment_update_buffer(env), update);
 }
 
+bool delete_table_entry(env_ptr_t env, p4_table_entry_ptr_t table_entry) {
+  assert(NULL != env);
+  helper_ptr_t helper = synapse_runtime_environment_helper(env);
+
+  p4_entity_ptr_t entity =
+      synapse_runtime_p4_entity_table_entry_new(helper, table_entry);
+
+  p4_update_type_ptr_t update =
+      synapse_runtime_p4_update_new(helper, Update_Type_DELETE, entity);
+
+  return synapse_runtime_update_buffer_buffer(
+      synapse_runtime_environment_update_buffer(env), update);
+}
+
 bool install_multicast_group(env_ptr_t env, uint32_t multicast_group_id,
                              pair_ptr_t *replicas, size_t replicas_size) {
   helper_ptr_t helper = synapse_runtime_environment_helper(env);
@@ -180,8 +211,6 @@ bool synapse_runtime_handle_pre_configure(env_ptr_t env) {
 }
 
 bool synapse_runtime_handle_packet_received(env_ptr_t env) {
-  printf("Received a packet...\n");
-
   // Tables
   S_STRING(mac_src_exact_str, "MyIngress.mac_src_exact", 23);
   S_STRING(mac_dst_exact_str, "MyIngress.mac_dst_exact", 23);
@@ -194,12 +223,12 @@ bool synapse_runtime_handle_packet_received(env_ptr_t env) {
   S_STRING(forward_str, "MyIngress.forward", 17);
   S_STRING(no_action_str, "NoAction", 8);
 
-  // Actions params
+  // Other params
   S_STRING(ingress_port_str, "ingress_port", 12);
   S_STRING(egress_port_str, "egress_port", 11);
 
-  // Other constants
-  static uint64_t idle_timeout_ns = 14400000000000;
+  // Constants
+  static uint64_t idle_timeout_ns = 5000000000; // fixme 14400000000000
 
   /**
    * The environment stack should look like this:
@@ -216,17 +245,23 @@ bool synapse_runtime_handle_packet_received(env_ptr_t env) {
   string_ptr_t payload = synapse_runtime_wrappers_stack_pop(stack);
   size_t metadata_size = *(size_t *)synapse_runtime_wrappers_stack_pop(stack);
   pair_ptr_t *metadata = synapse_runtime_wrappers_stack_pop(stack);
-  printf("Received a new packet of size %lu B...\n", payload->value_sz);
+  printf("Received a new packet of size %lu B...\n", payload->size);
 
-  // Get source address from the packet, and ingress port from the metadata
-  port_ptr_t ingress_port = synapse_runtime_wrappers_parse_port(
-      get_packet_metadata_by_name(synapse_runtime_environment_helper(env),
-                                  metadata, metadata_size, &ingress_port_str));
+  // Now we can read multiple metadatada at once
+  VAR_ALLOC(string_ptr_t, metadata_in_names, 1);
+  metadata_in_names[0] = &ingress_port_str;
+
+  string_ptr_t *metadata_in_result = get_packet_in_metadata_by_name(
+      synapse_runtime_environment_helper(env), metadata, metadata_size,
+      metadata_in_names, 1);
+
+  port_ptr_t ingress_port =
+      synapse_runtime_wrappers_decode_port(metadata_in_result[0]);
   assert(NULL != ingress_port);
 
-  payload->value += 6; // Skip destination address
+  // Get the source MAC address
   mac_addr_ptr_t src_mac_addr =
-      synapse_runtime_wrappers_parse_mac_address(payload);
+      synapse_runtime_wrappers_decode_mac_address(payload->value + 6);
   assert(NULL != src_mac_addr);
 
   // Write to `MyIngress.mac_src_exact`
@@ -235,7 +270,7 @@ bool synapse_runtime_handle_packet_received(env_ptr_t env) {
       mac_src_exact_key_matches_size * sizeof(mac_src_exact_key_matches));
 
   *mac_src_exact_key_matches =
-      synapse_runtime_wrappers_pair_new(&eth_src_addr_str, src_mac_addr->value);
+      synapse_runtime_wrappers_pair_new(&eth_src_addr_str, src_mac_addr->raw);
 
   if (!insert_table_entry(env, &mac_src_exact_str, mac_src_exact_key_matches,
                           mac_src_exact_key_matches_size, &no_action_str, NULL,
@@ -249,22 +284,21 @@ bool synapse_runtime_handle_packet_received(env_ptr_t env) {
       mac_dst_exact_key_matches_size * sizeof(mac_dst_exact_key_matches));
 
   *mac_dst_exact_key_matches =
-      synapse_runtime_wrappers_pair_new(&eth_dst_addr_str, src_mac_addr->value);
+      synapse_runtime_wrappers_pair_new(&eth_dst_addr_str, src_mac_addr->raw);
 
   size_t mac_dst_exact_action_params_size = 1;
   pair_ptr_t *mac_dst_exact_action_params = (pair_ptr_t *)malloc(
       mac_dst_exact_action_params_size * sizeof(mac_dst_exact_action_params));
 
   *mac_dst_exact_action_params =
-      synapse_runtime_wrappers_pair_new(&egress_port_str, ingress_port->value);
+      synapse_runtime_wrappers_pair_new(&egress_port_str, ingress_port->raw);
 
-  // Send the packet back to the switch
-  synapse_runtime_wrappers_stack_push(stack, NULL);
+  // No metadata to send (for now...)
+  VAR_ALLOC(size_t, metadata_out_size, 1);
+  *metadata_out_size = 0;
 
-  size_t *packet_out_metadata_size = malloc(sizeof(size_t));
-  *packet_out_metadata_size = 0;
-  synapse_runtime_wrappers_stack_push(stack, packet_out_metadata_size);
-
+  synapse_runtime_wrappers_stack_push(stack, NULL); // Required
+  synapse_runtime_wrappers_stack_push(stack, metadata_out_size);
   synapse_runtime_wrappers_stack_push(stack, payload);
 
   return insert_table_entry(env, &mac_dst_exact_str, mac_dst_exact_key_matches,
@@ -274,7 +308,30 @@ bool synapse_runtime_handle_packet_received(env_ptr_t env) {
 }
 
 bool synapse_runtime_handle_idle_timeout_notification_received(env_ptr_t env) {
-  printf("Received an idle timeout notification...\n");
+  /**
+   * The environment stack should look like this:
+   * ^
+   * | table entries size
+   * | table entries
+   * |-----------------------
+   */
+  stack_ptr_t stack = synapse_runtime_environment_stack(env);
+  assert(2 == synapse_runtime_wrappers_stack_size(stack));
+
+  size_t table_entries_size =
+      *(size_t *)synapse_runtime_wrappers_stack_pop(stack);
+  p4_table_entry_ptr_t *table_entries =
+      synapse_runtime_wrappers_stack_pop(stack);
+
+  printf("Received an idle timeout notification of %lu table entries...\n",
+         table_entries_size);
+
+  for (size_t i = 0; i < table_entries_size; i++) {
+    if (!delete_table_entry(env, table_entries[i])) {
+      return false;
+    }
+  }
+
   return true;
 }
 

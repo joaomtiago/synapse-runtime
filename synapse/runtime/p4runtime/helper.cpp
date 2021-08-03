@@ -58,17 +58,33 @@ RuntimeHelper::p4InfoControllerPacketMetadata(
 }
 
 p4_info_controller_packet_metadata_metadata_ptr_t
-RuntimeHelper::p4InfoControllerPacketMetadataMetadata(
+RuntimeHelper::p4InfoControllerPacketMetadataMetadataById(
     p4_info_controller_packet_metadata_ptr_t controllerPacketMetadata,
-    std::string metadataName) {
+    uint32_t metadataId) {
   for (auto metadata : controllerPacketMetadata->metadata()) {
-    if (metadata.name() == metadataName) {
+    if (metadataId == metadata.id()) {
       return new p4_info_controller_packet_metadata_metadata_t(metadata);
     }
   }
 
-  throw RuntimeException("Unknown controller packet metadata metadata `" +
-                         metadataName + "`");
+  throw RuntimeException(
+      "Unknown controller packet metadata metadata with ID `" +
+      std::to_string(metadataId) + "`");
+}
+
+p4_info_controller_packet_metadata_metadata_ptr_t
+RuntimeHelper::p4InfoControllerPacketMetadataMetadataByName(
+    p4_info_controller_packet_metadata_ptr_t controllerPacketMetadata,
+    std::string metadataName) {
+  for (auto metadata : controllerPacketMetadata->metadata()) {
+    if (metadataName == metadata.name()) {
+      return new p4_info_controller_packet_metadata_metadata_t(metadata);
+    }
+  }
+
+  throw RuntimeException(
+      "Unknown controller packet metadata metadata with name `" + metadataName +
+      "`");
 }
 
 p4_info_match_field_ptr_t

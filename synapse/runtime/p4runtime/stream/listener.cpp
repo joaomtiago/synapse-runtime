@@ -42,7 +42,7 @@ Listener::Listener(conn_ptr_t conn, logger_ptr_t logger) {
 }
 
 void Listener::listen() {
-  logger_->info("Listener: start");
+  logger_->debug("Listener: start");
 
   void *rawTag = nullptr;
   bool ok = false;

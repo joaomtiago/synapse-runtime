@@ -40,7 +40,13 @@ synapse_runtime_p4_info_controller_packet_metadata_new(
     helper_ptr_t helper, string_ptr_t controller_packet_metadata_name);
 
 p4_info_controller_packet_metadata_metadata_ptr_t
-synapse_runtime_p4_info_controller_packet_metadata_metadata_new(
+synapse_runtime_p4_info_controller_packet_metadata_metadata_by_id_new(
+    helper_ptr_t helper,
+    p4_info_controller_packet_metadata_ptr_t controller_packet_metadata,
+    uint32_t metadata_id);
+
+p4_info_controller_packet_metadata_metadata_ptr_t
+synapse_runtime_p4_info_controller_packet_metadata_metadata_by_name_new(
     helper_ptr_t helper,
     p4_info_controller_packet_metadata_ptr_t controller_packet_metadata,
     string_ptr_t metadata_name);

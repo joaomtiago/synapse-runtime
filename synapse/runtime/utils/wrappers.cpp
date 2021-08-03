@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <cstring>
 #include <inttypes.h>
+#include <math.h>
 #include <memory>
 #include <sstream>
 
@@ -10,24 +11,30 @@ namespace synapse::runtime {
 
 // String
 
-String::String(const char *value, size_t value_sz) {
-  assert(0 < value_sz);
-  this->value_sz = value_sz;
+String::String(std::string *string)
+    : value(string->c_str()), size(string->size()) {}
 
-  this->value = (char *)std::malloc(value_sz);
+String::String(const std::string &string)
+    : value(string.c_str()), size(string.size()) {}
+
+String::String(const char *value, size_t size) {
+  assert(0 < size);
+  this->size = size;
+
+  this->value = (char *)std::malloc(size);
   assert(nullptr != this->value);
-  std::memcpy((void *)this->value, value, value_sz);
+  std::memcpy((void *)this->value, value, size);
   assert(nullptr != this->value);
 }
 
-std::string String::toStdString() { return std::string(value, value_sz); }
+std::string String::toStdString() { return std::string(value, size); }
 
 // MAC address
 
-MACAddress::MACAddress(const std::string &address) {
+MACAddress::MACAddress(const char *address) {
   uint32_t byte1, byte2, byte3, byte4, byte5, byte6;
-  if (6 != sscanf(address.c_str(), "%02x:%02x:%02x:%02x:%02x:%02x", &byte1,
-                  &byte2, &byte3, &byte4, &byte5, &byte6)) {
+  if (6 != sscanf(address, "%02x:%02x:%02x:%02x:%02x:%02x", &byte1, &byte2,
+                  &byte3, &byte4, &byte5, &byte6)) {
     throw RuntimeException("Could not parse MAC address");
   }
 
@@ -40,25 +47,13 @@ MACAddress::MACAddress(const std::string &address) {
   stream << (uint8_t)byte6 && 0xff;
   std::string streamStr = stream.str();
 
-  this->address = new string_t(address.c_str(), address.size());
-  this->value = new string_t(streamStr.c_str(), streamStr.size());
+  this->address = new string_t(address, 17);
+  this->raw = new string_t(streamStr.c_str(), 6);
 }
 
-mac_addr_ptr_t synapse_runtime_wrappers_parse_mac_address(string_ptr_t value) {
-  if (6 > value->value_sz) {
-    return NULL;
-  }
-
-  char buffer[17]; // 12 hex digits + 5 ':'
-  char *ptr = buffer;
-
-  for (size_t i = 0; i < 6; i++) {
-    sprintf(ptr, "%02x", (uint8_t)value->value[i] & 0xff);
-    ptr += 2;
-    *ptr++ = ':';
-  }
-
-  return new mac_addr_t(std::string(buffer, 17));
+MACAddress::MACAddress(const char *address, const char *raw) {
+  this->address = new string_t(address, 17);
+  this->raw = new string_t(raw, 6);
 }
 
 // Port
@@ -92,17 +87,38 @@ Port::Port(const uint16_t &port) {
   std::string streamStr = stream.str();
 
   this->port = port;
-  this->value = new string_t(streamStr.c_str(), streamStr.size());
+  this->raw = new string_t(streamStr.c_str(), streamStr.size());
 }
 
-port_ptr_t synapse_runtime_wrappers_parse_port(string_ptr_t value) {
-  uint16_t port = 0;
+Port::Port(const uint16_t &port, string_ptr_t raw) {
+  this->port = port;
+  this->raw = raw;
+}
 
-  for (size_t i = 0; i < 2 && i < value->value_sz; i++) {
-    port = (uint16_t)((port << 8) | ((uint8_t)value->value[i] & 0xff));
+// Decoders
+
+mac_addr_ptr_t
+synapse_runtime_wrappers_decode_mac_address(const char *encoded) {
+  char buffer[17]; // 12 hex digits + 5 ':'
+  char *ptr = buffer;
+
+  for (size_t i = 0; i < 6; i++) {
+    sprintf(ptr, "%02x", (uint8_t)encoded[i] & 0xff);
+    ptr += 2;
+    *ptr++ = ':';
   }
 
-  return new port_t(port);
+  return new mac_addr_t(buffer, encoded);
+}
+
+port_ptr_t synapse_runtime_wrappers_decode_port(string_ptr_t encoded) {
+  uint16_t port = 0;
+
+  for (size_t i = 0; i < encoded->size; i++) {
+    port = (uint16_t)((port << 8) | ((uint8_t)encoded->value[i] & 0xff));
+  }
+
+  return new port_t(port, encoded);
 }
 
 // Stack

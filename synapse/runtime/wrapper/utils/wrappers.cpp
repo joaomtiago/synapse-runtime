@@ -11,8 +11,8 @@ string_ptr_t synapse_runtime_wrappers_string_new(const char *value,
 
 // MAC address
 
-mac_addr_ptr_t synapse_runtime_wrappers_mac_address_new(string_ptr_t address) {
-  return new mac_addr_t(address->toStdString());
+mac_addr_ptr_t synapse_runtime_wrappers_mac_address_new(const char *value) {
+  return new mac_addr_t(value);
 }
 
 // Port

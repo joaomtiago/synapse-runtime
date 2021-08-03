@@ -5,6 +5,7 @@
 #include "synapse/runtime/p4runtime/typedefs.hpp"
 #include "synapse/runtime/utils/file.hpp"
 #include "synapse/runtime/wrapper/utils/wrappers.hpp"
+#include <inttypes.h>
 
 namespace synapse::runtime {
 
@@ -141,23 +142,19 @@ bool handleMessageReceived(env_ptr_t env, stack_ptr_t stack,
 
     // Push packet metadata
     size_t metadataSize = packet->metadata_size();
-    env->stack->push(std::malloc(metadataSize * sizeof(pair_ptr_t)));
-    pair_ptr_t *metadata = S_CAST(pair_ptr_t *, env->stack->top());
-    env->stack->push(new size_t(metadataSize));
+    pair_ptr_t *metadata =
+        S_CAST(pair_ptr_t *, std::malloc(metadataSize * sizeof(pair_ptr_t)));
 
     for (size_t i = 0; i < metadataSize; i++) {
       p4_packet_metadata_ptr_t entry = packet->mutable_metadata(S_CAST(int, i));
 
-      *(metadata + i) = new pair_t(
-          S_CAST(void *, new uint32_t(entry->metadata_id())),
-          S_CAST(void *, new string_t(entry->mutable_value()->c_str(),
-                                      entry->mutable_value()->size())));
+      metadata[i] = new pair_t(new uint32_t(entry->metadata_id()),
+                               new string_t(entry->mutable_value()));
     }
 
-    // Push string containing the packet payload
-    size_t payloadSize = packet->mutable_payload()->size();
-    const char *payload = packet->mutable_payload()->c_str();
-    env->stack->push(new string_t(payload, payloadSize));
+    env->stack->push(metadata);
+    env->stack->push(new size_t(metadataSize));
+    env->stack->push(new string_t(packet->mutable_payload()));
 
     proceed = synapse_runtime_handle_packet_received(env);
 
@@ -196,16 +193,14 @@ bool handleMessageReceived(env_ptr_t env, stack_ptr_t stack,
           string_ptr_t metadataValue = S_CAST(string_ptr_t, metadata->right);
 
           packetOutMetadataVector->push_back(env->helper->p4PacketMetadata(
-              metadataId,
-              std::string(metadataValue->value, metadataValue->value_sz)));
+              metadataId, metadataValue->toStdString()));
         }
       }
 
       // Send packet out of the controller
       stream->Write(
           *env->helper->p4StreamMessageRequest(env->helper->p4PacketOut(
-              std::string(packetOutPayload->value, packetOutPayload->value_sz),
-              packetOutMetadataVector)),
+              packetOutPayload->toStdString(), packetOutMetadataVector)),
           nextStates[1]);
 
       // We cannot proceed as we would be queueing a reading!
@@ -216,9 +211,25 @@ bool handleMessageReceived(env_ptr_t env, stack_ptr_t stack,
   } break;
 
   case p4_stream_message_response_t::UpdateCase::kIdleTimeoutNotification: {
-    env->stack->push(response->mutable_idle_timeout_notification());
+    env->logger->debug("Clearing the stack");
+    env->stack->clear();
+
+    p4_idle_timeout_notification_ptr_t notification =
+        response->mutable_idle_timeout_notification();
+
+    size_t tableEntrySize = notification->table_entry_size();
+    p4_table_entry_ptr_t *tableEntry =
+        S_CAST(p4_table_entry_ptr_t *,
+               std::malloc(tableEntrySize * sizeof(p4_table_entry_ptr_t)));
+
+    for (size_t i = 0; i < tableEntrySize; i++) {
+      tableEntry[i] = notification->mutable_table_entry(S_CAST(int, i));
+    }
+
+    env->stack->push(tableEntry);
+    env->stack->push(new size_t(tableEntrySize));
+
     proceed = synapse_runtime_handle_idle_timeout_notification_received(env);
-    env->stack->empty();
 
     if (!flushUpdates(env, S_CAST(p4runtime_stub_ptr_t, stack->top()))) {
       env->logger->error("Could not flush updates");
@@ -234,7 +245,7 @@ bool handleMessageReceived(env_ptr_t env, stack_ptr_t stack,
       env->logger->error("Received an arbitration error:");
       env->logger->error(arbitration.status().message());
 
-      // print the highest election id known to the switch
+      // Print the highest election id known to the switch
       env->logger->debug("The highest election ID is now " +
                          arbitration.election_id().low());
 

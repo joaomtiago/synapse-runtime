@@ -1,6 +1,6 @@
 #include "synapse/runtime/wrapper/p4runtime/helper.hpp"
 
-#define TO_STD_STRING(str) std::string(str->value, str->value_sz)
+#define TO_STD_STRING(str) std::string(str->value, str->size)
 
 #define NOT_NULL(ptr) assert(nullptr != ptr)
 
@@ -46,12 +46,22 @@ synapse_runtime_p4_info_controller_packet_metadata_new(
 }
 
 p4_info_controller_packet_metadata_metadata_ptr_t
-synapse_runtime_p4_info_controller_packet_metadata_metadata_new(
+synapse_runtime_p4_info_controller_packet_metadata_metadata_by_id_new(
+    helper_ptr_t helper,
+    p4_info_controller_packet_metadata_ptr_t controller_packet_metadata,
+    uint32_t metadata_id) {
+  NOT_NULL(helper);
+  return helper->p4InfoControllerPacketMetadataMetadataById(
+      controller_packet_metadata, metadata_id);
+}
+
+p4_info_controller_packet_metadata_metadata_ptr_t
+synapse_runtime_p4_info_controller_packet_metadata_metadata_by_name_new(
     helper_ptr_t helper,
     p4_info_controller_packet_metadata_ptr_t controller_packet_metadata,
     string_ptr_t metadata_name) {
   NOT_NULL(helper);
-  return helper->p4InfoControllerPacketMetadataMetadata(
+  return helper->p4InfoControllerPacketMetadataMetadataByName(
       controller_packet_metadata, TO_STD_STRING(metadata_name));
 }
 

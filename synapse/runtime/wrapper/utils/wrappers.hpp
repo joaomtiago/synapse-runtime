@@ -4,7 +4,6 @@
 #include "synapse/runtime/utils/wrappers.hpp"
 
 #ifndef __cplusplus
-#include <stdbool.h>
 #include <stdint.h>
 #endif // __cplusplus
 
@@ -23,7 +22,7 @@ string_ptr_t synapse_runtime_wrappers_string_new(const char *value,
 
 // MAC address
 
-mac_addr_ptr_t synapse_runtime_wrappers_mac_address_new(string_ptr_t address);
+mac_addr_ptr_t synapse_runtime_wrappers_mac_address_new(const char *value);
 
 // Port
 

@@ -806,7 +806,7 @@
             "filename" : "main.p4",
             "line" : 43,
             "column" : 8,
-            "source_fragment" : "hdr.packet_in.ingress_port = standard_metadata.ingress_port"
+            "source_fragment" : "hdr.packet_in.ingress_port = (egressSpec_t) standard_metadata.ingress_port"
           }
         }
       ]
