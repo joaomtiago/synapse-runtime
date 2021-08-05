@@ -2,7 +2,6 @@
 #define SYNAPSE_RUNTIME_CONNECTOR_CONNECTOR_HPP_
 
 #include "synapse/runtime/p4runtime/typedefs.hpp"
-#include "synapse/runtime/logger/logger.hpp"
 #include "synapse/runtime/wrapper/utils/wrappers.hpp"
 
 #ifdef __cplusplus
@@ -22,7 +21,7 @@ public:
    * successful connection to be established, create the key-value dictionary,
    * build the Protobuf helpers, and create the stub.
    */
-  Connector(const std::string &grpcAddr, logger_logging_level_t loggingLevel);
+  Connector(const std::string &grpcAddr);
 
   /**
    * Configure the underlying structure of the connector by providing a path to
@@ -49,10 +48,8 @@ private:
   // Thread that consumes messages from the stream
   std::thread listener_thread_;
 
-  logger_ptr_t logger_;
-
 } conn_t;
-#else
+#else  // __cplusplus
 struct conn;
 typedef struct conn conn_t;
 #endif // __cplusplus

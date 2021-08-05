@@ -4,7 +4,18 @@
       "name" : "scalars_0",
       "id" : 0,
       "fields" : [
-        ["userMetadata.tcpLen", 16, false]
+        ["key_byte", 8, false],
+        ["key_byte_8", 8, false],
+        ["key_byte_9", 8, false],
+        ["key_byte_10", 8, false],
+        ["key_byte_11", 8, false],
+        ["key_byte_12", 8, false],
+        ["key_byte_13", 8, false],
+        ["key_byte_14", 8, false],
+        ["hasReturned", 1, false],
+        ["userMetadata.map_get_35", 32, false],
+        ["userMetadata.map_get_53", 32, false],
+        ["_padding_0", 7, false]
       ]
     },
     {
@@ -34,14 +45,19 @@
       "name" : "packet_in_t",
       "id" : 2,
       "fields" : [
-        ["ingress_port", 9, false],
-        ["padding", 7, false]
+        ["code_id", 32, false],
+        ["src_device", 9, false],
+        ["pad", 7, false]
       ]
     },
     {
       "name" : "packet_out_t",
       "id" : 3,
-      "fields" : []
+      "fields" : [
+        ["src_device", 9, false],
+        ["dst_device", 9, false],
+        ["pad", 6, false]
+      ]
     },
     {
       "name" : "ethernet_t",
@@ -50,63 +66,6 @@
         ["dstAddr", 48, false],
         ["srcAddr", 48, false],
         ["etherType", 16, false]
-      ]
-    },
-    {
-      "name" : "ipv4_t",
-      "id" : 5,
-      "fields" : [
-        ["version", 4, false],
-        ["ihl", 4, false],
-        ["diffserv", 8, false],
-        ["totalLen", 16, false],
-        ["identification", 16, false],
-        ["flags", 3, false],
-        ["fragOffset", 13, false],
-        ["ttl", 8, false],
-        ["protocol", 8, false],
-        ["hdrChecksum", 16, false],
-        ["srcAddr", 32, false],
-        ["dstAddr", 32, false]
-      ]
-    },
-    {
-      "name" : "tcp_udp_t",
-      "id" : 6,
-      "fields" : [
-        ["srcPort", 16, false],
-        ["dstPort", 16, false]
-      ]
-    },
-    {
-      "name" : "tcp_t",
-      "id" : 7,
-      "fields" : [
-        ["seqNo", 32, false],
-        ["ackNo", 32, false],
-        ["dataOffset", 4, false],
-        ["res", 3, false],
-        ["ecn", 3, false],
-        ["ctrl", 6, false],
-        ["window", 16, false],
-        ["checksum", 16, false],
-        ["urgentPtr", 16, false]
-      ]
-    },
-    {
-      "name" : "udp_t",
-      "id" : 8,
-      "fields" : [
-        ["length_", 16, false],
-        ["checksum", 16, false]
-      ]
-    },
-    {
-      "name" : "icmp_t",
-      "id" : 9,
-      "fields" : [
-        ["typeCode", 16, false],
-        ["hdrChecksum", 16, false]
       ]
     }
   ],
@@ -145,41 +104,6 @@
       "header_type" : "ethernet_t",
       "metadata" : false,
       "pi_omit" : true
-    },
-    {
-      "name" : "ipv4",
-      "id" : 5,
-      "header_type" : "ipv4_t",
-      "metadata" : false,
-      "pi_omit" : true
-    },
-    {
-      "name" : "tcp_udp",
-      "id" : 6,
-      "header_type" : "tcp_udp_t",
-      "metadata" : false,
-      "pi_omit" : true
-    },
-    {
-      "name" : "tcp",
-      "id" : 7,
-      "header_type" : "tcp_t",
-      "metadata" : false,
-      "pi_omit" : true
-    },
-    {
-      "name" : "udp",
-      "id" : 8,
-      "header_type" : "udp_t",
-      "metadata" : false,
-      "pi_omit" : true
-    },
-    {
-      "name" : "icmp",
-      "id" : 9,
-      "header_type" : "icmp_t",
-      "metadata" : false,
-      "pi_omit" : true
     }
   ],
   "header_stacks" : [],
@@ -210,7 +134,7 @@
           "transitions" : [
             {
               "type" : "hexstr",
-              "value" : "0x00ff",
+              "value" : "0x01fd",
               "mask" : null,
               "next_state" : "parse_packet_out"
             },
@@ -268,208 +192,6 @@
           ],
           "transitions" : [
             {
-              "type" : "hexstr",
-              "value" : "0x0800",
-              "mask" : null,
-              "next_state" : "parse_ipv4"
-            }
-          ],
-          "transition_key" : [
-            {
-              "type" : "field",
-              "value" : ["ethernet", "etherType"]
-            }
-          ]
-        },
-        {
-          "name" : "parse_ipv4",
-          "id" : 3,
-          "parser_ops" : [
-            {
-              "parameters" : [
-                {
-                  "type" : "regular",
-                  "value" : "ipv4"
-                }
-              ],
-              "op" : "extract"
-            },
-            {
-              "parameters" : [
-                {
-                  "type" : "field",
-                  "value" : ["scalars", "userMetadata.tcpLen"]
-                },
-                {
-                  "type" : "expression",
-                  "value" : {
-                    "type" : "expression",
-                    "value" : {
-                      "op" : "&",
-                      "left" : {
-                        "type" : "expression",
-                        "value" : {
-                          "op" : "-",
-                          "left" : {
-                            "type" : "field",
-                            "value" : ["ipv4", "totalLen"]
-                          },
-                          "right" : {
-                            "type" : "expression",
-                            "value" : {
-                              "op" : "&",
-                              "left" : {
-                                "type" : "expression",
-                                "value" : {
-                                  "op" : "<<",
-                                  "left" : {
-                                    "type" : "expression",
-                                    "value" : {
-                                      "op" : "&",
-                                      "left" : {
-                                        "type" : "field",
-                                        "value" : ["ipv4", "ihl"]
-                                      },
-                                      "right" : {
-                                        "type" : "hexstr",
-                                        "value" : "0xffff"
-                                      }
-                                    }
-                                  },
-                                  "right" : {
-                                    "type" : "hexstr",
-                                    "value" : "0x2"
-                                  }
-                                }
-                              },
-                              "right" : {
-                                "type" : "hexstr",
-                                "value" : "0xffff"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "right" : {
-                        "type" : "hexstr",
-                        "value" : "0xffff"
-                      }
-                    }
-                  }
-                }
-              ],
-              "op" : "set"
-            }
-          ],
-          "transitions" : [
-            {
-              "type" : "hexstr",
-              "value" : "0x01",
-              "mask" : null,
-              "next_state" : "parse_icmp"
-            },
-            {
-              "type" : "hexstr",
-              "value" : "0x06",
-              "mask" : null,
-              "next_state" : "parse_tcp"
-            },
-            {
-              "type" : "hexstr",
-              "value" : "0x11",
-              "mask" : null,
-              "next_state" : "parse_udp"
-            }
-          ],
-          "transition_key" : [
-            {
-              "type" : "field",
-              "value" : ["ipv4", "protocol"]
-            }
-          ]
-        },
-        {
-          "name" : "parse_icmp",
-          "id" : 4,
-          "parser_ops" : [
-            {
-              "parameters" : [
-                {
-                  "type" : "regular",
-                  "value" : "icmp"
-                }
-              ],
-              "op" : "extract"
-            }
-          ],
-          "transitions" : [
-            {
-              "type" : "default",
-              "value" : null,
-              "mask" : null,
-              "next_state" : null
-            }
-          ],
-          "transition_key" : []
-        },
-        {
-          "name" : "parse_tcp",
-          "id" : 5,
-          "parser_ops" : [
-            {
-              "parameters" : [
-                {
-                  "type" : "regular",
-                  "value" : "tcp_udp"
-                }
-              ],
-              "op" : "extract"
-            },
-            {
-              "parameters" : [
-                {
-                  "type" : "regular",
-                  "value" : "tcp"
-                }
-              ],
-              "op" : "extract"
-            }
-          ],
-          "transitions" : [
-            {
-              "type" : "default",
-              "value" : null,
-              "mask" : null,
-              "next_state" : null
-            }
-          ],
-          "transition_key" : []
-        },
-        {
-          "name" : "parse_udp",
-          "id" : 6,
-          "parser_ops" : [
-            {
-              "parameters" : [
-                {
-                  "type" : "regular",
-                  "value" : "tcp_udp"
-                }
-              ],
-              "op" : "extract"
-            },
-            {
-              "parameters" : [
-                {
-                  "type" : "regular",
-                  "value" : "udp"
-                }
-              ],
-              "op" : "extract"
-            }
-          ],
-          "transitions" : [
-            {
               "type" : "default",
               "value" : null,
               "mask" : null,
@@ -487,262 +209,19 @@
       "name" : "deparser",
       "id" : 0,
       "source_info" : {
-        "filename" : "../p4_include/parsers.p4",
-        "line" : 161,
+        "filename" : "main.p4",
+        "line" : 241,
         "column" : 8,
-        "source_fragment" : "MyDeparser"
+        "source_fragment" : "SyNAPSE_Deparser"
       },
-      "order" : ["packet_in", "packet_out", "ethernet", "ipv4", "tcp_udp", "tcp", "udp", "icmp"],
+      "order" : ["packet_in", "ethernet"],
       "primitives" : []
     }
   ],
   "meter_arrays" : [],
   "counter_arrays" : [],
   "register_arrays" : [],
-  "calculations" : [
-    {
-      "name" : "calc",
-      "id" : 0,
-      "source_info" : {
-        "filename" : "../p4_include/parsers.p4",
-        "line" : 97,
-        "column" : 8,
-        "source_fragment" : "update_checksum( ..."
-      },
-      "algo" : "csum16",
-      "input" : [
-        {
-          "type" : "field",
-          "value" : ["ipv4", "version"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "ihl"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "diffserv"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "totalLen"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "identification"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "flags"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "fragOffset"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "ttl"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "protocol"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "srcAddr"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "dstAddr"]
-        }
-      ]
-    },
-    {
-      "name" : "calc_0",
-      "id" : 1,
-      "source_info" : {
-        "filename" : "../p4_include/parsers.p4",
-        "line" : 116,
-        "column" : 8,
-        "source_fragment" : "update_checksum_with_payload( ..."
-      },
-      "algo" : "csum16",
-      "input" : [
-        {
-          "type" : "field",
-          "value" : ["ipv4", "srcAddr"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "dstAddr"]
-        },
-        {
-          "type" : "hexstr",
-          "value" : "0x00",
-          "bitwidth" : 8
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "protocol"]
-        },
-        {
-          "type" : "field",
-          "value" : ["scalars", "userMetadata.tcpLen"]
-        },
-        {
-          "type" : "field",
-          "value" : ["tcp_udp", "srcPort"]
-        },
-        {
-          "type" : "field",
-          "value" : ["tcp_udp", "dstPort"]
-        },
-        {
-          "type" : "field",
-          "value" : ["tcp", "seqNo"]
-        },
-        {
-          "type" : "field",
-          "value" : ["tcp", "ackNo"]
-        },
-        {
-          "type" : "field",
-          "value" : ["tcp", "dataOffset"]
-        },
-        {
-          "type" : "field",
-          "value" : ["tcp", "res"]
-        },
-        {
-          "type" : "field",
-          "value" : ["tcp", "ecn"]
-        },
-        {
-          "type" : "field",
-          "value" : ["tcp", "ctrl"]
-        },
-        {
-          "type" : "field",
-          "value" : ["tcp", "window"]
-        },
-        {
-          "type" : "field",
-          "value" : ["tcp", "urgentPtr"]
-        },
-        {
-          "type" : "payload",
-          "value" : null
-        }
-      ]
-    },
-    {
-      "name" : "calc_1",
-      "id" : 2,
-      "source_info" : {
-        "filename" : "../p4_include/parsers.p4",
-        "line" : 139,
-        "column" : 8,
-        "source_fragment" : "update_checksum_with_payload( ..."
-      },
-      "algo" : "csum16",
-      "input" : [
-        {
-          "type" : "field",
-          "value" : ["ipv4", "srcAddr"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "dstAddr"]
-        },
-        {
-          "type" : "hexstr",
-          "value" : "0x00",
-          "bitwidth" : 8
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "protocol"]
-        },
-        {
-          "type" : "field",
-          "value" : ["udp", "length_"]
-        },
-        {
-          "type" : "field",
-          "value" : ["tcp_udp", "srcPort"]
-        },
-        {
-          "type" : "field",
-          "value" : ["tcp_udp", "dstPort"]
-        },
-        {
-          "type" : "field",
-          "value" : ["scalars", "userMetadata.tcpLen"]
-        },
-        {
-          "type" : "payload",
-          "value" : null
-        }
-      ]
-    },
-    {
-      "name" : "calc_2",
-      "id" : 3,
-      "source_info" : {
-        "filename" : "../p4_include/parsers.p4",
-        "line" : 70,
-        "column" : 8,
-        "source_fragment" : "verify_checksum(hdr.ipv4.isValid(), ..."
-      },
-      "algo" : "csum16",
-      "input" : [
-        {
-          "type" : "field",
-          "value" : ["ipv4", "version"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "ihl"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "diffserv"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "totalLen"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "identification"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "flags"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "fragOffset"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "ttl"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "protocol"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "srcAddr"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "dstAddr"]
-        }
-      ]
-    }
-  ],
+  "calculations" : [],
   "learn_lists" : [],
   "actions" : [
     {
@@ -752,67 +231,13 @@
       "primitives" : []
     },
     {
-      "name" : "MyIngress.send_to_cpu",
+      "name" : "NoAction",
       "id" : 1,
       "runtime_data" : [],
-      "primitives" : [
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["standard_metadata", "egress_spec"]
-            },
-            {
-              "type" : "hexstr",
-              "value" : "0x00ff"
-            }
-          ],
-          "source_info" : {
-            "filename" : "main.p4",
-            "line" : 40,
-            "column" : 8,
-            "source_fragment" : "standard_metadata.egress_spec = 255"
-          }
-        },
-        {
-          "op" : "add_header",
-          "parameters" : [
-            {
-              "type" : "header",
-              "value" : "packet_in"
-            }
-          ],
-          "source_info" : {
-            "filename" : "main.p4",
-            "line" : 42,
-            "column" : 8,
-            "source_fragment" : "hdr.packet_in.setValid()"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["packet_in", "ingress_port"]
-            },
-            {
-              "type" : "field",
-              "value" : ["standard_metadata", "ingress_port"]
-            }
-          ],
-          "source_info" : {
-            "filename" : "main.p4",
-            "line" : 43,
-            "column" : 8,
-            "source_fragment" : "hdr.packet_in.ingress_port = (egressSpec_t) standard_metadata.ingress_port"
-          }
-        }
-      ]
+      "primitives" : []
     },
     {
-      "name" : "MyIngress.flood",
+      "name" : "SyNAPSE_Ingress.broadcast",
       "id" : 2,
       "runtime_data" : [],
       "primitives" : [
@@ -830,22 +255,17 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 61,
-            "column" : 8,
-            "source_fragment" : "standard_metadata.mcast_grp = (multicastGroup_t) 1"
+            "line" : 91,
+            "column" : 4,
+            "source_fragment" : "standard_metadata.mcast_grp = (mcast_group_t) 1"
           }
         }
       ]
     },
     {
-      "name" : "MyIngress.forward",
+      "name" : "SyNAPSE_Ingress.forward",
       "id" : 3,
-      "runtime_data" : [
-        {
-          "name" : "egress_port",
-          "bitwidth" : 9
-        }
-      ],
+      "runtime_data" : [],
       "primitives" : [
         {
           "op" : "assign",
@@ -855,15 +275,1158 @@
               "value" : ["standard_metadata", "egress_spec"]
             },
             {
+              "type" : "field",
+              "value" : ["packet_out", "dst_device"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 99,
+            "column" : 4,
+            "source_fragment" : "standard_metadata.egress_spec = port; ..."
+          }
+        }
+      ]
+    },
+    {
+      "name" : "SyNAPSE_Ingress.send_to_controller",
+      "id" : 4,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["standard_metadata", "egress_spec"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x01fd"
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 103,
+            "column" : 4,
+            "source_fragment" : "standard_metadata.egress_spec = 509"
+          }
+        },
+        {
+          "op" : "add_header",
+          "parameters" : [
+            {
+              "type" : "header",
+              "value" : "packet_in"
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 105,
+            "column" : 4,
+            "source_fragment" : "hdr.packet_in.setValid()"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["packet_in", "code_id"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x00000024"
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 106,
+            "column" : 4,
+            "source_fragment" : "hdr.packet_in.code_id = code_id; ..."
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["packet_in", "src_device"]
+            },
+            {
+              "type" : "field",
+              "value" : ["standard_metadata", "ingress_port"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 107,
+            "column" : 4,
+            "source_fragment" : "hdr.packet_in.src_device = standard_metadata.ingress_port"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "SyNAPSE_Ingress.send_to_controller",
+      "id" : 5,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["standard_metadata", "egress_spec"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x01fd"
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 103,
+            "column" : 4,
+            "source_fragment" : "standard_metadata.egress_spec = 509"
+          }
+        },
+        {
+          "op" : "add_header",
+          "parameters" : [
+            {
+              "type" : "header",
+              "value" : "packet_in"
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 105,
+            "column" : 4,
+            "source_fragment" : "hdr.packet_in.setValid()"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["packet_in", "code_id"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x00000036"
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 106,
+            "column" : 4,
+            "source_fragment" : "hdr.packet_in.code_id = code_id; ..."
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["packet_in", "src_device"]
+            },
+            {
+              "type" : "field",
+              "value" : ["standard_metadata", "ingress_port"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 107,
+            "column" : 4,
+            "source_fragment" : "hdr.packet_in.src_device = standard_metadata.ingress_port"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "SyNAPSE_Ingress.map_get_35_populate",
+      "id" : 6,
+      "runtime_data" : [
+        {
+          "name" : "param_0",
+          "bitwidth" : 32
+        }
+      ],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.map_get_35"]
+            },
+            {
               "type" : "runtime_data",
               "value" : 0
             }
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 65,
-            "column" : 8,
-            "source_fragment" : "standard_metadata.egress_spec = egress_port"
+            "line" : 120,
+            "column" : 4,
+            "source_fragment" : "meta.map_get_35_0 = param_0"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "SyNAPSE_Ingress.map_get_53_populate",
+      "id" : 7,
+      "runtime_data" : [
+        {
+          "name" : "param_0",
+          "bitwidth" : 32
+        }
+      ],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.map_get_53"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 0
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 143,
+            "column" : 4,
+            "source_fragment" : "meta.map_get_53_0 = param_0"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "main167",
+      "id" : 8,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "add_header",
+          "parameters" : [
+            {
+              "type" : "header",
+              "value" : "packet_out"
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 167,
+            "column" : 6,
+            "source_fragment" : "hdr.packet_out.setValid()"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "main176",
+      "id" : 9,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "remove_header",
+          "parameters" : [
+            {
+              "type" : "header",
+              "value" : "packet_out"
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 176,
+            "column" : 6,
+            "source_fragment" : "hdr.packet_out.setInvalid()"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "hasReturned"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "b2d",
+                  "left" : null,
+                  "right" : {
+                    "type" : "bool",
+                    "value" : true
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 177,
+            "column" : 6,
+            "source_fragment" : "return"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "act",
+      "id" : 10,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "hasReturned"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "b2d",
+                  "left" : null,
+                  "right" : {
+                    "type" : "bool",
+                    "value" : false
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name" : "main181",
+      "id" : 11,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_byte"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "field",
+                        "value" : ["ethernet", "dstAddr"]
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0000000000ff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 181,
+            "column" : 6,
+            "source_fragment" : "key_byte_0 = (bit<8>) ((hdr.ethernet.dstAddr >> 0) & 0xff)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_byte_8"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "&",
+                          "left" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : ">>",
+                              "left" : {
+                                "type" : "field",
+                                "value" : ["ethernet", "dstAddr"]
+                              },
+                              "right" : {
+                                "type" : "hexstr",
+                                "value" : "0x8"
+                              }
+                            }
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0xffffffffffff"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0000000000ff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 182,
+            "column" : 6,
+            "source_fragment" : "key_byte_1 = (bit<8>) ((hdr.ethernet.dstAddr >> 8) & 0xff)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_byte_9"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "&",
+                          "left" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : ">>",
+                              "left" : {
+                                "type" : "field",
+                                "value" : ["ethernet", "dstAddr"]
+                              },
+                              "right" : {
+                                "type" : "hexstr",
+                                "value" : "0x10"
+                              }
+                            }
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0xffffffffffff"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0000000000ff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 183,
+            "column" : 6,
+            "source_fragment" : "key_byte_2 = (bit<8>) ((hdr.ethernet.dstAddr >> 16) & 0xff)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_byte_10"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "&",
+                          "left" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : ">>",
+                              "left" : {
+                                "type" : "field",
+                                "value" : ["ethernet", "dstAddr"]
+                              },
+                              "right" : {
+                                "type" : "hexstr",
+                                "value" : "0x18"
+                              }
+                            }
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0xffffffffffff"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0000000000ff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 184,
+            "column" : 6,
+            "source_fragment" : "key_byte_3 = (bit<8>) ((hdr.ethernet.dstAddr >> 24) & 0xff)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_byte_11"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "&",
+                          "left" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : ">>",
+                              "left" : {
+                                "type" : "field",
+                                "value" : ["ethernet", "dstAddr"]
+                              },
+                              "right" : {
+                                "type" : "hexstr",
+                                "value" : "0x20"
+                              }
+                            }
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0xffffffffffff"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0000000000ff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 185,
+            "column" : 6,
+            "source_fragment" : "key_byte_4 = (bit<8>) ((hdr.ethernet.dstAddr >> 32) & 0xff)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_byte_12"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "&",
+                          "left" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : ">>",
+                              "left" : {
+                                "type" : "field",
+                                "value" : ["ethernet", "dstAddr"]
+                              },
+                              "right" : {
+                                "type" : "hexstr",
+                                "value" : "0x28"
+                              }
+                            }
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0xffffffffffff"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0000000000ff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 186,
+            "column" : 6,
+            "source_fragment" : "key_byte_5 = (bit<8>) ((hdr.ethernet.dstAddr >> 40) & 0xff)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_byte_13"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x01"
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 187,
+            "column" : 6,
+            "source_fragment" : "key_byte_6 = (bit<8>) (1"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_byte_14"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x00"
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 188,
+            "column" : 6,
+            "source_fragment" : "key_byte_7 = (bit<8>) (0"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "main193",
+      "id" : 12,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_byte"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "field",
+                        "value" : ["ethernet", "dstAddr"]
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0000000000ff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 193,
+            "column" : 6,
+            "source_fragment" : "key_byte_0 = (bit<8>) (hdr.ethernet.dstAddr & 0xff)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_byte_8"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "&",
+                          "left" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : ">>",
+                              "left" : {
+                                "type" : "field",
+                                "value" : ["ethernet", "dstAddr"]
+                              },
+                              "right" : {
+                                "type" : "hexstr",
+                                "value" : "0x8"
+                              }
+                            }
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0xffffffffffff"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0000000000ff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 194,
+            "column" : 6,
+            "source_fragment" : "key_byte_1 = (bit<8>) ((hdr.ethernet.dstAddr >> 8) & 0xff)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_byte_9"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "&",
+                          "left" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : ">>",
+                              "left" : {
+                                "type" : "field",
+                                "value" : ["ethernet", "dstAddr"]
+                              },
+                              "right" : {
+                                "type" : "hexstr",
+                                "value" : "0x10"
+                              }
+                            }
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0xffffffffffff"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0000000000ff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 195,
+            "column" : 6,
+            "source_fragment" : "key_byte_2 = (bit<8>) ((hdr.ethernet.dstAddr >> 16) & 0xff)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_byte_10"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "&",
+                          "left" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : ">>",
+                              "left" : {
+                                "type" : "field",
+                                "value" : ["ethernet", "dstAddr"]
+                              },
+                              "right" : {
+                                "type" : "hexstr",
+                                "value" : "0x18"
+                              }
+                            }
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0xffffffffffff"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0000000000ff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 196,
+            "column" : 6,
+            "source_fragment" : "key_byte_3 = (bit<8>) ((hdr.ethernet.dstAddr >> 24) & 0xff)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_byte_11"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "&",
+                          "left" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : ">>",
+                              "left" : {
+                                "type" : "field",
+                                "value" : ["ethernet", "dstAddr"]
+                              },
+                              "right" : {
+                                "type" : "hexstr",
+                                "value" : "0x20"
+                              }
+                            }
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0xffffffffffff"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0000000000ff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 197,
+            "column" : 6,
+            "source_fragment" : "key_byte_4 = (bit<8>) ((hdr.ethernet.dstAddr >> 32) & 0xff)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_byte_12"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "&",
+                          "left" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : ">>",
+                              "left" : {
+                                "type" : "field",
+                                "value" : ["ethernet", "dstAddr"]
+                              },
+                              "right" : {
+                                "type" : "hexstr",
+                                "value" : "0x28"
+                              }
+                            }
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0xffffffffffff"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0000000000ff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 198,
+            "column" : 6,
+            "source_fragment" : "key_byte_5 = (bit<8>) ((hdr.ethernet.dstAddr >> 40) & 0xff)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_byte_13"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x00"
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 199,
+            "column" : 6,
+            "source_fragment" : "key_byte_6 = (bit<8>) (0"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_byte_14"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x00"
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 200,
+            "column" : 6,
+            "source_fragment" : "key_byte_7 = (bit<8>) (0"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "SyNAPSE_Egress.drop",
+      "id" : 13,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["standard_metadata", "egress_spec"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x01fe"
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 215,
+            "column" : 4,
+            "source_fragment" : "standard_metadata.egress_spec = 510"
           }
         }
       ]
@@ -875,78 +1438,388 @@
       "id" : 0,
       "source_info" : {
         "filename" : "main.p4",
-        "line" : 35,
+        "line" : 84,
         "column" : 8,
-        "source_fragment" : "MyIngress"
+        "source_fragment" : "SyNAPSE_Ingress"
       },
-      "init_table" : "node_2",
+      "init_table" : "tbl_act",
       "tables" : [
         {
-          "name" : "MyIngress.mac_dst_exact",
+          "name" : "tbl_act",
           "id" : 0,
-          "source_info" : {
-            "filename" : "main.p4",
-            "line" : 68,
-            "column" : 10,
-            "source_fragment" : "mac_dst_exact"
-          },
-          "key" : [
-            {
-              "match_type" : "exact",
-              "name" : "hdr.ethernet.dstAddr",
-              "target" : ["ethernet", "dstAddr"],
-              "mask" : null
-            }
-          ],
-          "match_type" : "exact",
-          "type" : "simple",
-          "max_size" : 1024,
-          "with_counters" : false,
-          "support_timeout" : true,
-          "direct_meters" : null,
-          "action_ids" : [2, 3],
-          "actions" : ["MyIngress.flood", "MyIngress.forward"],
-          "base_default_next" : null,
-          "next_tables" : {
-            "MyIngress.flood" : null,
-            "MyIngress.forward" : null
-          },
-          "default_entry" : {
-            "action_id" : 2,
-            "action_const" : false,
-            "action_data" : [],
-            "action_entry_const" : false
-          }
-        },
-        {
-          "name" : "MyIngress.mac_src_exact",
-          "id" : 1,
-          "source_info" : {
-            "filename" : "main.p4",
-            "line" : 46,
-            "column" : 10,
-            "source_fragment" : "mac_src_exact"
-          },
-          "key" : [
-            {
-              "match_type" : "exact",
-              "name" : "hdr.ethernet.srcAddr",
-              "target" : ["ethernet", "srcAddr"],
-              "mask" : null
-            }
-          ],
+          "key" : [],
           "match_type" : "exact",
           "type" : "simple",
           "max_size" : 1024,
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [1, 0],
-          "actions" : ["MyIngress.send_to_cpu", "NoAction"],
+          "action_ids" : [10],
+          "actions" : ["act"],
+          "base_default_next" : "node_3",
+          "next_tables" : {
+            "act" : "node_3"
+          },
+          "default_entry" : {
+            "action_id" : 10,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "tbl_main167",
+          "id" : 1,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 167,
+            "column" : 6,
+            "source_fragment" : "hdr.packet_out.setValid()"
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [8],
+          "actions" : ["main167"],
+          "base_default_next" : "node_5",
+          "next_tables" : {
+            "main167" : "node_5"
+          },
+          "default_entry" : {
+            "action_id" : 8,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "tbl_broadcast",
+          "id" : 2,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 170,
+            "column" : 8,
+            "source_fragment" : "broadcast()"
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [2],
+          "actions" : ["SyNAPSE_Ingress.broadcast"],
+          "base_default_next" : "tbl_main176",
+          "next_tables" : {
+            "SyNAPSE_Ingress.broadcast" : "tbl_main176"
+          },
+          "default_entry" : {
+            "action_id" : 2,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "tbl_forward",
+          "id" : 3,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 173,
+            "column" : 8,
+            "source_fragment" : "forward(hdr.packet_out.dst_device)"
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [3],
+          "actions" : ["SyNAPSE_Ingress.forward"],
+          "base_default_next" : "tbl_main176",
+          "next_tables" : {
+            "SyNAPSE_Ingress.forward" : "tbl_main176"
+          },
+          "default_entry" : {
+            "action_id" : 3,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "tbl_main176",
+          "id" : 4,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 176,
+            "column" : 6,
+            "source_fragment" : "hdr.packet_out.setInvalid(); ..."
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [9],
+          "actions" : ["main176"],
+          "base_default_next" : "node_9",
+          "next_tables" : {
+            "main176" : "node_9"
+          },
+          "default_entry" : {
+            "action_id" : 9,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "tbl_main181",
+          "id" : 5,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 181,
+            "column" : 17,
+            "source_fragment" : "= (bit<8>) ((hdr.ethernet.dstAddr >> 0) & 0xff); ..."
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [11],
+          "actions" : ["main181"],
+          "base_default_next" : "SyNAPSE_Ingress.map_get_35",
+          "next_tables" : {
+            "main181" : "SyNAPSE_Ingress.map_get_35"
+          },
+          "default_entry" : {
+            "action_id" : 11,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "SyNAPSE_Ingress.map_get_35",
+          "id" : 6,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 123,
+            "column" : 8,
+            "source_fragment" : "map_get_35"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "name" : "key_byte_0",
+              "target" : ["scalars", "key_byte"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "key_byte_1",
+              "target" : ["scalars", "key_byte_8"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "key_byte_2",
+              "target" : ["scalars", "key_byte_9"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "key_byte_3",
+              "target" : ["scalars", "key_byte_10"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "key_byte_4",
+              "target" : ["scalars", "key_byte_11"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "key_byte_5",
+              "target" : ["scalars", "key_byte_12"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "key_byte_6",
+              "target" : ["scalars", "key_byte_13"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "key_byte_7",
+              "target" : ["scalars", "key_byte_14"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 256,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [6, 0],
+          "actions" : ["SyNAPSE_Ingress.map_get_35_populate", "NoAction"],
+          "base_default_next" : "tbl_send_to_controller",
+          "next_tables" : {
+            "SyNAPSE_Ingress.map_get_35_populate" : "tbl_send_to_controller",
+            "NoAction" : "tbl_send_to_controller"
+          },
+          "default_entry" : {
+            "action_id" : 0,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        },
+        {
+          "name" : "tbl_send_to_controller",
+          "id" : 7,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 190,
+            "column" : 6,
+            "source_fragment" : "send_to_controller(36)"
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [4],
+          "actions" : ["SyNAPSE_Ingress.send_to_controller"],
           "base_default_next" : null,
           "next_tables" : {
-            "__MISS__" : null,
-            "__HIT__" : "MyIngress.mac_dst_exact"
+            "SyNAPSE_Ingress.send_to_controller" : null
+          },
+          "default_entry" : {
+            "action_id" : 4,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "tbl_main193",
+          "id" : 8,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 193,
+            "column" : 17,
+            "source_fragment" : "= (bit<8>) (hdr.ethernet.dstAddr & 0xff); ..."
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [12],
+          "actions" : ["main193"],
+          "base_default_next" : "SyNAPSE_Ingress.map_get_53",
+          "next_tables" : {
+            "main193" : "SyNAPSE_Ingress.map_get_53"
+          },
+          "default_entry" : {
+            "action_id" : 12,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "SyNAPSE_Ingress.map_get_53",
+          "id" : 9,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 146,
+            "column" : 8,
+            "source_fragment" : "map_get_53"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "name" : "key_byte_0",
+              "target" : ["scalars", "key_byte"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "key_byte_1",
+              "target" : ["scalars", "key_byte_8"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "key_byte_2",
+              "target" : ["scalars", "key_byte_9"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "key_byte_3",
+              "target" : ["scalars", "key_byte_10"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "key_byte_4",
+              "target" : ["scalars", "key_byte_11"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "key_byte_5",
+              "target" : ["scalars", "key_byte_12"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "key_byte_6",
+              "target" : ["scalars", "key_byte_13"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "key_byte_7",
+              "target" : ["scalars", "key_byte_14"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 256,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [7, 1],
+          "actions" : ["SyNAPSE_Ingress.map_get_53_populate", "NoAction"],
+          "base_default_next" : "tbl_send_to_controller_0",
+          "next_tables" : {
+            "SyNAPSE_Ingress.map_get_53_populate" : "tbl_send_to_controller_0",
+            "NoAction" : "tbl_send_to_controller_0"
           },
           "default_entry" : {
             "action_id" : 1,
@@ -954,18 +1827,47 @@
             "action_data" : [],
             "action_entry_const" : false
           }
+        },
+        {
+          "name" : "tbl_send_to_controller_0",
+          "id" : 10,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 202,
+            "column" : 6,
+            "source_fragment" : "send_to_controller(54)"
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [5],
+          "actions" : ["SyNAPSE_Ingress.send_to_controller"],
+          "base_default_next" : null,
+          "next_tables" : {
+            "SyNAPSE_Ingress.send_to_controller" : null
+          },
+          "default_entry" : {
+            "action_id" : 5,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
         }
       ],
       "action_profiles" : [],
       "conditionals" : [
         {
-          "name" : "node_2",
+          "name" : "node_3",
           "id" : 0,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 84,
-            "column" : 12,
-            "source_fragment" : "standard_metadata.ingress_port == 255"
+            "line" : 166,
+            "column" : 8,
+            "source_fragment" : "standard_metadata.ingress_port == 509"
           },
           "expression" : {
             "type" : "expression",
@@ -977,12 +1879,88 @@
               },
               "right" : {
                 "type" : "hexstr",
-                "value" : "0x00ff"
+                "value" : "0x01fd"
               }
             }
           },
-          "true_next" : "MyIngress.mac_dst_exact",
-          "false_next" : "MyIngress.mac_src_exact"
+          "true_next" : "tbl_main167",
+          "false_next" : "node_9"
+        },
+        {
+          "name" : "node_5",
+          "id" : 1,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 169,
+            "column" : 10,
+            "source_fragment" : "hdr.packet_out.dst_device == 511"
+          },
+          "expression" : {
+            "type" : "expression",
+            "value" : {
+              "op" : "==",
+              "left" : {
+                "type" : "field",
+                "value" : ["packet_out", "dst_device"]
+              },
+              "right" : {
+                "type" : "hexstr",
+                "value" : "0x01ff"
+              }
+            }
+          },
+          "true_next" : "tbl_broadcast",
+          "false_next" : "tbl_forward"
+        },
+        {
+          "name" : "node_9",
+          "id" : 2,
+          "expression" : {
+            "type" : "expression",
+            "value" : {
+              "op" : "not",
+              "left" : null,
+              "right" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "d2b",
+                  "left" : null,
+                  "right" : {
+                    "type" : "field",
+                    "value" : ["scalars", "hasReturned"]
+                  }
+                }
+              }
+            }
+          },
+          "false_next" : null,
+          "true_next" : "node_10"
+        },
+        {
+          "name" : "node_10",
+          "id" : 3,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 180,
+            "column" : 19,
+            "source_fragment" : "0) == (standard_metadata.ingress_port"
+          },
+          "expression" : {
+            "type" : "expression",
+            "value" : {
+              "op" : "!=",
+              "left" : {
+                "type" : "hexstr",
+                "value" : "0x0000"
+              },
+              "right" : {
+                "type" : "field",
+                "value" : ["standard_metadata", "ingress_port"]
+              }
+            }
+          },
+          "true_next" : "tbl_main181",
+          "false_next" : "tbl_main193"
         }
       ]
     },
@@ -991,122 +1969,111 @@
       "id" : 1,
       "source_info" : {
         "filename" : "main.p4",
-        "line" : 99,
+        "line" : 211,
         "column" : 8,
-        "source_fragment" : "MyEgress"
+        "source_fragment" : "SyNAPSE_Egress"
       },
-      "init_table" : null,
-      "tables" : [],
+      "init_table" : "node_19",
+      "tables" : [
+        {
+          "name" : "tbl_drop",
+          "id" : 11,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 223,
+            "column" : 8,
+            "source_fragment" : "drop()"
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [13],
+          "actions" : ["SyNAPSE_Egress.drop"],
+          "base_default_next" : null,
+          "next_tables" : {
+            "SyNAPSE_Egress.drop" : null
+          },
+          "default_entry" : {
+            "action_id" : 13,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        }
+      ],
       "action_profiles" : [],
-      "conditionals" : []
+      "conditionals" : [
+        {
+          "name" : "node_19",
+          "id" : 4,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 219,
+            "column" : 8,
+            "source_fragment" : "standard_metadata.ingress_port == 509 ..."
+          },
+          "expression" : {
+            "type" : "expression",
+            "value" : {
+              "op" : "and",
+              "left" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "and",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "==",
+                      "left" : {
+                        "type" : "field",
+                        "value" : ["standard_metadata", "ingress_port"]
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x01fd"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "d2b",
+                      "left" : null,
+                      "right" : {
+                        "type" : "field",
+                        "value" : ["packet_out", "$valid$"]
+                      }
+                    }
+                  }
+                }
+              },
+              "right" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "==",
+                  "left" : {
+                    "type" : "field",
+                    "value" : ["packet_out", "src_device"]
+                  },
+                  "right" : {
+                    "type" : "field",
+                    "value" : ["standard_metadata", "egress_port"]
+                  }
+                }
+              }
+            }
+          },
+          "false_next" : null,
+          "true_next" : "tbl_drop"
+        }
+      ]
     }
   ],
-  "checksums" : [
-    {
-      "name" : "cksum",
-      "id" : 0,
-      "source_info" : {
-        "filename" : "../p4_include/parsers.p4",
-        "line" : 97,
-        "column" : 8,
-        "source_fragment" : "update_checksum( ..."
-      },
-      "target" : ["ipv4", "hdrChecksum"],
-      "type" : "generic",
-      "calculation" : "calc",
-      "verify" : false,
-      "update" : true,
-      "if_cond" : {
-        "type" : "expression",
-        "value" : {
-          "op" : "d2b",
-          "left" : null,
-          "right" : {
-            "type" : "field",
-            "value" : ["ipv4", "$valid$"]
-          }
-        }
-      }
-    },
-    {
-      "name" : "cksum_0",
-      "id" : 1,
-      "source_info" : {
-        "filename" : "../p4_include/parsers.p4",
-        "line" : 116,
-        "column" : 8,
-        "source_fragment" : "update_checksum_with_payload( ..."
-      },
-      "target" : ["tcp", "checksum"],
-      "type" : "generic",
-      "calculation" : "calc_0",
-      "verify" : false,
-      "update" : true,
-      "if_cond" : {
-        "type" : "expression",
-        "value" : {
-          "op" : "d2b",
-          "left" : null,
-          "right" : {
-            "type" : "field",
-            "value" : ["tcp", "$valid$"]
-          }
-        }
-      }
-    },
-    {
-      "name" : "cksum_1",
-      "id" : 2,
-      "source_info" : {
-        "filename" : "../p4_include/parsers.p4",
-        "line" : 139,
-        "column" : 8,
-        "source_fragment" : "update_checksum_with_payload( ..."
-      },
-      "target" : ["udp", "checksum"],
-      "type" : "generic",
-      "calculation" : "calc_1",
-      "verify" : false,
-      "update" : true,
-      "if_cond" : {
-        "type" : "expression",
-        "value" : {
-          "op" : "d2b",
-          "left" : null,
-          "right" : {
-            "type" : "field",
-            "value" : ["udp", "$valid$"]
-          }
-        }
-      }
-    },
-    {
-      "name" : "cksum_2",
-      "id" : 3,
-      "source_info" : {
-        "filename" : "../p4_include/parsers.p4",
-        "line" : 70,
-        "column" : 8,
-        "source_fragment" : "verify_checksum(hdr.ipv4.isValid(), ..."
-      },
-      "target" : ["ipv4", "hdrChecksum"],
-      "type" : "generic",
-      "calculation" : "calc_2",
-      "verify" : true,
-      "update" : false,
-      "if_cond" : {
-        "type" : "expression",
-        "value" : {
-          "op" : "d2b",
-          "left" : null,
-          "right" : {
-            "type" : "field",
-            "value" : ["ipv4", "$valid$"]
-          }
-        }
-      }
-    }
-  ],
+  "checksums" : [],
   "force_arith" : [],
   "extern_instances" : [],
   "field_aliases" : [

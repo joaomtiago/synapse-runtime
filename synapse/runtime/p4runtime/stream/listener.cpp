@@ -2,14 +2,11 @@
 
 namespace synapse::runtime {
 
-Listener::Listener(conn_ptr_t conn, logger_ptr_t logger) {
+Listener::Listener(conn_ptr_t conn) {
   env_ = new env_t();
   env_->helper = new helper_t(S_CAST(std::string *, conn->stack->pop()));
-  env_->logger = logger;
   env_->stack = new stack_t();
   env_->update_buffer = new upd_buff_t(env_->helper);
-
-  logger_ = logger;
 
   tags_.tagConnected.next_tags = (void **)std::malloc(sizeof(void *));
   *tags_.tagConnected.next_tags = &tags_.tagMakePrimarySent;
@@ -42,7 +39,7 @@ Listener::Listener(conn_ptr_t conn, logger_ptr_t logger) {
 }
 
 void Listener::listen() {
-  logger_->debug("Listener: start");
+  SYNAPSE_DEBUG("Connected to the stream");
 
   void *rawTag = nullptr;
   bool ok = false;
@@ -53,11 +50,11 @@ void Listener::listen() {
     }
   }
 
-  logger_->debug("Listener: stop");
+  SYNAPSE_DEBUG("Disconnected from the stream");
 }
 
 bool Listener::dispatch(tag_t *tag) {
-  logger_->debug("Listener: dispatching tag " + tag->identifier);
+  SYNAPSE_DEBUG("Dispatching tag `%s`", tag->identifier.c_str());
   return nullptr == tag->handler || tag->handler(env_, stack_, tag->next_tags);
 }
 

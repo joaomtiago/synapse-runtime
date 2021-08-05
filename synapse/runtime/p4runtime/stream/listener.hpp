@@ -4,13 +4,12 @@
 #include "synapse/runtime/connector.hpp"
 #include "synapse/runtime/p4runtime/stream/handler/environment.hpp"
 #include "synapse/runtime/p4runtime/stream/tags.hpp"
-#include "synapse/runtime/logger/logger.hpp"
 
 namespace synapse::runtime {
 
 class Listener {
 public:
-  Listener(conn_ptr_t conn, logger_ptr_t logger);
+  Listener(conn_ptr_t conn);
 
   virtual void listen();
 
@@ -24,8 +23,6 @@ private:
 private:
   // Environment passed to handlers
   env_ptr_t env_;
-
-  logger_ptr_t logger_;
 
   // Singleton structure to reuse tags
   tags_t tags_;

@@ -3,22 +3,13 @@
 #include "synapse/runtime/wrapper/p4runtime/stream/handler/environment.hpp"
 #include "synapse/runtime/wrapper/utils/wrappers.hpp"
 
-#define INFO(msg) env->logger->info(msg)
-
 namespace synapse::runtime {
 
-bool synapse_runtime_handle_pre_configure(env_ptr_t env) {
-  INFO("Preconfiguring the switch...");
-  return true;
-}
+bool synapse_runtime_handle_pre_configure(env_ptr_t env) { return true; }
 
-bool synapse_runtime_handle_packet_received(env_ptr_t env) {
-  INFO("Received a packet...");
-  return true;
-}
+bool synapse_runtime_handle_packet_received(env_ptr_t env) { return true; }
 
 bool synapse_runtime_handle_idle_timeout_notification_received(env_ptr_t env) {
-  INFO("Received an idle timeout notification...");
   return true;
 }
 
@@ -26,7 +17,6 @@ bool synapse_runtime_handle_idle_timeout_notification_received(env_ptr_t env) {
 
 using synapse::runtime::conn_ptr_t;
 using synapse::runtime::conn_t;
-using synapse::runtime::logger_logging_level_t;
 
 int main(int argc, char *argv[]) {
   if (argc != 4) {
@@ -36,6 +26,6 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  conn_ptr_t connector = new conn_t(argv[1], logger_logging_level_t::LoggerDebug);
+  conn_ptr_t connector = new conn_t(argv[1]);
   return connector->configure(argv[3], argv[2]) && connector->startAndWait();
 }

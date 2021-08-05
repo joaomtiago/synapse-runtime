@@ -13,6 +13,35 @@
 #define R_CAST(type, value) _CAST(reinterpret, type, value)
 #define VAR_R_CAST(type, var, value) _ASSIGNMENT(type var, R_CAST(type, value))
 
+#define ENABLE_INFO
+
+#ifdef ENABLE_DEBUG
+#define ENABLE_INFO
+#define ENABLE_ERROR
+#endif // ENABLE_DEBUG
+
+#ifdef ENABLE_INFO
+#define ENABLE_ERROR
+#endif // ENABLE_INFO
+
+#ifdef ENABLE_ERROR
+#define SYNAPSE_ERROR(text, ...) printf("ERROR: " text "\n", ##__VA_ARGS__)
+#else // ENABLE_ERROR
+#define SYNAPSE_ERROR(text, ...)
+#endif // ENABLE_ERROR
+
+#ifdef ENABLE_INFO
+#define SYNAPSE_INFO(text, ...) printf("INFO: " text "\n", ##__VA_ARGS__)
+#else // ENABLE_INFO
+#define SYNAPSE_INFO(text, ...)
+#endif // ENABLE_INFO
+
+#ifdef ENABLE_DEBUG
+#define SYNAPSE_DEBUG(text, ...) printf("DEBUG: " text "\n", ##__VA_ARGS__)
+#else // ENABLE_DEBUG
+#define SYNAPSE_DEBUG(text, ...)
+#endif // ENABLE_DEBUG
+
 #ifdef __cplusplus
 #include <stack>
 #include <string>
@@ -114,7 +143,7 @@ private:
   std::stack<void *> stack_;
 
 } stack_t;
-#else
+#else  //__cplusplus
 struct Stack;
 typedef struct Stack stack_t;
 #endif // __cplusplus

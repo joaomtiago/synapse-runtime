@@ -1,7 +1,6 @@
 #ifndef SYNAPSE_RUNTIME_P4RUNTIME_STREAM_HANDLER_ENVIRONMENT_HPP_
 #define SYNAPSE_RUNTIME_P4RUNTIME_STREAM_HANDLER_ENVIRONMENT_HPP_
 
-#include "synapse/runtime/wrapper/logger/logger.hpp"
 #include "synapse/runtime/wrapper/p4runtime/helper.hpp"
 #include "synapse/runtime/wrapper/p4runtime/stream/handler/buffer/update_buffer.hpp"
 #include "synapse/runtime/wrapper/utils/wrappers.hpp"
@@ -16,7 +15,6 @@ namespace synapse::runtime {
 
 typedef struct Environment {
   helper_ptr_t helper;
-  logger_ptr_t logger;
   stack_ptr_t stack;
   upd_buff_ptr_t update_buffer;
 

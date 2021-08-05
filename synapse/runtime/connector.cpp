@@ -11,11 +11,7 @@
 
 namespace synapse::runtime {
 
-Connector::Connector(const std::string &grpcAddr,
-                     logger_logging_level_t loggingLevel) {
-  // Instantiate logger with specified logging level
-  logger_ = new logger_t(loggingLevel);
-
+Connector::Connector(const std::string &grpcAddr) {
   auto credentials = grpc::InsecureChannelCredentials();
   auto channel = grpc::CreateChannel(grpcAddr, credentials);
 
@@ -41,7 +37,7 @@ bool Connector::configure(const std::string &bmv2JsonFilepath,
 }
 
 bool Connector::startAndWait() {
-  auto listener = std::thread(&Listener::listen, new Listener(this, logger_));
+  auto listener = std::thread(&Listener::listen, new Listener(this));
   if (!listener.joinable()) {
     return false;
   }

@@ -15,8 +15,7 @@ namespace synapse::runtime {
 extern "C" {
 #endif // __cplusplus
 
-conn_ptr_t synapse_runtime_connector_new(const char *grpc_addr,
-                                         logger_logging_level_t logging_level);
+conn_ptr_t synapse_runtime_connector_new(const char *grpc_addr);
 
 bool synapse_runtime_connector_configure(conn_ptr_t connector,
                                          const char *bmv2JsonFilepath,

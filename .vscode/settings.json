@@ -89,5 +89,6 @@
         "inttypes.h": "c"
     },
     "clang-format.language.typescript.fallbackStyle": "",
-    "clang-format.language.javascript.fallbackStyle": ""
+    "clang-format.language.javascript.fallbackStyle": "",
+    "cmake.configureOnOpen": false
 }

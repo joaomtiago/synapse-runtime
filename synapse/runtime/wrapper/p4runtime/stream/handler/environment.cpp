@@ -6,10 +6,6 @@ helper_ptr_t synapse_runtime_environment_helper(env_ptr_t env) {
   return env->helper;
 }
 
-logger_ptr_t synapse_runtime_environment_logger(env_ptr_t env) {
-  return env->logger;
-}
-
 stack_ptr_t synapse_runtime_environment_stack(env_ptr_t env) {
   return env->stack;
 }

@@ -7,22 +7,32 @@
 #include "synapse/runtime/wrapper/utils/wrappers.hpp"
 #include <inttypes.h>
 
+#define MALLOC(var_type, var_name, var_size)                                   \
+  var_type *var_name =                                                         \
+      S_CAST(var_type *, std::malloc(var_size * sizeof(var_type)))
+
+#define VECTOR(var_type, var_name)                                             \
+  std::vector<var_type> *var_name = new std::vector<var_type>();
+
+#define NOT_NULL(exp) assert(NULL != (exp))
+
 namespace synapse::runtime {
 
 bool flushUpdates(env_ptr_t env, p4runtime_stub_ptr_t stub) {
   p4_write_request_ptr_t request = nullptr;
   if (env->update_buffer->flush(request)) {
-    env->logger->debug("Writing to the switch:");
-    env->logger->debug(request->DebugString());
+    SYNAPSE_INFO("Flushing update(s) to the switch");
+    SYNAPSE_DEBUG("%.*s", (int)request->DebugString().size(),
+                  request->DebugString().c_str());
 
     grpc_cctx_t context;
     grpc::Status status =
         stub->Write(&context, *request, new p4_write_response_t());
 
     if (!status.ok()) {
-      env->logger->error(
-          "Received the following error when writing to the switch:");
-      env->logger->error(status.error_details());
+      SYNAPSE_ERROR("Error while writing to the switch:");
+      SYNAPSE_ERROR("%.*s", (int)status.error_details().size(),
+                    status.error_details().c_str());
 
       return false;
     }
@@ -60,15 +70,16 @@ bool handleMakePrimaryReceived(env_ptr_t env, stack_ptr_t stack,
   VAR_S_CAST(p4_stream_message_response_ptr_t, response, stack->pop());
 
   if (response->has_error()) {
-    env->logger->error("Received an error during arbitration:");
-    env->logger->error(response->error().DebugString());
+    SYNAPSE_ERROR("Error during arbitration:");
+    SYNAPSE_ERROR("%.*s", (int)response->error().DebugString().size(),
+                  response->error().DebugString().c_str());
 
     return false;
 
   } else if (response->has_arbitration()) {
     p4::v1::MasterArbitrationUpdate arbitration = response->arbitration();
     if (grpc::StatusCode::OK == arbitration.status().code()) {
-      env->logger->info("This controller is now primary");
+      SYNAPSE_DEBUG("Controller is the primary client of the switch");
 
       /**
        * Now that the controller is the primary client, we still need to install
@@ -76,18 +87,18 @@ bool handleMakePrimaryReceived(env_ptr_t env, stack_ptr_t stack,
        * preconfiguration steps required by the controller/user.
        */
       if (!installProgram(env, stack)) {
-        env->logger->error("Could not install the program on the switch");
+        SYNAPSE_ERROR("Could not install the program on the switch...");
         return false;
       }
 
       VAR_S_CAST(p4runtime_stream_ptr_t, stream, stack->pop());
       if (!synapse_runtime_handle_pre_configure(env)) {
-        env->logger->error("Could not preconfigure the processing environment");
+        SYNAPSE_ERROR("Failed to configure the environment");
         return false;
       }
 
       if (!flushUpdates(env, S_CAST(p4runtime_stub_ptr_t, stack->top()))) {
-        env->logger->error("Could not flush updates");
+        SYNAPSE_ERROR("Could not flush update(s)");
         return false;
       }
 
@@ -103,12 +114,12 @@ bool handleMakePrimaryReceived(env_ptr_t env, stack_ptr_t stack,
       return true;
 
     } else {
-      env->logger->error("A controller already exists");
+      SYNAPSE_ERROR("A primary client of the switch already exists");
       return false;
     }
 
   } else {
-    env->logger->error("Expected an arbitration update");
+    SYNAPSE_ERROR("Unexpected message type (expecting arbitration update)");
     return false;
   }
 }
@@ -130,36 +141,46 @@ bool handleMessageReceived(env_ptr_t env, stack_ptr_t stack,
 
   // Pop stream response from the stack
   VAR_S_CAST(p4_stream_message_response_ptr_t, response, stack->pop());
+  NOT_NULL(response);
+
   // And the stream itself
   VAR_S_CAST(p4runtime_stream_ptr_t, stream, stack->pop());
+  NOT_NULL(stream);
 
   switch (response->update_case()) {
   case p4_stream_message_response_t::UpdateCase::kPacket: {
-    env->logger->debug("Clearing the stack");
     env->stack->clear();
 
-    p4_packet_in_ptr_t packet = response->mutable_packet();
+    p4_packet_in_ptr_t packetIn = response->mutable_packet();
+    NOT_NULL(packetIn);
 
-    // Push packet metadata
-    size_t metadataSize = packet->metadata_size();
-    pair_ptr_t *metadata =
-        S_CAST(pair_ptr_t *, std::malloc(metadataSize * sizeof(pair_ptr_t)));
+    std::string *payloadIn = packetIn->mutable_payload();
+    NOT_NULL(payloadIn);
 
-    for (size_t i = 0; i < metadataSize; i++) {
-      p4_packet_metadata_ptr_t entry = packet->mutable_metadata(S_CAST(int, i));
+    size_t metaInSize = packetIn->metadata_size();
+    MALLOC(pair_ptr_t, metaIn, metaInSize);
+    NOT_NULL(metaIn);
 
-      metadata[i] = new pair_t(new uint32_t(entry->metadata_id()),
-                               new string_t(entry->mutable_value()));
+    for (size_t i = 0; i < metaInSize; i++) {
+      p4_packet_metadata_ptr_t entry =
+          packetIn->mutable_metadata(S_CAST(int, i));
+      NOT_NULL(entry);
+
+      metaIn[i] = new pair_t(new uint32_t(entry->metadata_id()),
+                             new string_t(entry->mutable_value()));
     }
 
-    env->stack->push(metadata);
-    env->stack->push(new size_t(metadataSize));
-    env->stack->push(new string_t(packet->mutable_payload()));
+    SYNAPSE_INFO("Receiving packet with size %lu B", payloadIn->size());
+    SYNAPSE_INFO("\n%s", packetIn->DebugString().c_str());
+
+    env->stack->push(metaIn);
+    env->stack->push(new size_t(metaInSize));
+    env->stack->push(new string_t(payloadIn));
 
     proceed = synapse_runtime_handle_packet_received(env);
 
     if (!flushUpdates(env, S_CAST(p4runtime_stub_ptr_t, stack->top()))) {
-      env->logger->error("Could not flush updates");
+      SYNAPSE_ERROR("Could not flush update(s)");
       return false;
     }
 
@@ -177,31 +198,44 @@ bool handleMessageReceived(env_ptr_t env, stack_ptr_t stack,
     if (!env->stack->empty()) {
       assert(3 == env->stack->size());
 
-      string_ptr_t packetOutPayload = S_CAST(string_ptr_t, env->stack->pop());
-      size_t packetOutMetadataSize = *S_CAST(size_t *, env->stack->pop());
-      pair_ptr_t *packetOutMetadata = S_CAST(pair_ptr_t *, env->stack->pop());
+      string_ptr_t payloadOut = S_CAST(string_ptr_t, env->stack->pop());
+      NOT_NULL(payloadOut);
 
-      std::vector<p4_packet_metadata_ptr_t> *packetOutMetadataVector =
-          new std::vector<p4_packet_metadata_ptr_t>();
+      size_t metaOutSize = *S_CAST(size_t *, env->stack->pop());
+      pair_ptr_t *metaOut = S_CAST(pair_ptr_t *, env->stack->pop());
+      NOT_NULL(metaOut);
 
-      if (0 < packetOutMetadataSize) {
-        assert(nullptr != packetOutMetadata);
+      VECTOR(p4_packet_metadata_ptr_t, packetOutMetadataVector);
+      for (size_t i = 0; i < metaOutSize; i++) {
+        pair_ptr_t metaEntry = metaOut[i];
+        NOT_NULL(metaEntry);
 
-        for (size_t i = 0; i < packetOutMetadataSize; i++) {
-          pair_ptr_t metadata = packetOutMetadata[i];
-          uint32_t metadataId = *S_CAST(uint32_t *, metadata->left);
-          string_ptr_t metadataValue = S_CAST(string_ptr_t, metadata->right);
+        uint32_t *entryId = S_CAST(uint32_t *, metaEntry->left);
+        NOT_NULL(entryId);
 
-          packetOutMetadataVector->push_back(env->helper->p4PacketMetadata(
-              metadataId, metadataValue->toStdString()));
-        }
+        string_ptr_t entryVal = S_CAST(string_ptr_t, metaEntry->right);
+        NOT_NULL(entryVal);
+
+        p4_packet_metadata_ptr_t metaPtr =
+            env->helper->p4PacketMetadata(*entryId, entryVal->toStdString());
+        NOT_NULL(metaPtr);
+
+        packetOutMetadataVector->push_back(metaPtr);
       }
 
       // Send packet out of the controller
-      stream->Write(
-          *env->helper->p4StreamMessageRequest(env->helper->p4PacketOut(
-              packetOutPayload->toStdString(), packetOutMetadataVector)),
-          nextStates[1]);
+      p4_packet_out_ptr_t packetOut = env->helper->p4PacketOut(
+          payloadOut->toStdString(), packetOutMetadataVector);
+      NOT_NULL(packetOut);
+
+      SYNAPSE_INFO("Writing packet with size %lu B", payloadOut->size);
+      SYNAPSE_INFO("\n%s", packetOut->DebugString().c_str());
+
+      p4_stream_message_request_ptr_t request =
+          env->helper->p4StreamMessageRequest(packetOut);
+      NOT_NULL(request);
+
+      stream->Write(*request, nextStates[1]);
 
       // We cannot proceed as we would be queueing a reading!
       stack->push(stream);
@@ -211,28 +245,28 @@ bool handleMessageReceived(env_ptr_t env, stack_ptr_t stack,
   } break;
 
   case p4_stream_message_response_t::UpdateCase::kIdleTimeoutNotification: {
-    env->logger->debug("Clearing the stack");
     env->stack->clear();
 
     p4_idle_timeout_notification_ptr_t notification =
         response->mutable_idle_timeout_notification();
+    NOT_NULL(notification);
 
-    size_t tableEntrySize = notification->table_entry_size();
-    p4_table_entry_ptr_t *tableEntry =
-        S_CAST(p4_table_entry_ptr_t *,
-               std::malloc(tableEntrySize * sizeof(p4_table_entry_ptr_t)));
+    size_t entriesSize = notification->table_entry_size();
+    MALLOC(p4_table_entry_ptr_t, entries, entriesSize);
+    NOT_NULL(entries);
 
-    for (size_t i = 0; i < tableEntrySize; i++) {
-      tableEntry[i] = notification->mutable_table_entry(S_CAST(int, i));
+    for (size_t i = 0; i < entriesSize; i++) {
+      entries[i] = notification->mutable_table_entry(S_CAST(int, i));
+      NOT_NULL(entries[i]);
     }
 
-    env->stack->push(tableEntry);
-    env->stack->push(new size_t(tableEntrySize));
+    env->stack->push(entries);
+    env->stack->push(new size_t(entriesSize));
 
     proceed = synapse_runtime_handle_idle_timeout_notification_received(env);
 
     if (!flushUpdates(env, S_CAST(p4runtime_stub_ptr_t, stack->top()))) {
-      env->logger->error("Could not flush updates");
+      SYNAPSE_ERROR("Could not flush update(s)");
       return false;
     }
 
@@ -242,31 +276,32 @@ bool handleMessageReceived(env_ptr_t env, stack_ptr_t stack,
     p4_master_arbitration_update_t arbitration = response->arbitration();
 
     if (grpc::OK != arbitration.status().code()) {
-      env->logger->error("Received an arbitration error:");
-      env->logger->error(arbitration.status().message());
-
-      // Print the highest election id known to the switch
-      env->logger->debug("The highest election ID is now " +
-                         arbitration.election_id().low());
+      SYNAPSE_ERROR("Error during arbitration:");
+      SYNAPSE_ERROR("%.*s", (int)arbitration.status().message().size(),
+                    arbitration.status().message().c_str());
+      SYNAPSE_DEBUG("The highest election ID is now %" SCNu64,
+                    arbitration.election_id().low());
 
     } else {
-      env->logger->debug("Received an arbitration update:");
-      env->logger->debug(arbitration.DebugString());
+      SYNAPSE_INFO("Received arbitration update:");
+      SYNAPSE_INFO("%.*s", (int)arbitration.DebugString().size(),
+                   arbitration.DebugString().c_str());
       proceed = true;
     }
 
   } break;
 
   case p4_stream_message_response_t::UpdateCase::kError: {
-    env->logger->error("Received an error:");
-    env->logger->error(response->error().DebugString());
+    SYNAPSE_ERROR("Received an error:");
+    SYNAPSE_ERROR("%.*s", (int)response->error().DebugString().size(),
+                  response->error().DebugString().c_str());
 
   } break;
 
   case p4_stream_message_response_t::UpdateCase::kOther:
   case p4_stream_message_response_t::UpdateCase::kDigest:
   default: {
-    env->logger->error("Received an unsupported message type");
+    SYNAPSE_ERROR("Received an unsupported message type");
     proceed = true;
 
   } break;
@@ -330,14 +365,14 @@ bool installProgram(env_ptr_t env, stack_ptr_t stack) {
                &response)
            .ok()) {
 
-    env->logger->error("Could not apply pipeline configuration");
+    SYNAPSE_ERROR("Failed to set the forwarding pipeline configuration");
     return false;
   }
 
   stack->push(stub);
   stack->push(stream);
 
-  env->logger->info("Installed the program on the switch");
+  SYNAPSE_INFO("Installed the P4 program on the switch");
   return true;
 }
 
