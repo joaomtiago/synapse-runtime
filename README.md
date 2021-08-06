@@ -33,7 +33,7 @@ $ cmake ../.. -DgRPC_INSTALL=ON \
 $ make
 $ sudo make install
 $ sudo ldconfig
-$ sudo cp -r /home/user/grpc/third_party/abseil-cpp/absl /usr/local/include # abominable
+$ sudo cp -r third_party/abseil-cpp/absl /usr/local/include # abominable
 ```
 
 <!-- 
