@@ -25,6 +25,7 @@ $ sudo ldconfig
 $ git clone git@github.com:grpc/grpc --recursive
 $ cd grpc/
 $ mkdir -p cmake/build
+$ cd cmake/build
 $ cmake ../.. -DgRPC_INSTALL=ON \
               -DCMAKE_BUILD_TYPE=Release \
               -DgRPC_PROTOBUF_PROVIDER=package \
