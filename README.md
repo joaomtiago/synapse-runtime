@@ -25,6 +25,7 @@ $ sudo ldconfig
 $ git clone git@github.com:grpc/grpc --recursive
 $ cd grpc/
 $ mkdir -p cmake/build
+$ cd cmake/build
 $ cmake ../.. -DgRPC_INSTALL=ON \
               -DCMAKE_BUILD_TYPE=Release \
               -DgRPC_PROTOBUF_PROVIDER=package \
@@ -33,7 +34,7 @@ $ cmake ../.. -DgRPC_INSTALL=ON \
 $ make
 $ sudo make install
 $ sudo ldconfig
-$ sudo cp -r /home/user/grpc/third_party/abseil-cpp/absl /usr/local/include # abominable
+$ sudo cp -r ../../third_party/abseil-cpp/absl /usr/local/include # abominable
 ```
 
 <!-- 
