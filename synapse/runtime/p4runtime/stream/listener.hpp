@@ -16,7 +16,7 @@ public:
 private:
   /**
    * Based on the consumed completion queue tag, invoke the function associated
-   * with that tag.
+   * with that tag
    */
   bool dispatch(tag_t *tag);
 

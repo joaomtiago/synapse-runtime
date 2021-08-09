@@ -13,7 +13,7 @@
 // Helpers
 
 #define S_STRING(var_name, var_value, var_size)                                \
-  static string_t var_name = {.value = var_value, .size = var_size}
+  static string_t var_name = {.str = var_value, .sz = var_size}
 
 #define NEW_STRING(var_value, var_size)                                        \
   synapse_runtime_wrappers_string_new(var_value, var_size)
@@ -91,7 +91,7 @@ bool insert_table_entry(env_ptr_t env, string_ptr_t table_name,
 
     // Append to the key matches
     *(matches + i) = synapse_runtime_p4_field_match_new(
-        helper, field_id,
+        helper, field_id, FieldMatch_Exact,
         synapse_runtime_p4_field_match_exact_new(helper, value));
 
   } while (++i < key_matches_size);
@@ -128,14 +128,14 @@ bool insert_table_entry(env_ptr_t env, string_ptr_t table_name,
       synapse_runtime_p4_table_action_new(helper, action);
 
   p4_table_entry_ptr_t table_entry = synapse_runtime_p4_table_entry_new(
-      helper, table_preamble_id, matches, key_matches_size, table_action,
+      helper, table_preamble_id, matches, key_matches_size, table_action, 0,
       idle_timeout_ns);
 
   p4_entity_ptr_t entity =
-      synapse_runtime_p4_entity_table_entry_new(helper, table_entry);
+      synapse_runtime_p4_entity_new(helper, Entity_TableEntry, table_entry);
 
   p4_update_ptr_t update =
-      synapse_runtime_p4_update_new(helper, Update_Type_INSERT, entity);
+      synapse_runtime_p4_update_new(helper, Update_Insert, entity);
 
   return synapse_runtime_update_buffer_buffer(
       synapse_runtime_environment_update_buffer(env), update);
@@ -146,10 +146,10 @@ bool delete_table_entry(env_ptr_t env, p4_table_entry_ptr_t table_entry) {
   helper_ptr_t helper = synapse_runtime_environment_helper(env);
 
   p4_entity_ptr_t entity =
-      synapse_runtime_p4_entity_table_entry_new(helper, table_entry);
+      synapse_runtime_p4_entity_new(helper, Entity_TableEntry, table_entry);
 
-  p4_update_type_ptr_t update =
-      synapse_runtime_p4_update_new(helper, Update_Type_DELETE, entity);
+  p4_update_ptr_t update =
+      synapse_runtime_p4_update_new(helper, Update_Delete, entity);
 
   return synapse_runtime_update_buffer_buffer(
       synapse_runtime_environment_update_buffer(env), update);
@@ -180,12 +180,11 @@ bool install_multicast_group(env_ptr_t env, uint32_t multicast_group_id,
       synapse_runtime_p4_packet_replication_engine_entry_new(helper,
                                                              mcast_group_entry);
 
-  p4_entity_ptr_t entity =
-      synapse_runtime_p4_entity_packet_replication_engine_entry_new(helper,
-                                                                    pre_entry);
+  p4_entity_ptr_t entity = synapse_runtime_p4_entity_new(
+      helper, Entity_PacketReplicationEngineEntry, pre_entry);
 
   p4_update_ptr_t update =
-      synapse_runtime_p4_update_new(helper, Update_Type_INSERT, entity);
+      synapse_runtime_p4_update_new(helper, Update_Insert, entity);
 
   return synapse_runtime_update_buffer_buffer(
       synapse_runtime_environment_update_buffer(env), update);
@@ -228,7 +227,7 @@ bool synapse_runtime_handle_packet_received(env_ptr_t env) {
   S_STRING(egress_port_str, "egress_port", 11);
 
   // Constants
-  static uint64_t idle_timeout_ns = 5000000000; // fixme 14400000000000
+  static uint64_t idle_timeout_ns = 5000000000; // fixme
 
   /**
    * The environment stack should look like this:
@@ -245,7 +244,7 @@ bool synapse_runtime_handle_packet_received(env_ptr_t env) {
   string_ptr_t payload = synapse_runtime_wrappers_stack_pop(stack);
   size_t metadata_size = *(size_t *)synapse_runtime_wrappers_stack_pop(stack);
   pair_ptr_t *metadata = synapse_runtime_wrappers_stack_pop(stack);
-  printf("Received a new packet of size %lu B...\n", payload->size);
+  printf("Received a new packet of size %lu B...\n", payload->sz);
 
   // Now we can read multiple metadatada at once
   VAR_ALLOC(string_ptr_t, metadata_in_names, 1);
@@ -260,9 +259,11 @@ bool synapse_runtime_handle_packet_received(env_ptr_t env) {
   assert(NULL != ingress_port);
 
   // Get the source MAC address
+  payload->str += 6;
   mac_addr_ptr_t src_mac_addr =
-      synapse_runtime_wrappers_decode_mac_address(payload->value + 6);
+      synapse_runtime_wrappers_decode_mac_address(payload);
   assert(NULL != src_mac_addr);
+  payload->str -= 6;
 
   // Write to `MyIngress.mac_src_exact`
   size_t mac_src_exact_key_matches_size = 1;

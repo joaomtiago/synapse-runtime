@@ -1,13 +1,13 @@
 #include "synapse/runtime/wrapper/p4runtime/helper.hpp"
 
-#define TO_STD_STRING(str) std::string(str->value, str->size)
+#define TO_STD_STRING(ptr) std::string(ptr->str, ptr->sz)
 
 #define NOT_NULL(ptr) assert(nullptr != ptr)
 
 namespace synapse::runtime {
 
 /**
- * P4Info helpers go below.
+ * P4Info helpers go below
  */
 
 p4_info_action_ptr_t
@@ -139,31 +139,70 @@ p4_action_param_ptr_t synapse_runtime_p4_action_param_new(helper_ptr_t helper,
   return helper->p4ActionParam(param_id, TO_STD_STRING(value));
 }
 
-p4_entity_ptr_t
-synapse_runtime_p4_entity_table_entry_new(helper_ptr_t helper,
-                                          p4_table_entry_ptr_t entry) {
+p4_entity_ptr_t synapse_runtime_p4_entity_new(helper_ptr_t helper,
+                                              p4_entity_entity_case_t type,
+                                              void *entry) {
   NOT_NULL(helper);
-  return helper->p4Entity(entry);
+
+  switch (type) {
+  case p4_entity_t::EntityCase::kTableEntry:
+    return helper->p4Entity(S_CAST(p4_table_entry_ptr_t, entry));
+
+  case p4_entity_t::EntityCase::kPacketReplicationEngineEntry:
+    return helper->p4Entity(
+        S_CAST(p4_packet_replication_engine_entry_ptr_t, entry));
+
+  default:
+    return nullptr;
+  }
 }
 
-p4_entity_ptr_t synapse_runtime_p4_entity_packet_replication_engine_entry_new(
-    helper_ptr_t helper, p4_packet_replication_engine_entry_ptr_t entry) {
+p4_field_match_ptr_t
+synapse_runtime_p4_field_match_new(helper_ptr_t helper, uint32_t field_id,
+                                   p4_field_match_field_match_type_case_t type,
+                                   void *field_match) {
   NOT_NULL(helper);
-  return helper->p4Entity(entry);
+
+  switch (type) {
+  case p4_field_match_t::FieldMatchTypeCase::kExact:
+    return helper->p4FieldMatch(
+        field_id, S_CAST(p4_field_match_exact_ptr_t, field_match));
+
+  case p4_field_match_t::FieldMatchTypeCase::kRange:
+    return helper->p4FieldMatch(
+        field_id, S_CAST(p4_field_match_range_ptr_t, field_match));
+
+  case p4_field_match_t::FieldMatchTypeCase::kOptional:
+    return helper->p4FieldMatch(
+        field_id, S_CAST(p4_field_match_optional_ptr_t, field_match));
+
+  default:
+    return nullptr;
+  }
 }
 
-p4_field_match_ptr_t synapse_runtime_p4_field_match_new(
-    helper_ptr_t helper, uint32_t field_id,
-    p4_field_match_exact_ptr_t field_match_type) {
-  NOT_NULL(helper);
-  return helper->p4FieldMatch(field_id, field_match_type);
-}
-
+// After `synapse_runtime_p4_field_match_new`
 p4_field_match_exact_ptr_t
 synapse_runtime_p4_field_match_exact_new(helper_ptr_t helper,
                                          string_ptr_t value) {
   NOT_NULL(helper);
   return helper->p4FieldMatchExact(TO_STD_STRING(value));
+}
+
+// After `synapse_runtime_p4_field_match_exact_new`
+p4_field_match_optional_ptr_t
+synapse_runtime_p4_field_match_optional_new(helper_ptr_t helper,
+                                            string_ptr_t value) {
+  NOT_NULL(helper);
+  return helper->p4FieldMatchOptional(TO_STD_STRING(value));
+}
+
+// After `synapse_runtime_p4_field_match_exact_new`
+p4_field_match_range_ptr_t
+synapse_runtime_p4_field_match_range_new(helper_ptr_t helper, string_ptr_t low,
+                                         string_ptr_t high) {
+  NOT_NULL(helper);
+  return helper->p4FieldMatchRange(TO_STD_STRING(low), TO_STD_STRING(high));
 }
 
 p4_forwarding_pipeline_config_ptr_t
@@ -233,9 +272,10 @@ synapse_runtime_p4_packet_replication_engine_entry_new(
   return helper->p4PacketReplicationEngineEntry(type);
 }
 
-p4_read_request_ptr_t synapse_runtime_p4_read_request_new(
-    helper_ptr_t helper, uint64_t device_id, string_ptr_t role,
-    p4_entity_ptr_t *entities, size_t entities_size) {
+p4_read_request_ptr_t
+synapse_runtime_p4_read_request_new(helper_ptr_t helper, uint64_t device_id,
+                                    p4_entity_ptr_t *entities,
+                                    size_t entities_size) {
   NOT_NULL(helper);
 
   if (entities_size > 0) {
@@ -247,7 +287,7 @@ p4_read_request_ptr_t synapse_runtime_p4_read_request_new(
     entitiesVector->push_back(entities[i]);
   }
 
-  return helper->p4ReadRequest(device_id, TO_STD_STRING(role), entitiesVector);
+  return helper->p4ReadRequest(device_id, entitiesVector);
 }
 
 p4_replica_ptr_t synapse_runtime_p4_replica_new(helper_ptr_t helper,
@@ -290,7 +330,8 @@ synapse_runtime_p4_table_action_new(helper_ptr_t helper, p4_action_ptr_t type) {
 
 p4_table_entry_ptr_t synapse_runtime_p4_table_entry_new(
     helper_ptr_t helper, uint32_t table_id, p4_field_match_ptr_t *match,
-    size_t match_size, p4_table_action_ptr_t action, uint64_t idle_timeout_ns) {
+    size_t match_size, p4_table_action_ptr_t action, int32_t priority,
+    uint64_t idle_timeout_ns) {
   NOT_NULL(helper);
 
   if (match_size > 0) {
@@ -302,7 +343,8 @@ p4_table_entry_ptr_t synapse_runtime_p4_table_entry_new(
     matchVector->push_back(match[i]);
   }
 
-  return helper->p4TableEntry(table_id, matchVector, action, idle_timeout_ns);
+  return helper->p4TableEntry(table_id, matchVector, action, priority,
+                              idle_timeout_ns);
 }
 
 p4_update_ptr_t synapse_runtime_p4_update_new(helper_ptr_t helper,

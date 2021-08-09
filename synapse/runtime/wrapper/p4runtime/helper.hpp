@@ -76,7 +76,7 @@ synapse_runtime_p4_info_table_preamble(p4_info_table_ptr_t table);
 uint32_t synapse_runtime_p4_preamble_id(p4_info_preamble_ptr_t preamble);
 
 /**
- * P4Runtime helpers go below.
+ * P4Runtime helpers go below
  */
 
 p4_action_ptr_t synapse_runtime_p4_action_new(helper_ptr_t helper,
@@ -88,20 +88,29 @@ p4_action_param_ptr_t synapse_runtime_p4_action_param_new(helper_ptr_t helper,
                                                           uint32_t param_id,
                                                           string_ptr_t value);
 
-p4_entity_ptr_t
-synapse_runtime_p4_entity_table_entry_new(helper_ptr_t helper,
-                                          p4_table_entry_ptr_t entry);
-
-p4_entity_ptr_t synapse_runtime_p4_entity_packet_replication_engine_entry_new(
-    helper_ptr_t helper, p4_packet_replication_engine_entry_ptr_t entry);
+p4_entity_ptr_t synapse_runtime_p4_entity_new(helper_ptr_t helper,
+                                              p4_entity_entity_case_t type,
+                                              void *entry);
 
 p4_field_match_ptr_t
 synapse_runtime_p4_field_match_new(helper_ptr_t helper, uint32_t field_id,
-                                   p4_field_match_exact_ptr_t field_match_type);
+                                   p4_field_match_field_match_type_case_t type,
+                                   void *field_match);
 
+// After `synapse_runtime_p4_field_match_new`
 p4_field_match_exact_ptr_t
 synapse_runtime_p4_field_match_exact_new(helper_ptr_t helper,
                                          string_ptr_t value);
+
+// After `synapse_runtime_p4_field_match_exact_new`
+p4_field_match_optional_ptr_t
+synapse_runtime_p4_field_match_optional_new(helper_ptr_t helper,
+                                            string_ptr_t value);
+
+// After `synapse_runtime_p4_field_match_exact_new`
+p4_field_match_range_ptr_t
+synapse_runtime_p4_field_match_range_new(helper_ptr_t helper, string_ptr_t low,
+                                         string_ptr_t high);
 
 p4_forwarding_pipeline_config_ptr_t
 synapse_runtime_p4_forwarding_pipeline_config_new(
@@ -130,9 +139,10 @@ p4_packet_replication_engine_entry_ptr_t
 synapse_runtime_p4_packet_replication_engine_entry_new(
     helper_ptr_t helper, p4_multicast_group_entry_ptr_t type);
 
-p4_read_request_ptr_t synapse_runtime_p4_read_request_new(
-    helper_ptr_t helper, uint64_t device_id, string_ptr_t role,
-    p4_entity_ptr_t *entities, size_t entities_size);
+p4_read_request_ptr_t
+synapse_runtime_p4_read_request_new(helper_ptr_t helper, uint64_t device_id,
+                                    p4_entity_ptr_t *entities,
+                                    size_t entities_size);
 
 p4_replica_ptr_t synapse_runtime_p4_replica_new(helper_ptr_t helper,
                                                 uint32_t egress_port,
@@ -158,7 +168,8 @@ p4_table_action_ptr_t synapse_runtime_p4_table_action_new(helper_ptr_t helper,
 
 p4_table_entry_ptr_t synapse_runtime_p4_table_entry_new(
     helper_ptr_t helper, uint32_t table_id, p4_field_match_ptr_t *match,
-    size_t match_size, p4_table_action_ptr_t action, uint64_t idle_timeout_ns);
+    size_t match_size, p4_table_action_ptr_t action, int32_t priority,
+    uint64_t idle_timeout_ns);
 
 p4_update_ptr_t synapse_runtime_p4_update_new(helper_ptr_t helper,
                                               p4_update_type_t type,

@@ -91,6 +91,19 @@ typedef struct p4_info_match_field p4_info_match_field_t;
 typedef void *p4_info_match_field_ptr_t;
 #endif // __cplusplus
 
+// MatchField_MatchType
+
+#ifdef __cplusplus
+typedef p4::config::v1::MatchField_MatchType p4_info_match_field_match_type_t;
+#else
+typedef enum {
+  MatchField_Exact = 2,
+  MatchField_Range = 5,
+  MatchField_Optional = 6
+
+} p4_info_match_field_match_type_t;
+#endif // __cplusplus
+
 // P4Info
 
 #ifdef __cplusplus
@@ -161,6 +174,18 @@ typedef struct p4_entity p4_entity_t;
 typedef void *p4_entity_ptr_t;
 #endif // __cplusplus
 
+// Entity_EntityCase
+
+#ifdef __cplusplus
+typedef p4::v1::Entity::EntityCase p4_entity_entity_case_t;
+#else
+typedef enum {
+  Entity_TableEntry = 2,
+  Entity_PacketReplicationEngineEntry = 9
+
+} p4_entity_entity_case_t;
+#endif // __cplusplus
+
 // FieldMatch
 
 #ifdef __cplusplus
@@ -181,6 +206,42 @@ typedef p4_field_match_exact_t *p4_field_match_exact_ptr_t;
 struct p4_field_match_exact;
 typedef struct p4_field_match_exact p4_field_match_exact_t;
 typedef void *p4_field_match_exact_ptr_t;
+#endif // __cplusplus
+
+// FieldMatch_FieldMatchTypeCase
+
+#ifdef __cplusplus
+typedef p4::v1::FieldMatch::FieldMatchTypeCase
+    p4_field_match_field_match_type_case_t;
+#else
+typedef enum {
+  FieldMatch_Exact = 1,
+  FieldMatch_Range = 6,
+  FieldMatch_Optional = 7
+
+} p4_field_match_field_match_type_case_t;
+#endif // __cplusplus
+
+// FieldMatch_Optional
+
+#ifdef __cplusplus
+typedef p4::v1::FieldMatch_Optional p4_field_match_optional_t;
+typedef p4_field_match_optional_t *p4_field_match_optional_ptr_t;
+#else
+struct p4_field_match_optional;
+typedef struct p4_field_match_optional p4_field_match_optional_t;
+typedef void *p4_field_match_optional_ptr_t;
+#endif // __cplusplus
+
+// FieldMatch_Range
+
+#ifdef __cplusplus
+typedef p4::v1::FieldMatch_Range p4_field_match_range_t;
+typedef p4_field_match_range_t *p4_field_match_range_ptr_t;
+#else
+struct p4_field_match_range;
+typedef struct p4_field_match_range p4_field_match_range_t;
+typedef void *p4_field_match_range_ptr_t;
 #endif // __cplusplus
 
 // ForwardingPipelineConfig
@@ -349,6 +410,17 @@ typedef struct p4_set_forwarding_pipeline_config_request_action
 typedef void *p4_set_forwarding_pipeline_config_request_action_ptr_t;
 #endif // __cplusplus
 
+// StreamError
+
+#ifdef __cplusplus
+typedef p4::v1::StreamError p4_stream_error_t;
+typedef p4_stream_error_t *p4_stream_error_ptr_t;
+#else
+struct p4_stream_error;
+typedef struct p4_stream_error p4_stream_error_t;
+typedef void *p4_stream_error_ptr_t;
+#endif // __cplusplus
+
 // StreamMessageResponse
 
 #ifdef __cplusplus
@@ -408,14 +480,13 @@ typedef void *p4_update_ptr_t;
 
 #ifdef __cplusplus
 typedef p4::v1::Update_Type p4_update_type_t;
-typedef p4_update_type_t *p4_update_type_ptr_t;
 #else
-typedef enum Update_Type {
-  Update_Type_INSERT = 1,
-  Update_Type_MODIFY = 2,
-  Update_Type_DELETE = 3
+typedef enum {
+  Update_Insert = 1,
+  Update_Modify = 2,
+  Update_Delete = 3
+
 } p4_update_type_t;
-typedef void *p4_update_type_ptr_t;
 #endif // __cplusplus
 
 // WriteResponse
@@ -503,6 +574,15 @@ typedef std::shared_ptr<grpc_cqueue_t> grpc_cqueue_ptr_t;
 struct grpc_cqueue;
 typedef struct grpc_cqueue grpc_cqueue_t;
 typedef void *grpc_cqueue_ptr_t;
+#endif // __cplusplus
+
+// Status
+
+#ifdef __cplusplus
+typedef grpc::Status grpc_status_t;
+#else
+struct grpc_status;
+typedef struct grpc_status grpc_status_t;
 #endif // __cplusplus
 
 #ifdef __cplusplus

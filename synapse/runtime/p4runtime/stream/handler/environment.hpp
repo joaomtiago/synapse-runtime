@@ -27,8 +27,8 @@ typedef void *env_ptr_t;
 #endif // __cplusplus
 
 #ifdef __cplusplus
-typedef bool (*handler_ptr_t)(env_ptr_t env, stack_ptr_t stack,
-                              void **nextStates);
+typedef bool (*handler_ptr_t)(env_ptr_t &env, stack_ptr_t &stack,
+                              void **&nextStates);
 #endif // __cplusplus
 
 #ifdef __cplusplus

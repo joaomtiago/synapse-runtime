@@ -7,31 +7,41 @@
 #include <memory>
 #include <sstream>
 
+#define ASSIGN_BYTE(var_type, var, buffer, i)                                  \
+  var = (var_type)((var << 8) | ((uint8_t)buffer->str[i] & 0xff));
+
+#define NOT_NULL(exp) assert(nullptr != (exp))
+
 namespace synapse::runtime {
 
 // String
 
-String::String(std::string *string)
-    : value(string->c_str()), size(string->size()) {}
-
-String::String(const std::string &string)
-    : value(string.c_str()), size(string.size()) {}
-
-String::String(const char *value, size_t size) {
-  assert(0 < size);
-  this->size = size;
-
-  this->value = (char *)std::malloc(size);
-  assert(nullptr != this->value);
-  std::memcpy((void *)this->value, value, size);
-  assert(nullptr != this->value);
+String::String(const std::string *string) {
+  this->str = string->c_str();
+  this->sz = string->size();
 }
 
-std::string String::toStdString() { return std::string(value, size); }
+String::String(const std::string &string)
+    : String(string.c_str(), string.size()) {}
+
+String::String(const char *value, size_t size) {
+  this->sz = size;
+
+  if (0 < size) {
+    this->str = (char *)std::malloc(size);
+    NOT_NULL(this->str);
+    std::memcpy((void *)this->str, value, size);
+    NOT_NULL(this->str);
+  }
+}
+
+std::string String::toStdString() { return std::string(str, sz); }
 
 // MAC address
 
 MACAddress::MACAddress(const char *address) {
+  NOT_NULL(address);
+
   uint32_t byte1, byte2, byte3, byte4, byte5, byte6;
   if (6 != sscanf(address, "%02x:%02x:%02x:%02x:%02x:%02x", &byte1, &byte2,
                   &byte3, &byte4, &byte5, &byte6)) {
@@ -52,7 +62,10 @@ MACAddress::MACAddress(const char *address) {
 }
 
 MACAddress::MACAddress(const char *address, const char *raw) {
+  NOT_NULL(address);
   this->address = new string_t(address, 17);
+
+  NOT_NULL(raw);
   this->raw = new string_t(raw, 6);
 }
 
@@ -92,43 +105,103 @@ Port::Port(const uint16_t &port) {
 
 Port::Port(const uint16_t &port, string_ptr_t raw) {
   this->port = port;
+
+  NOT_NULL(raw);
+  this->raw = raw;
+}
+
+// P4 uint32
+
+P4Uint32::P4Uint32(const uint32_t &value) {
+  char buffer[9];
+  snprintf(buffer, 9, "%08x", value);
+
+  uint32_t byte1, byte2, byte3, byte4;
+  if (4 != sscanf(buffer, "%02x%02x%02x%02x", &byte1, &byte2, &byte3, &byte4)) {
+    throw RuntimeException("Could not parse uint32");
+  }
+
+  std::stringstream stream;
+  stream << (uint8_t)byte1 && 0xff;
+  stream << (uint8_t)byte2 && 0xff;
+  stream << (uint8_t)byte3 && 0xff;
+  stream << (uint8_t)byte4 && 0xff;
+  std::string streamStr = stream.str();
+
+  this->value = value;
+  this->raw = new string_t(streamStr.c_str(), streamStr.size());
+}
+
+P4Uint32::P4Uint32(const uint32_t &value, string_ptr_t raw) {
+  this->value = value;
+
+  NOT_NULL(raw);
   this->raw = raw;
 }
 
 // Decoders
 
 mac_addr_ptr_t
-synapse_runtime_wrappers_decode_mac_address(const char *encoded) {
+synapse_runtime_wrappers_decode_mac_address(string_ptr_t encoded) {
+  NOT_NULL(encoded);
+  assert(6 <= encoded->sz);
+
   char buffer[17]; // 12 hex digits + 5 ':'
   char *ptr = buffer;
 
   for (size_t i = 0; i < 6; i++) {
-    sprintf(ptr, "%02x", (uint8_t)encoded[i] & 0xff);
+    sprintf(ptr, "%02x", (uint8_t)encoded->str[i] & 0xff);
     ptr += 2;
     *ptr++ = ':';
   }
 
-  return new mac_addr_t(buffer, encoded);
+  return new mac_addr_t(buffer, encoded->str);
 }
 
 port_ptr_t synapse_runtime_wrappers_decode_port(string_ptr_t encoded) {
-  uint16_t port = 0;
+  NOT_NULL(encoded);
 
-  for (size_t i = 0; i < encoded->size; i++) {
-    port = (uint16_t)((port << 8) | ((uint8_t)encoded->value[i] & 0xff));
+  size_t size = encoded->sz;
+  if (2 < size) {
+    size = 2;
+  }
+
+  uint16_t port = 0;
+  for (size_t i = 0; i < size; i++) {
+    ASSIGN_BYTE(uint16_t, port, encoded, i);
   }
 
   return new port_t(port, encoded);
 }
 
+uint32_t synapse_runtime_wrappers_decode_p4_uint32(string_ptr_t encoded) {
+  NOT_NULL(encoded);
+
+  uint32_t value = 0;
+  for (size_t i = 0; i < encoded->sz; i++) {
+    ASSIGN_BYTE(uint32_t, value, encoded, i);
+  }
+
+  return value;
+}
+
 // Stack
 
-void Stack::push(void *el) { stack_.push(el); }
+void Stack::push(void *el) {
+  if (nullptr == el) {
+    SYNAPSE_INFO("Pushing a null pointer to the stack");
+  }
+
+  stack_.push(el);
+}
 
 void *Stack::pop() {
-  auto &el = stack_.top();
-  stack_.pop();
+  void *&el = stack_.top();
+  if (nullptr == el) {
+    SYNAPSE_INFO("Popping a null pointer from the stack");
+  }
 
+  stack_.pop();
   return el;
 }
 
@@ -145,13 +218,21 @@ size_t Stack::clear() {
     elsPopped++;
   }
 
+  SYNAPSE_DEBUG("Cleared %lu element(s) from the stack", elsPopped);
   return elsPopped;
 }
 
 // Pair
 
 Pair::Pair(void *left, void *right) {
+  if (nullptr == left) {
+    SYNAPSE_INFO("Provided a null pointer as left element");
+  }
   this->left = left;
+
+  if (nullptr == right) {
+    SYNAPSE_INFO("Provided a null pointer as right element");
+  }
   this->right = right;
 }
 

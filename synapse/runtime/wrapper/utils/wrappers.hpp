@@ -28,6 +28,10 @@ mac_addr_ptr_t synapse_runtime_wrappers_mac_address_new(const char *value);
 
 port_ptr_t synapse_runtime_wrappers_port_new(uint16_t port);
 
+// P4 uint32
+
+p4_uint32_ptr_t synapse_runtime_wrappers_p4_uint32_new(uint32_t value);
+
 // Stack
 
 void synapse_runtime_wrappers_stack_push(stack_ptr_t stack, void *el);

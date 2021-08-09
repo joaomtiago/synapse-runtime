@@ -5,15 +5,15 @@
 
 namespace synapse::runtime {
 
-bool handleConnected(env_ptr_t, stack_ptr_t, void **);
+bool handleConnected(env_ptr_t &, stack_ptr_t &, void **&);
 
-bool handleMakePrimarySent(env_ptr_t, stack_ptr_t, void **);
+bool handleMakePrimarySent(env_ptr_t &, stack_ptr_t &, void **&);
 
-bool handleMakePrimaryReceived(env_ptr_t, stack_ptr_t, void **);
+bool handleMakePrimaryReceived(env_ptr_t &, stack_ptr_t &, void **&);
 
-bool handleMessageReceived(env_ptr_t, stack_ptr_t, void **);
+bool handleMessageReceived(env_ptr_t &, stack_ptr_t &, void **&);
 
-bool handleMessageSent(env_ptr_t, stack_ptr_t, void **);
+bool handleMessageSent(env_ptr_t &, stack_ptr_t &, void **&);
 
 } // namespace synapse::runtime
 

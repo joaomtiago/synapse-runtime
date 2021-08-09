@@ -3,131 +3,73 @@ pkg_info {
 }
 tables {
   preamble {
-    id: 43595043
-    name: "SyNAPSE_Ingress.map_get_35"
-    alias: "map_get_35"
-  }
-  match_fields {
-    id: 1
-    name: "key_byte_0"
-    bitwidth: 8
-    match_type: EXACT
-  }
-  match_fields {
-    id: 2
-    name: "key_byte_1"
-    bitwidth: 8
-    match_type: EXACT
-  }
-  match_fields {
-    id: 3
-    name: "key_byte_2"
-    bitwidth: 8
-    match_type: EXACT
-  }
-  match_fields {
-    id: 4
-    name: "key_byte_3"
-    bitwidth: 8
-    match_type: EXACT
-  }
-  match_fields {
-    id: 5
-    name: "key_byte_4"
-    bitwidth: 8
-    match_type: EXACT
-  }
-  match_fields {
-    id: 6
-    name: "key_byte_5"
-    bitwidth: 8
-    match_type: EXACT
-  }
-  match_fields {
-    id: 7
-    name: "key_byte_6"
-    bitwidth: 8
-    match_type: EXACT
-  }
-  match_fields {
-    id: 8
-    name: "key_byte_7"
-    bitwidth: 8
-    match_type: EXACT
+    id: 35303302
+    name: "MyIngress.tag_control"
+    alias: "tag_control"
   }
   action_refs {
-    id: 25897657
+    id: 32924407
   }
   action_refs {
     id: 21257015
     annotations: "@defaultonly"
     scope: DEFAULT_ONLY
   }
-  size: 256
+  size: 1
 }
 tables {
   preamble {
-    id: 41218606
-    name: "SyNAPSE_Ingress.map_get_53"
-    alias: "map_get_53"
+    id: 44007467
+    name: "MyIngress.mac_src_exact"
+    alias: "mac_src_exact"
   }
   match_fields {
     id: 1
-    name: "key_byte_0"
-    bitwidth: 8
-    match_type: EXACT
+    name: "meta.mac_src_exact_tag"
+    bitwidth: 32
+    match_type: RANGE
   }
   match_fields {
     id: 2
-    name: "key_byte_1"
-    bitwidth: 8
-    match_type: EXACT
-  }
-  match_fields {
-    id: 3
-    name: "key_byte_2"
-    bitwidth: 8
-    match_type: EXACT
-  }
-  match_fields {
-    id: 4
-    name: "key_byte_3"
-    bitwidth: 8
-    match_type: EXACT
-  }
-  match_fields {
-    id: 5
-    name: "key_byte_4"
-    bitwidth: 8
-    match_type: EXACT
-  }
-  match_fields {
-    id: 6
-    name: "key_byte_5"
-    bitwidth: 8
-    match_type: EXACT
-  }
-  match_fields {
-    id: 7
-    name: "key_byte_6"
-    bitwidth: 8
-    match_type: EXACT
-  }
-  match_fields {
-    id: 8
-    name: "key_byte_7"
-    bitwidth: 8
+    name: "hdr.ethernet.srcAddr"
+    bitwidth: 48
     match_type: EXACT
   }
   action_refs {
-    id: 28027752
+    id: 32760417
   }
   action_refs {
     id: 21257015
-    annotations: "@defaultonly"
-    scope: DEFAULT_ONLY
   }
-  size: 256
+  size: 1024
+  idle_timeout_behavior: NOTIFY_CONTROL
+}
+tables {
+  preamble {
+    id: 35575582
+    name: "MyIngress.mac_dst_exact"
+    alias: "mac_dst_exact"
+  }
+  match_fields {
+    id: 1
+    name: "meta.mac_dst_exact_tag"
+    bitwidth: 32
+    match_type: RANGE
+  }
+  match_fields {
+    id: 2
+    name: "hdr.ethernet.dstAddr"
+    bitwidth: 48
+    match_type: EXACT
+  }
+  action_refs {
+    id: 22516369
+  }
+  action_refs {
+    id: 29683729
+  }
+  size: 1024
+  idle_timeout_behavior: NOTIFY_CONTROL
 }
 actions {
   preamble {
@@ -139,53 +81,56 @@ actions {
 }
 actions {
   preamble {
-    id: 32489210
-    name: "SyNAPSE_Ingress.broadcast"
-    alias: "broadcast"
+    id: 32924407
+    name: "MyIngress.tag_versions"
+    alias: "tag_versions"
+  }
+  params {
+    id: 1
+    name: "global_tag"
+    bitwidth: 32
+  }
+  params {
+    id: 2
+    name: "mac_src_exact_tag"
+    bitwidth: 32
+  }
+  params {
+    id: 3
+    name: "mac_dst_exact_tag"
+    bitwidth: 32
   }
 }
 actions {
   preamble {
-    id: 23696361
-    name: "SyNAPSE_Ingress.forward"
-    alias: "forward"
-  }
-}
-actions {
-  preamble {
-    id: 29542393
-    name: "SyNAPSE_Ingress.send_to_controller"
+    id: 32760417
+    name: "MyIngress.send_to_controller"
     alias: "send_to_controller"
   }
 }
 actions {
   preamble {
-    id: 25897657
-    name: "SyNAPSE_Ingress.map_get_35_populate"
-    alias: "map_get_35_populate"
-  }
-  params {
-    id: 1
-    name: "param_0"
-    bitwidth: 32
+    id: 22516369
+    name: "MyIngress.broadcast"
+    alias: "broadcast"
   }
 }
 actions {
   preamble {
-    id: 28027752
-    name: "SyNAPSE_Ingress.map_get_53_populate"
-    alias: "map_get_53_populate"
+    id: 29683729
+    name: "MyIngress.forward"
+    alias: "forward"
   }
   params {
     id: 1
-    name: "param_0"
-    bitwidth: 32
+    name: "egress_port"
+    bitwidth: 9
   }
 }
 actions {
   preamble {
-    id: 19368370
-    name: "SyNAPSE_Egress.drop"
+    id: 20880156
+    name: "MyEgress.drop"
     alias: "drop"
   }
 }
@@ -198,17 +143,17 @@ controller_packet_metadata {
   }
   metadata {
     id: 1
-    name: "code_id"
+    name: "global_tag"
     bitwidth: 32
   }
   metadata {
     id: 2
-    name: "src_device"
+    name: "ingress_port"
     bitwidth: 9
   }
   metadata {
     id: 3
-    name: "pad"
+    name: "padding"
     bitwidth: 7
   }
 }
@@ -221,18 +166,13 @@ controller_packet_metadata {
   }
   metadata {
     id: 1
-    name: "src_device"
+    name: "ingress_port"
     bitwidth: 9
   }
   metadata {
     id: 2
-    name: "dst_device"
-    bitwidth: 9
-  }
-  metadata {
-    id: 3
-    name: "pad"
-    bitwidth: 6
+    name: "padding"
+    bitwidth: 7
   }
 }
 type_info {

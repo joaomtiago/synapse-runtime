@@ -11,27 +11,26 @@ typedef enum {
   MakePrimarySent = 2,
   MakePrimaryReceived = 3,
   MessageReceived = 4,
-  MessageSent = 5,
-  MessageSentDone = 6
-
+  MessageSent = 5
 } tag_state_t;
 
 typedef struct {
-  std::string identifier;
+  tag_state_t state;
   handler_ptr_t handler;
   void **next_tags;
 
 } tag_t;
 
 typedef struct {
-  tag_t tagConnected = {"Connected", &handleConnected, nullptr};
-  tag_t tagMakePrimarySent = {"MakePrimarySent", &handleMakePrimarySent,
-                              nullptr};
-  tag_t tagMakePrimaryReceived = {"MakePrimaryReceived",
+  tag_t tagConnected = {tag_state_t::Connected, &handleConnected, nullptr};
+  tag_t tagMakePrimarySent = {tag_state_t::MakePrimarySent,
+                              &handleMakePrimarySent, nullptr};
+  tag_t tagMakePrimaryReceived = {tag_state_t::MakePrimaryReceived,
                                   &handleMakePrimaryReceived, nullptr};
-  tag_t tagMessageReceived = {"MessageReceived", &handleMessageReceived,
-                              nullptr};
-  tag_t tagMessageSent = {"MessageSent", &handleMessageSent, nullptr};
+  tag_t tagMessageReceived = {tag_state_t::MessageReceived,
+                              &handleMessageReceived, nullptr};
+  tag_t tagMessageSent = {tag_state_t::MessageSent, &handleMessageSent,
+                          nullptr};
 
 } tags_t;
 

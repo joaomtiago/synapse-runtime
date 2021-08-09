@@ -13,34 +13,34 @@
 #define R_CAST(type, value) _CAST(reinterpret, type, value)
 #define VAR_R_CAST(type, var, value) _ASSIGNMENT(type var, R_CAST(type, value))
 
-#define ENABLE_INFO
+#define SYNAPSE_ENABLE_ERROR
 
-#ifdef ENABLE_DEBUG
-#define ENABLE_INFO
-#define ENABLE_ERROR
-#endif // ENABLE_DEBUG
+#ifdef SYNAPSE_ENABLE_DEBUG
+#define SYNAPSE_ENABLE_INFO
+#define SYNAPSE_ENABLE_ERROR
+#endif // SYNAPSE_ENABLE_DEBUG
 
-#ifdef ENABLE_INFO
-#define ENABLE_ERROR
-#endif // ENABLE_INFO
+#ifdef SYNAPSE_ENABLE_INFO
+#define SYNAPSE_ENABLE_ERROR
+#endif // SYNAPSE_ENABLE_INFO
 
-#ifdef ENABLE_ERROR
+#ifdef SYNAPSE_ENABLE_ERROR
 #define SYNAPSE_ERROR(text, ...) printf("ERROR: " text "\n", ##__VA_ARGS__)
-#else // ENABLE_ERROR
+#else // SYNAPSE_ENABLE_ERROR
 #define SYNAPSE_ERROR(text, ...)
-#endif // ENABLE_ERROR
+#endif // SYNAPSE_ENABLE_ERROR
 
-#ifdef ENABLE_INFO
+#ifdef SYNAPSE_ENABLE_INFO
 #define SYNAPSE_INFO(text, ...) printf("INFO: " text "\n", ##__VA_ARGS__)
-#else // ENABLE_INFO
+#else // SYNAPSE_ENABLE_INFO
 #define SYNAPSE_INFO(text, ...)
-#endif // ENABLE_INFO
+#endif // SYNAPSE_ENABLE_INFO
 
-#ifdef ENABLE_DEBUG
+#ifdef SYNAPSE_ENABLE_DEBUG
 #define SYNAPSE_DEBUG(text, ...) printf("DEBUG: " text "\n", ##__VA_ARGS__)
-#else // ENABLE_DEBUG
+#else // SYNAPSE_ENABLE_DEBUG
 #define SYNAPSE_DEBUG(text, ...)
-#endif // ENABLE_DEBUG
+#endif // SYNAPSE_ENABLE_DEBUG
 
 #ifdef __cplusplus
 #include <stack>
@@ -61,15 +61,15 @@ namespace synapse::runtime {
 
 typedef struct String {
 #ifdef __cplusplus
-  String(std::string *string);
+  String(const std::string *string);
 
   String(const std::string &string);
 
   String(const char *value, size_t value_sz);
 #endif // __cplusplus
 
-  const char *value;
-  size_t size;
+  const char *str;
+  size_t sz;
 
 #ifdef __cplusplus
   std::string toStdString();
@@ -108,15 +108,33 @@ typedef struct Port {
 } port_t;
 typedef port_t *port_ptr_t;
 
+// P4 uint32
+
+typedef struct P4Uint32 {
+#ifdef __cplusplus
+  P4Uint32(const uint32_t &value);
+
+  P4Uint32(const uint32_t &value, string_ptr_t raw);
+#endif // __cplusplus
+
+  uint32_t value;
+  string_ptr_t raw;
+
+} p4_uint32_t;
+typedef p4_uint32_t *p4_uint32_ptr_t;
+
 // Decoders
 
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
 
-mac_addr_ptr_t synapse_runtime_wrappers_decode_mac_address(const char *encoded);
+mac_addr_ptr_t
+synapse_runtime_wrappers_decode_mac_address(string_ptr_t encoded);
 
 port_ptr_t synapse_runtime_wrappers_decode_port(string_ptr_t encoded);
+
+uint32_t synapse_runtime_wrappers_decode_p4_uint32(string_ptr_t encoded);
 
 #ifdef __cplusplus
 }
