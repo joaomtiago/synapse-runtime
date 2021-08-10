@@ -13,7 +13,7 @@
 #define R_CAST(type, value) _CAST(reinterpret, type, value)
 #define VAR_R_CAST(type, var, value) _ASSIGNMENT(type var, R_CAST(type, value))
 
-#define SYNAPSE_ENABLE_ERROR
+#define SYNAPSE_ENABLE_DEBUG
 
 #ifdef SYNAPSE_ENABLE_DEBUG
 #define SYNAPSE_ENABLE_INFO
@@ -78,6 +78,21 @@ typedef struct String {
 } string_t;
 typedef string_t *string_ptr_t;
 
+// IP address
+
+typedef struct IPAddress {
+#ifdef __cplusplus
+  IPAddress(const char *address);
+
+  IPAddress(string_ptr_t address, string_ptr_t raw);
+#endif // __cplusplus
+
+  string_ptr_t address;
+  string_ptr_t raw;
+
+} ip_addr_t;
+typedef ip_addr_t *ip_addr_ptr_t;
+
 // MAC address
 
 typedef struct MACAddress {
@@ -129,6 +144,8 @@ typedef p4_uint32_t *p4_uint32_ptr_t;
 extern "C" {
 #endif // __cplusplus
 
+ip_addr_ptr_t synapse_runtime_wrappers_decode_ip_address(string_ptr_t encoded);
+
 mac_addr_ptr_t
 synapse_runtime_wrappers_decode_mac_address(string_ptr_t encoded);
 
@@ -145,7 +162,7 @@ uint32_t synapse_runtime_wrappers_decode_p4_uint32(string_ptr_t encoded);
 #ifdef __cplusplus
 typedef struct Stack {
 public:
-  void push(void *el);
+  void *push(void *el);
 
   void *pop();
 

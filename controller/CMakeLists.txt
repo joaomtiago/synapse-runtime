@@ -7,7 +7,7 @@ project(controller)
 # Include files in `pb` and `grpc`
 include_directories(${p4runtime_cpp_pb_path} ${p4runtime_cpp_grpc_path})
 
-# Generate two controllers (C and C++)
+# Generate two empty controllers
 set(cpp_controller ${PROJECT_NAME}_cpp)
 set(c_controller ${PROJECT_NAME}_c)
 

@@ -8,11 +8,11 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/bin/c_controller",
+            "program": "${workspaceFolder}/build/bin/firewall_controller",
             "args": [
                 "10.0.2.5:50051",
-                "${workspaceFolder}/controller/program.p4info.txt",
-                "${workspaceFolder}/controller/program.json"
+                "${workspaceFolder}/controller/firewall/program.p4info.txt",
+                "${workspaceFolder}/controller/firewall/program.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

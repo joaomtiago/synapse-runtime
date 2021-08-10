@@ -104,10 +104,14 @@ bool handleMakePrimaryReceived(env_ptr_t &env, stack_ptr_t &stack,
       }
 
       if (mustUpdateTags(env->stack)) {
+        SYNAPSE_DEBUG("Updating tags");
+
         if (!updateTags(env->stack, env->helper, env->update_buffer, stub)) {
           SYNAPSE_ERROR("Could not update tags");
           return false;
         }
+
+        SYNAPSE_DEBUG("Updated tags");
       }
 
       // We're done with the configuration, queue the first read!
@@ -228,10 +232,14 @@ bool handleMessageReceivedPacket(env_ptr_t &env, p4runtime_stub_ptr_t &stub,
   }
 
   if (mustUpdateTags(env->stack)) {
+    SYNAPSE_DEBUG("Updating tags");
+
     if (!updateTags(env->stack, env->helper, env->update_buffer, stub)) {
       SYNAPSE_ERROR("Could not update tags");
       return false;
     }
+
+    SYNAPSE_DEBUG("Updated tags");
   }
 
   return true;

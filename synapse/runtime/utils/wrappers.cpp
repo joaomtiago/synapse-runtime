@@ -37,6 +37,40 @@ String::String(const char *value, size_t size) {
 
 std::string String::toStdString() { return std::string(str, sz); }
 
+// IP Adresss
+
+IPAddress::IPAddress(const char *address) {
+  NOT_NULL(address);
+
+  uint32_t byte1, byte2, byte3, byte4;
+  if (4 != sscanf(address,
+                  "%" SCNu32 "."
+                  "%" SCNu32 "."
+                  "%" SCNu32 "."
+                  "%" SCNu32,
+                  &byte1, &byte2, &byte3, &byte4)) {
+    throw RuntimeException("Could not parse IP address");
+  }
+
+  std::stringstream stream;
+  stream << (uint8_t)byte1 && 0xff;
+  stream << (uint8_t)byte2 && 0xff;
+  stream << (uint8_t)byte3 && 0xff;
+  stream << (uint8_t)byte4 && 0xff;
+  std::string streamStr = stream.str();
+
+  this->address = new string_t(new std::string(address));
+  this->raw = new string_t(streamStr.c_str(), 4);
+}
+
+IPAddress::IPAddress(string_ptr_t address, string_ptr_t raw) {
+  NOT_NULL(address);
+  this->address = address;
+
+  NOT_NULL(raw);
+  this->raw = raw;
+}
+
 // MAC address
 
 MACAddress::MACAddress(const char *address) {
@@ -141,6 +175,40 @@ P4Uint32::P4Uint32(const uint32_t &value, string_ptr_t raw) {
 
 // Decoders
 
+ip_addr_ptr_t synapse_runtime_wrappers_decode_ip_address(string_ptr_t encoded) {
+  NOT_NULL(encoded);
+  assert(4 <= encoded->sz);
+
+  // Worst case scenario: 12 digits + 3 '.' are written
+  char buffer[15];
+  char *ptr = buffer;
+
+  size_t totalChars = 0;
+  int charsRead = -1;
+
+  for (size_t i = 0; i < 4; i++) {
+    if (-1 == (charsRead =
+                   sprintf(ptr, "%" SCNu32, (uint8_t)encoded->str[i] & 0xff))) {
+      return nullptr;
+
+    } else if (0 == charsRead) {
+      *ptr++ = '0';
+      totalChars += 1;
+
+    } else {
+      ptr += charsRead;
+      totalChars += charsRead;
+    }
+
+    if (i < 3) {
+      *ptr++ = '.';
+      totalChars += 1;
+    }
+  }
+
+  return new ip_addr_t(new string_t(buffer, totalChars), encoded);
+}
+
 mac_addr_ptr_t
 synapse_runtime_wrappers_decode_mac_address(string_ptr_t encoded) {
   NOT_NULL(encoded);
@@ -152,7 +220,10 @@ synapse_runtime_wrappers_decode_mac_address(string_ptr_t encoded) {
   for (size_t i = 0; i < 6; i++) {
     sprintf(ptr, "%02x", (uint8_t)encoded->str[i] & 0xff);
     ptr += 2;
-    *ptr++ = ':';
+
+    if (i < 5) {
+      *ptr++ = ':';
+    }
   }
 
   return new mac_addr_t(buffer, encoded->str);
@@ -187,12 +258,13 @@ uint32_t synapse_runtime_wrappers_decode_p4_uint32(string_ptr_t encoded) {
 
 // Stack
 
-void Stack::push(void *el) {
+void *Stack::push(void *el) {
   if (nullptr == el) {
     SYNAPSE_INFO("Pushing a null pointer to the stack");
   }
 
   stack_.push(el);
+  return el;
 }
 
 void *Stack::pop() {
@@ -212,13 +284,14 @@ bool Stack::empty() { return stack_.empty(); }
 size_t Stack::size() { return stack_.size(); }
 
 size_t Stack::clear() {
+  SYNAPSE_DEBUG("Clearing %lu element(s) from the stack", stack_.size());
+
   size_t elsPopped = 0;
   while (!stack_.empty()) {
     stack_.pop();
     elsPopped++;
   }
 
-  SYNAPSE_DEBUG("Cleared %lu element(s) from the stack", elsPopped);
   return elsPopped;
 }
 

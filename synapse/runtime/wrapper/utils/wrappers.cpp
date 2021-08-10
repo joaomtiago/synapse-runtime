@@ -12,6 +12,12 @@ string_ptr_t synapse_runtime_wrappers_string_new(const char *value,
   return new string_t(value, value_sz);
 }
 
+// IP address
+
+ip_addr_ptr_t synapse_runtime_wrappers_ip_address_new(const char *value) {
+  return new ip_addr_t(value);
+}
+
 // MAC address
 
 mac_addr_ptr_t synapse_runtime_wrappers_mac_address_new(const char *value) {
@@ -32,7 +38,7 @@ p4_uint32_ptr_t synapse_runtime_wrappers_p4_uint32_new(uint32_t value) {
 
 // Stack
 
-void synapse_runtime_wrappers_stack_push(stack_ptr_t stack, void *el) {
+void *synapse_runtime_wrappers_stack_push(stack_ptr_t stack, void *el) {
   NOT_NULL(stack);
   return stack->push(el);
 }
