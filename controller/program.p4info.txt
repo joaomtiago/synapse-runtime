@@ -9,6 +9,12 @@ tables {
   }
   match_fields {
     id: 1
+    name: "meta.example_tbl_tag"
+    bitwidth: 32
+    match_type: RANGE
+  }
+  match_fields {
+    id: 2
     name: "hdr.ethernet.dstAddr"
     bitwidth: 48
     match_type: EXACT
@@ -205,11 +211,16 @@ actions {
   }
   params {
     id: 1
-    name: "map_get_35_tag"
+    name: "example_tbl_tag"
     bitwidth: 32
   }
   params {
     id: 2
+    name: "map_get_35_tag"
+    bitwidth: 32
+  }
+  params {
+    id: 3
     name: "map_get_53_tag"
     bitwidth: 32
   }

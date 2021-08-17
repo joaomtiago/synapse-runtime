@@ -13,6 +13,7 @@
         ["key_byte_13", 8, false],
         ["key_byte_14", 8, false],
         ["hasReturned", 1, false],
+        ["userMetadata.example_tbl_tag", 32, false],
         ["userMetadata.map_get_35", 32, false],
         ["userMetadata.map_get_35_tag", 32, false],
         ["userMetadata.map_get_53", 32, false],
@@ -212,7 +213,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "main.p4",
-        "line" : 270,
+        "line" : 273,
         "column" : 8,
         "source_fragment" : "SyNAPSE_Deparser"
       },
@@ -274,7 +275,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 89,
+            "line" : 90,
             "column" : 4,
             "source_fragment" : "standard_metadata.ingress_port = port"
           }
@@ -285,6 +286,10 @@
       "name" : "SyNAPSE_Ingress.tag_versions",
       "id" : 5,
       "runtime_data" : [
+        {
+          "name" : "example_tbl_tag",
+          "bitwidth" : 32
+        },
         {
           "name" : "map_get_35_tag",
           "bitwidth" : 32
@@ -300,7 +305,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "userMetadata.map_get_35_tag"]
+              "value" : ["scalars", "userMetadata.example_tbl_tag"]
             },
             {
               "type" : "runtime_data",
@@ -309,7 +314,26 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 109,
+            "line" : 111,
+            "column" : 4,
+            "source_fragment" : "meta.example_tbl_tag = example_tbl_tag"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.map_get_35_tag"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 1
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 112,
             "column" : 4,
             "source_fragment" : "meta.map_get_35_tag = map_get_35_tag"
           }
@@ -323,12 +347,12 @@
             },
             {
               "type" : "runtime_data",
-              "value" : 1
+              "value" : 2
             }
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 110,
+            "line" : 113,
             "column" : 4,
             "source_fragment" : "meta.map_get_53_tag = map_get_53_tag"
           }
@@ -441,7 +465,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 138,
+            "line" : 141,
             "column" : 4,
             "source_fragment" : "standard_metadata.egress_spec = 509"
           }
@@ -456,7 +480,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 140,
+            "line" : 143,
             "column" : 4,
             "source_fragment" : "hdr.packet_in.setValid()"
           }
@@ -475,7 +499,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 141,
+            "line" : 144,
             "column" : 4,
             "source_fragment" : "hdr.packet_in.code_id = code_id; ..."
           }
@@ -494,7 +518,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 142,
+            "line" : 145,
             "column" : 4,
             "source_fragment" : "hdr.packet_in.src_device = standard_metadata.ingress_port"
           }
@@ -520,7 +544,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 138,
+            "line" : 141,
             "column" : 4,
             "source_fragment" : "standard_metadata.egress_spec = 509"
           }
@@ -535,7 +559,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 140,
+            "line" : 143,
             "column" : 4,
             "source_fragment" : "hdr.packet_in.setValid()"
           }
@@ -554,7 +578,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 141,
+            "line" : 144,
             "column" : 4,
             "source_fragment" : "hdr.packet_in.code_id = code_id; ..."
           }
@@ -573,7 +597,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 142,
+            "line" : 145,
             "column" : 4,
             "source_fragment" : "hdr.packet_in.src_device = standard_metadata.ingress_port"
           }
@@ -604,7 +628,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 155,
+            "line" : 158,
             "column" : 4,
             "source_fragment" : "meta.map_get_35_0 = param_0"
           }
@@ -635,7 +659,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 179,
+            "line" : 182,
             "column" : 4,
             "source_fragment" : "meta.map_get_53_0 = param_0"
           }
@@ -673,7 +697,7 @@
       ]
     },
     {
-      "name" : "main208",
+      "name" : "main211",
       "id" : 12,
       "runtime_data" : [],
       "primitives" : [
@@ -701,7 +725,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 208,
+            "line" : 211,
             "column" : 6,
             "source_fragment" : "return"
           }
@@ -709,7 +733,7 @@
       ]
     },
     {
-      "name" : "main212",
+      "name" : "main215",
       "id" : 13,
       "runtime_data" : [],
       "primitives" : [
@@ -750,7 +774,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 212,
+            "line" : 215,
             "column" : 6,
             "source_fragment" : "key_byte_0 = (bit<8>) (hdr.ethernet.dstAddr & 0xff)"
           }
@@ -812,7 +836,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 213,
+            "line" : 216,
             "column" : 6,
             "source_fragment" : "key_byte_1 = (bit<8>) ((hdr.ethernet.dstAddr >> 8) & 0xff)"
           }
@@ -874,7 +898,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 214,
+            "line" : 217,
             "column" : 6,
             "source_fragment" : "key_byte_2 = (bit<8>) ((hdr.ethernet.dstAddr >> 16) & 0xff)"
           }
@@ -936,7 +960,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 215,
+            "line" : 218,
             "column" : 6,
             "source_fragment" : "key_byte_3 = (bit<8>) ((hdr.ethernet.dstAddr >> 24) & 0xff)"
           }
@@ -998,7 +1022,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 216,
+            "line" : 219,
             "column" : 6,
             "source_fragment" : "key_byte_4 = (bit<8>) ((hdr.ethernet.dstAddr >> 32) & 0xff)"
           }
@@ -1060,7 +1084,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 217,
+            "line" : 220,
             "column" : 6,
             "source_fragment" : "key_byte_5 = (bit<8>) ((hdr.ethernet.dstAddr >> 40) & 0xff)"
           }
@@ -1079,7 +1103,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 218,
+            "line" : 221,
             "column" : 6,
             "source_fragment" : "key_byte_6 = (bit<8>) (1"
           }
@@ -1098,7 +1122,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 219,
+            "line" : 222,
             "column" : 6,
             "source_fragment" : "key_byte_7 = (bit<8>) (0"
           }
@@ -1106,7 +1130,7 @@
       ]
     },
     {
-      "name" : "main224",
+      "name" : "main227",
       "id" : 14,
       "runtime_data" : [],
       "primitives" : [
@@ -1147,7 +1171,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 224,
+            "line" : 227,
             "column" : 6,
             "source_fragment" : "key_byte_0 = (bit<8>) (hdr.ethernet.dstAddr & 0xff)"
           }
@@ -1209,7 +1233,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 225,
+            "line" : 228,
             "column" : 6,
             "source_fragment" : "key_byte_1 = (bit<8>) ((hdr.ethernet.dstAddr >> 8) & 0xff)"
           }
@@ -1271,7 +1295,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 226,
+            "line" : 229,
             "column" : 6,
             "source_fragment" : "key_byte_2 = (bit<8>) ((hdr.ethernet.dstAddr >> 16) & 0xff)"
           }
@@ -1333,7 +1357,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 227,
+            "line" : 230,
             "column" : 6,
             "source_fragment" : "key_byte_3 = (bit<8>) ((hdr.ethernet.dstAddr >> 24) & 0xff)"
           }
@@ -1395,7 +1419,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 228,
+            "line" : 231,
             "column" : 6,
             "source_fragment" : "key_byte_4 = (bit<8>) ((hdr.ethernet.dstAddr >> 32) & 0xff)"
           }
@@ -1457,7 +1481,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 229,
+            "line" : 232,
             "column" : 6,
             "source_fragment" : "key_byte_5 = (bit<8>) ((hdr.ethernet.dstAddr >> 40) & 0xff)"
           }
@@ -1476,7 +1500,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 230,
+            "line" : 233,
             "column" : 6,
             "source_fragment" : "key_byte_6 = (bit<8>) (0"
           }
@@ -1495,7 +1519,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 231,
+            "line" : 234,
             "column" : 6,
             "source_fragment" : "key_byte_7 = (bit<8>) (0"
           }
@@ -1521,7 +1545,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 246,
+            "line" : 249,
             "column" : 4,
             "source_fragment" : "standard_metadata.egress_spec = 510"
           }
@@ -1535,7 +1559,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "main.p4",
-        "line" : 84,
+        "line" : 85,
         "column" : 8,
         "source_fragment" : "SyNAPSE_Ingress"
       },
@@ -1569,11 +1593,17 @@
           "id" : 1,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 92,
+            "line" : 93,
             "column" : 8,
             "source_fragment" : "example_tbl"
           },
           "key" : [
+            {
+              "match_type" : "range",
+              "name" : "meta.example_tbl_tag",
+              "target" : ["scalars", "userMetadata.example_tbl_tag"],
+              "mask" : null
+            },
             {
               "match_type" : "exact",
               "name" : "hdr.ethernet.dstAddr",
@@ -1581,7 +1611,7 @@
               "mask" : null
             }
           ],
-          "match_type" : "exact",
+          "match_type" : "range",
           "type" : "simple",
           "max_size" : 1024,
           "with_counters" : false,
@@ -1606,7 +1636,7 @@
           "id" : 2,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 113,
+            "line" : 116,
             "column" : 8,
             "source_fragment" : "tag_control"
           },
@@ -1636,7 +1666,7 @@
           "id" : 3,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 207,
+            "line" : 210,
             "column" : 6,
             "source_fragment" : "forward(hdr.packet_out.dst_device)"
           },
@@ -1649,9 +1679,9 @@
           "direct_meters" : null,
           "action_ids" : [6],
           "actions" : ["SyNAPSE_Ingress.forward"],
-          "base_default_next" : "tbl_main208",
+          "base_default_next" : "tbl_main211",
           "next_tables" : {
-            "SyNAPSE_Ingress.forward" : "tbl_main208"
+            "SyNAPSE_Ingress.forward" : "tbl_main211"
           },
           "default_entry" : {
             "action_id" : 6,
@@ -1661,11 +1691,11 @@
           }
         },
         {
-          "name" : "tbl_main208",
+          "name" : "tbl_main211",
           "id" : 4,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 208,
+            "line" : 211,
             "column" : 6,
             "source_fragment" : "return"
           },
@@ -1677,10 +1707,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [12],
-          "actions" : ["main208"],
+          "actions" : ["main211"],
           "base_default_next" : "node_8",
           "next_tables" : {
-            "main208" : "node_8"
+            "main211" : "node_8"
           },
           "default_entry" : {
             "action_id" : 12,
@@ -1690,11 +1720,11 @@
           }
         },
         {
-          "name" : "tbl_main212",
+          "name" : "tbl_main215",
           "id" : 5,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 212,
+            "line" : 215,
             "column" : 17,
             "source_fragment" : "= (bit<8>) (hdr.ethernet.dstAddr & 0xff); ..."
           },
@@ -1706,10 +1736,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [13],
-          "actions" : ["main212"],
+          "actions" : ["main215"],
           "base_default_next" : "SyNAPSE_Ingress.map_get_35",
           "next_tables" : {
-            "main212" : "SyNAPSE_Ingress.map_get_35"
+            "main215" : "SyNAPSE_Ingress.map_get_35"
           },
           "default_entry" : {
             "action_id" : 13,
@@ -1723,7 +1753,7 @@
           "id" : 6,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 158,
+            "line" : 161,
             "column" : 8,
             "source_fragment" : "map_get_35"
           },
@@ -1808,7 +1838,7 @@
           "id" : 7,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 221,
+            "line" : 224,
             "column" : 6,
             "source_fragment" : "send_to_controller(36)"
           },
@@ -1833,11 +1863,11 @@
           }
         },
         {
-          "name" : "tbl_main224",
+          "name" : "tbl_main227",
           "id" : 8,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 224,
+            "line" : 227,
             "column" : 17,
             "source_fragment" : "= (bit<8>) (hdr.ethernet.dstAddr & 0xff); ..."
           },
@@ -1849,10 +1879,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [14],
-          "actions" : ["main224"],
+          "actions" : ["main227"],
           "base_default_next" : "SyNAPSE_Ingress.map_get_53",
           "next_tables" : {
-            "main224" : "SyNAPSE_Ingress.map_get_53"
+            "main227" : "SyNAPSE_Ingress.map_get_53"
           },
           "default_entry" : {
             "action_id" : 14,
@@ -1866,7 +1896,7 @@
           "id" : 9,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 182,
+            "line" : 185,
             "column" : 8,
             "source_fragment" : "map_get_53"
           },
@@ -1951,7 +1981,7 @@
           "id" : 10,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 233,
+            "line" : 236,
             "column" : 6,
             "source_fragment" : "send_to_controller(54)"
           },
@@ -1983,7 +2013,7 @@
           "id" : 0,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 206,
+            "line" : 209,
             "column" : 8,
             "source_fragment" : "standard_metadata.ingress_port == 509"
           },
@@ -2033,7 +2063,7 @@
           "id" : 2,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 211,
+            "line" : 214,
             "column" : 19,
             "source_fragment" : "0) == (standard_metadata.ingress_port"
           },
@@ -2051,8 +2081,8 @@
               }
             }
           },
-          "true_next" : "tbl_main212",
-          "false_next" : "tbl_main224"
+          "true_next" : "tbl_main215",
+          "false_next" : "tbl_main227"
         }
       ]
     },
@@ -2061,7 +2091,7 @@
       "id" : 1,
       "source_info" : {
         "filename" : "main.p4",
-        "line" : 242,
+        "line" : 245,
         "column" : 8,
         "source_fragment" : "SyNAPSE_Egress"
       },
@@ -2072,7 +2102,7 @@
           "id" : 11,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 252,
+            "line" : 255,
             "column" : 6,
             "source_fragment" : "drop()"
           },
@@ -2104,7 +2134,7 @@
           "id" : 3,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 250,
+            "line" : 253,
             "column" : 8,
             "source_fragment" : "standard_metadata.ingress_port == 509 ..."
           },

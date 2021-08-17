@@ -189,7 +189,7 @@ bool updateTags(env_ptr_t &env, p4runtime_stub_ptr_t &stub, size_t tagsSz,
         helper->p4InfoActionParam(actionInfo, tagName->toStdString())->id();
 
     actionParams->push_back(
-        helper->p4ActionParam(tagId, tagValue->raw->toStdString()));
+        helper->p4ActionParam(tagId, tagValue->bytes->toStdString()));
   }
 
   static bool firstUpdate = true;
@@ -303,22 +303,17 @@ bool handleMakePrimaryReceived(env_ptr_t &env, stack_ptr_t &stack,
       VAR_S_CAST(p4runtime_stream_ptr_t, stream, stack->pop());
       VAR_S_CAST(p4runtime_stub_ptr_t, stub, stack->top());
 
-      if (mustFlushUpdates(env->queue)) {
-        if (!flushUpdates(env->queue, stub)) {
-          SYNAPSE_ERROR("Failed to flush updates");
-          return false;
-        }
+      if (mustFlushUpdates(env->queue) && !flushUpdates(env->queue, stub)) {
+        SYNAPSE_ERROR("Failed to flush updates");
+        return false;
       }
 
       size_t tagsSz;
       pair_ptr_t *tags = nullptr;
-      if (mustUpdateTags(env->stack, &tagsSz, &tags)) {
-        SYNAPSE_INFO("Tags need to be updated at configuration time");
-
-        if (!updateTags(env, stub, tagsSz, tags)) {
-          SYNAPSE_ERROR("Could not update tags");
-          return false;
-        }
+      if (mustUpdateTags(env->stack, &tagsSz, &tags) &&
+          !updateTags(env, stub, tagsSz, tags)) {
+        SYNAPSE_ERROR("Could not update tags");
+        return false;
       }
 
       // We're done with the configuration, queue the first read!

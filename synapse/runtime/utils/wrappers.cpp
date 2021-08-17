@@ -60,7 +60,7 @@ IPAddress::IPAddress(const char *address) {
   std::string streamStr = stream.str();
 
   this->address = new string_t(new std::string(address));
-  this->raw = new string_t(streamStr.c_str(), 4);
+  this->bytes = new string_t(streamStr.c_str(), 4);
 }
 
 IPAddress::IPAddress(string_ptr_t address, string_ptr_t raw) {
@@ -68,7 +68,7 @@ IPAddress::IPAddress(string_ptr_t address, string_ptr_t raw) {
   this->address = address;
 
   NOT_NULL(raw);
-  this->raw = raw;
+  this->bytes = raw;
 }
 
 // MAC address
@@ -92,7 +92,7 @@ MACAddress::MACAddress(const char *address) {
   std::string streamStr = stream.str();
 
   this->address = new string_t(address, 17);
-  this->raw = new string_t(streamStr.c_str(), 6);
+  this->bytes = new string_t(streamStr.c_str(), 6);
 }
 
 MACAddress::MACAddress(const char *address, const char *raw) {
@@ -100,7 +100,7 @@ MACAddress::MACAddress(const char *address, const char *raw) {
   this->address = new string_t(address, 17);
 
   NOT_NULL(raw);
-  this->raw = new string_t(raw, 6);
+  this->bytes = new string_t(raw, 6);
 }
 
 // Port
@@ -134,14 +134,14 @@ Port::Port(const uint16_t &port) {
   std::string streamStr = stream.str();
 
   this->port = port;
-  this->raw = new string_t(streamStr.c_str(), streamStr.size());
+  this->bytes = new string_t(streamStr.c_str(), streamStr.size());
 }
 
 Port::Port(const uint16_t &port, string_ptr_t raw) {
   this->port = port;
 
   NOT_NULL(raw);
-  this->raw = raw;
+  this->bytes = raw;
 }
 
 // P4 uint32
@@ -163,14 +163,14 @@ P4Uint32::P4Uint32(const uint32_t &value) {
   std::string streamStr = stream.str();
 
   this->value = value;
-  this->raw = new string_t(streamStr.c_str(), streamStr.size());
+  this->bytes = new string_t(streamStr.c_str(), streamStr.size());
 }
 
 P4Uint32::P4Uint32(const uint32_t &value, string_ptr_t raw) {
   this->value = value;
 
   NOT_NULL(raw);
-  this->raw = raw;
+  this->bytes = raw;
 }
 
 // Decoders
@@ -229,6 +229,18 @@ synapse_runtime_wrappers_decode_mac_address(string_ptr_t encoded) {
   return new mac_addr_t(buffer, encoded->str);
 }
 
+p4_uint32_ptr_t
+synapse_runtime_wrappers_decode_p4_uint32(string_ptr_t encoded) {
+  NOT_NULL(encoded);
+
+  uint32_t value = 0;
+  for (size_t i = 0; i < encoded->sz; i++) {
+    ASSIGN_BYTE(uint32_t, value, encoded, i);
+  }
+
+  return new p4_uint32_t(value);
+}
+
 port_ptr_t synapse_runtime_wrappers_decode_port(string_ptr_t encoded) {
   NOT_NULL(encoded);
 
@@ -243,17 +255,6 @@ port_ptr_t synapse_runtime_wrappers_decode_port(string_ptr_t encoded) {
   }
 
   return new port_t(port, encoded);
-}
-
-uint32_t synapse_runtime_wrappers_decode_p4_uint32(string_ptr_t encoded) {
-  NOT_NULL(encoded);
-
-  uint32_t value = 0;
-  for (size_t i = 0; i < encoded->sz; i++) {
-    ASSIGN_BYTE(uint32_t, value, encoded, i);
-  }
-
-  return value;
 }
 
 // Stack
