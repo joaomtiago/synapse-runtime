@@ -3,6 +3,26 @@ pkg_info {
 }
 tables {
   preamble {
+    id: 41711167
+    name: "SyNAPSE_Ingress.example_tbl"
+    alias: "example_tbl"
+  }
+  match_fields {
+    id: 1
+    name: "hdr.ethernet.dstAddr"
+    bitwidth: 48
+    match_type: EXACT
+  }
+  action_refs {
+    id: 19226067
+  }
+  action_refs {
+    id: 21257015
+  }
+  size: 1024
+}
+tables {
+  preamble {
     id: 48395005
     name: "SyNAPSE_Ingress.tag_control"
     alias: "tag_control"
@@ -163,6 +183,18 @@ actions {
     name: "NoAction"
     alias: "NoAction"
     annotations: "@noWarn(\"unused\")"
+  }
+}
+actions {
+  preamble {
+    id: 19226067
+    name: "SyNAPSE_Ingress.forward_act"
+    alias: "forward_act"
+  }
+  params {
+    id: 1
+    name: "port"
+    bitwidth: 9
   }
 }
 actions {

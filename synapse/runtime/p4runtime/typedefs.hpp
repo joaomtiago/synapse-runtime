@@ -215,7 +215,7 @@ typedef p4::v1::FieldMatch::FieldMatchTypeCase
     p4_field_match_field_match_type_case_t;
 #else
 typedef enum {
-  FieldMatch_Exact = 1,
+  FieldMatch_Exact = 2,
   FieldMatch_Range = 6,
   FieldMatch_Optional = 7
 

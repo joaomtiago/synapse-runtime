@@ -64,6 +64,10 @@ synapse_runtime_p4_info_match_field_new(helper_ptr_t helper,
 uint32_t
 synapse_runtime_p4_info_match_field_id(p4_info_match_field_ptr_t match_field);
 
+// After `synapse_runtime_p4_info_match_field_id`
+p4_info_match_field_match_type_t
+synapse_runtime_p4_info_match_field_type(p4_info_match_field_ptr_t match_field);
+
 p4_info_p4_info_ptr_t synapse_runtime_p4_info_p4_info_new(helper_ptr_t helper);
 
 p4_info_table_ptr_t synapse_runtime_p4_info_table_new(helper_ptr_t helper,

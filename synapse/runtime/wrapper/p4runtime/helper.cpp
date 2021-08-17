@@ -87,6 +87,13 @@ synapse_runtime_p4_info_match_field_id(p4_info_match_field_ptr_t match_field) {
   return match_field->id();
 }
 
+// After `synapse_runtime_p4_info_match_field_id`
+p4_info_match_field_match_type_t synapse_runtime_p4_info_match_field_type(
+    p4_info_match_field_ptr_t match_field) {
+  NOT_NULL(match_field);
+  return match_field->match_type();
+}
+
 p4_info_p4_info_ptr_t synapse_runtime_p4_info_p4_info_new(helper_ptr_t helper) {
   NOT_NULL(helper);
   return helper->p4InfoP4Info();

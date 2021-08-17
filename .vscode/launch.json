@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/bin/cpp_controller",
+            "program": "${workspaceFolder}/build/bin/c_controller",
             "args": [
                 "10.0.2.5:50051",
                 "${workspaceFolder}/controller/program.p4info.txt",

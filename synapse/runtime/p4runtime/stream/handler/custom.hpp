@@ -1,7 +1,7 @@
 #ifndef SYNAPSE_RUNTIME_P4RUNTIME_STREAM_HANDLER_CUSTOM_HPP_
 #define SYNAPSE_RUNTIME_P4RUNTIME_STREAM_HANDLER_CUSTOM_HPP_
 
-#include "synapse/runtime/wrapper/p4runtime/stream/handler/environment.hpp"
+#include "synapse/runtime/p4runtime/stream/handler/environment.hpp"
 
 #ifndef __cplusplus
 #include <stdbool.h>
