@@ -1,0 +1,277 @@
+pkg_info {
+  arch: "v1model"
+}
+tables {
+  preamble {
+    id: 48395005
+    name: "SyNAPSE_Ingress.tag_control"
+    alias: "tag_control"
+  }
+  action_refs {
+    id: 19502521
+  }
+  action_refs {
+    id: 21257015
+    annotations: "@defaultonly"
+    scope: DEFAULT_ONLY
+  }
+  size: 1
+}
+tables {
+  preamble {
+    id: 43595043
+    name: "SyNAPSE_Ingress.map_get_35"
+    alias: "map_get_35"
+  }
+  match_fields {
+    id: 1
+    name: "meta.map_get_35_tag"
+    bitwidth: 32
+    match_type: RANGE
+  }
+  match_fields {
+    id: 2
+    name: "key_byte_0"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 3
+    name: "key_byte_1"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 4
+    name: "key_byte_2"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 5
+    name: "key_byte_3"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 6
+    name: "key_byte_4"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 7
+    name: "key_byte_5"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 8
+    name: "key_byte_6"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 9
+    name: "key_byte_7"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  action_refs {
+    id: 25897657
+  }
+  action_refs {
+    id: 21257015
+    annotations: "@defaultonly"
+    scope: DEFAULT_ONLY
+  }
+  size: 256
+}
+tables {
+  preamble {
+    id: 41218606
+    name: "SyNAPSE_Ingress.map_get_53"
+    alias: "map_get_53"
+  }
+  match_fields {
+    id: 1
+    name: "meta.map_get_53_tag"
+    bitwidth: 32
+    match_type: RANGE
+  }
+  match_fields {
+    id: 2
+    name: "key_byte_0"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 3
+    name: "key_byte_1"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 4
+    name: "key_byte_2"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 5
+    name: "key_byte_3"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 6
+    name: "key_byte_4"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 7
+    name: "key_byte_5"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 8
+    name: "key_byte_6"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 9
+    name: "key_byte_7"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  action_refs {
+    id: 28027752
+  }
+  action_refs {
+    id: 21257015
+    annotations: "@defaultonly"
+    scope: DEFAULT_ONLY
+  }
+  size: 256
+}
+actions {
+  preamble {
+    id: 21257015
+    name: "NoAction"
+    alias: "NoAction"
+    annotations: "@noWarn(\"unused\")"
+  }
+}
+actions {
+  preamble {
+    id: 19502521
+    name: "SyNAPSE_Ingress.tag_versions"
+    alias: "tag_versions"
+  }
+  params {
+    id: 1
+    name: "map_get_35_tag"
+    bitwidth: 32
+  }
+  params {
+    id: 2
+    name: "map_get_53_tag"
+    bitwidth: 32
+  }
+}
+actions {
+  preamble {
+    id: 23696361
+    name: "SyNAPSE_Ingress.forward"
+    alias: "forward"
+  }
+}
+actions {
+  preamble {
+    id: 29542393
+    name: "SyNAPSE_Ingress.send_to_controller"
+    alias: "send_to_controller"
+  }
+}
+actions {
+  preamble {
+    id: 25897657
+    name: "SyNAPSE_Ingress.map_get_35_populate"
+    alias: "map_get_35_populate"
+  }
+  params {
+    id: 1
+    name: "param_0"
+    bitwidth: 32
+  }
+}
+actions {
+  preamble {
+    id: 28027752
+    name: "SyNAPSE_Ingress.map_get_53_populate"
+    alias: "map_get_53_populate"
+  }
+  params {
+    id: 1
+    name: "param_0"
+    bitwidth: 32
+  }
+}
+actions {
+  preamble {
+    id: 19368370
+    name: "SyNAPSE_Egress.drop"
+    alias: "drop"
+  }
+}
+controller_packet_metadata {
+  preamble {
+    id: 80671331
+    name: "packet_in"
+    alias: "packet_in"
+    annotations: "@controller_header(\"packet_in\")"
+  }
+  metadata {
+    id: 1
+    name: "code_id"
+    bitwidth: 32
+  }
+  metadata {
+    id: 2
+    name: "src_device"
+    bitwidth: 9
+  }
+  metadata {
+    id: 3
+    name: "pad"
+    bitwidth: 7
+  }
+}
+controller_packet_metadata {
+  preamble {
+    id: 75327753
+    name: "packet_out"
+    alias: "packet_out"
+    annotations: "@controller_header(\"packet_out\")"
+  }
+  metadata {
+    id: 1
+    name: "src_device"
+    bitwidth: 9
+  }
+  metadata {
+    id: 2
+    name: "dst_device"
+    bitwidth: 9
+  }
+  metadata {
+    id: 3
+    name: "pad"
+    bitwidth: 6
+  }
+}
+type_info {
+}

@@ -80,7 +80,7 @@
         "helper.hpp": "c",
         "stdlib.h": "c",
         "logger.hpp": "c",
-        "update_buffer.hpp": "c",
+        "update_queue.hpp": "c",
         "typedefs.hpp": "c",
         "packet_received.hpp": "c",
         "custom_packet_received.hpp": "c",

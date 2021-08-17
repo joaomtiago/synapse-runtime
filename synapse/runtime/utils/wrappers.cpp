@@ -260,7 +260,7 @@ uint32_t synapse_runtime_wrappers_decode_p4_uint32(string_ptr_t encoded) {
 
 void *Stack::push(void *el) {
   if (nullptr == el) {
-    SYNAPSE_INFO("Pushing a null pointer to the stack");
+    SYNAPSE_DEBUG("Pushing a null pointer to the stack");
   }
 
   stack_.push(el);
@@ -270,7 +270,7 @@ void *Stack::push(void *el) {
 void *Stack::pop() {
   void *&el = stack_.top();
   if (nullptr == el) {
-    SYNAPSE_INFO("Popping a null pointer from the stack");
+    SYNAPSE_DEBUG("Popping a null pointer from the stack");
   }
 
   stack_.pop();
@@ -299,12 +299,12 @@ size_t Stack::clear() {
 
 Pair::Pair(void *left, void *right) {
   if (nullptr == left) {
-    SYNAPSE_INFO("Provided a null pointer as left element");
+    SYNAPSE_DEBUG("Provided a null pointer as left element");
   }
   this->left = left;
 
   if (nullptr == right) {
-    SYNAPSE_INFO("Provided a null pointer as right element");
+    SYNAPSE_DEBUG("Provided a null pointer as right element");
   }
   this->right = right;
 }

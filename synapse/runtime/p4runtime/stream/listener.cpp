@@ -8,27 +8,31 @@
 
 namespace synapse::runtime {
 
+void configureTags(tags_t &tags) {
+  ALLOC_TAGS(tags.tagConnected, 1);
+  tags.tagConnected.next_tags[0] = &tags.tagMakePrimarySent;
+
+  ALLOC_TAGS(tags.tagMakePrimarySent, 1);
+  tags.tagMakePrimarySent.next_tags[0] = &tags.tagMakePrimaryReceived;
+
+  ALLOC_TAGS(tags.tagMakePrimaryReceived, 1);
+  tags.tagMakePrimaryReceived.next_tags[0] = &tags.tagMessageReceived;
+
+  ALLOC_TAGS(tags.tagMessageReceived, 2);
+  tags.tagMessageReceived.next_tags[0] = &tags.tagMessageReceived;
+  tags.tagMessageReceived.next_tags[1] = &tags.tagMessageSent;
+
+  ALLOC_TAGS(tags.tagMessageSent, 1);
+  tags.tagMessageSent.next_tags[0] = &tags.tagMessageReceived;
+}
+
 Listener::Listener(conn_ptr_t conn) {
   env_ = new env_t();
   env_->helper = new helper_t(S_CAST(std::string *, conn->stack->pop()));
+  env_->queue = new update_queue_t(env_->helper);
   env_->stack = new stack_t();
-  env_->update_buffer = new upd_buff_t(env_->helper);
 
-  ALLOC_TAGS(tags_.tagConnected, 1);
-  tags_.tagConnected.next_tags[0] = &tags_.tagMakePrimarySent;
-
-  ALLOC_TAGS(tags_.tagMakePrimarySent, 1);
-  tags_.tagMakePrimarySent.next_tags[0] = &tags_.tagMakePrimaryReceived;
-
-  ALLOC_TAGS(tags_.tagMakePrimaryReceived, 1);
-  tags_.tagMakePrimaryReceived.next_tags[0] = &tags_.tagMessageReceived;
-
-  ALLOC_TAGS(tags_.tagMessageReceived, 2);
-  tags_.tagMessageReceived.next_tags[0] = &tags_.tagMessageReceived;
-  tags_.tagMessageReceived.next_tags[1] = &tags_.tagMessageSent;
-
-  ALLOC_TAGS(tags_.tagMessageSent, 1);
-  tags_.tagMessageSent.next_tags[0] = &tags_.tagMessageReceived;
+  configureTags(tags_);
 
   context_ = std::make_shared<grpc_cctx_t>();
   queue_ = std::make_shared<grpc_cqueue_t>();

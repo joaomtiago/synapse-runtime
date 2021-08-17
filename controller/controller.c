@@ -4,18 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-bool synapse_runtime_handle_pre_configure(env_ptr_t env) {
-  synapse_runtime_wrappers_stack_clear(synapse_runtime_environment_stack(env));
-  return true;
-}
+bool synapse_runtime_handle_pre_configure(env_ptr_t env) { return true; }
 
-bool synapse_runtime_handle_packet_received(env_ptr_t env) {
-  synapse_runtime_wrappers_stack_clear(synapse_runtime_environment_stack(env));
-  return true;
-}
+bool synapse_runtime_handle_packet_received(env_ptr_t env) { return true; }
 
 bool synapse_runtime_handle_idle_timeout_notification_received(env_ptr_t env) {
-  synapse_runtime_wrappers_stack_clear(synapse_runtime_environment_stack(env));
   return true;
 }
 

@@ -13,7 +13,7 @@
 #define R_CAST(type, value) _CAST(reinterpret, type, value)
 #define VAR_R_CAST(type, var, value) _ASSIGNMENT(type var, R_CAST(type, value))
 
-#define SYNAPSE_ENABLE_DEBUG
+#define SYNAPSE_ENABLE_INFO
 
 #ifdef SYNAPSE_ENABLE_DEBUG
 #define SYNAPSE_ENABLE_INFO

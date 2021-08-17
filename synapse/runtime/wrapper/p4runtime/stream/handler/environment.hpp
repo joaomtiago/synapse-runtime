@@ -13,9 +13,9 @@ extern "C" {
 
 helper_ptr_t synapse_runtime_environment_helper(env_ptr_t env);
 
-stack_ptr_t synapse_runtime_environment_stack(env_ptr_t env);
+update_queue_ptr_t synapse_runtime_environment_queue(env_ptr_t env);
 
-upd_buff_ptr_t synapse_runtime_environment_update_buffer(env_ptr_t env);
+stack_ptr_t synapse_runtime_environment_stack(env_ptr_t env);
 
 #ifdef __cplusplus
 }
