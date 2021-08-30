@@ -10,9 +10,9 @@ bool synapse_runtime_handle_pre_configure(env_ptr_t env) {
   return true;
 }
 
-bool synapse_runtime_handle_packet_received(env_ptr_t env) { return true; }
+bool synapse_runtime_handle_packet_received() { return true; }
 
-bool synapse_runtime_handle_idle_timeout_notification_received(env_ptr_t env) {
+bool synapse_runtime_handle_idle_timeout_notification_received() {
   return true;
 }
 

@@ -17,9 +17,9 @@ extern "C" {
 
 bool synapse_runtime_handle_pre_configure(env_ptr_t env);
 
-bool synapse_runtime_handle_packet_received(env_ptr_t env);
+bool synapse_runtime_handle_packet_received();
 
-bool synapse_runtime_handle_idle_timeout_notification_received(env_ptr_t env);
+bool synapse_runtime_handle_idle_timeout_notification_received();
 
 #ifdef __cplusplus
 }

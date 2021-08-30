@@ -442,7 +442,7 @@ bool handleMessageReceived(env_ptr_t &env, stack_ptr_t &stack,
       return false;
     }
 
-    if (!synapse_runtime_handle_packet_received(env)) {
+    if (!synapse_runtime_handle_packet_received()) {
       SYNAPSE_ERROR("Failed to handle packet");
       return false;
     }
@@ -490,7 +490,7 @@ bool handleMessageReceived(env_ptr_t &env, stack_ptr_t &stack,
       return false;
     }
 
-    if (!synapse_runtime_handle_idle_timeout_notification_received(env)) {
+    if (!synapse_runtime_handle_idle_timeout_notification_received()) {
       SYNAPSE_ERROR("Failed to parse idle timeout notification");
       return false;
     }

@@ -13,7 +13,6 @@
         ["key_byte_13", 8, false],
         ["key_byte_14", 8, false],
         ["hasReturned", 1, false],
-        ["userMetadata.example_tbl_tag", 32, false],
         ["userMetadata.map_get_35", 32, false],
         ["userMetadata.map_get_35_tag", 32, false],
         ["userMetadata.map_get_53", 32, false],
@@ -213,7 +212,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "main.p4",
-        "line" : 273,
+        "line" : 253,
         "column" : 8,
         "source_fragment" : "SyNAPSE_Deparser"
       },
@@ -246,50 +245,9 @@
       "primitives" : []
     },
     {
-      "name" : "NoAction",
-      "id" : 3,
-      "runtime_data" : [],
-      "primitives" : []
-    },
-    {
-      "name" : "SyNAPSE_Ingress.forward_act",
-      "id" : 4,
-      "runtime_data" : [
-        {
-          "name" : "port",
-          "bitwidth" : 9
-        }
-      ],
-      "primitives" : [
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["standard_metadata", "ingress_port"]
-            },
-            {
-              "type" : "runtime_data",
-              "value" : 0
-            }
-          ],
-          "source_info" : {
-            "filename" : "main.p4",
-            "line" : 90,
-            "column" : 4,
-            "source_fragment" : "standard_metadata.ingress_port = port"
-          }
-        }
-      ]
-    },
-    {
       "name" : "SyNAPSE_Ingress.tag_versions",
-      "id" : 5,
+      "id" : 3,
       "runtime_data" : [
-        {
-          "name" : "example_tbl_tag",
-          "bitwidth" : 32
-        },
         {
           "name" : "map_get_35_tag",
           "bitwidth" : 32
@@ -305,7 +263,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "userMetadata.example_tbl_tag"]
+              "value" : ["scalars", "userMetadata.map_get_35_tag"]
             },
             {
               "type" : "runtime_data",
@@ -314,26 +272,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 111,
-            "column" : 4,
-            "source_fragment" : "meta.example_tbl_tag = example_tbl_tag"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.map_get_35_tag"]
-            },
-            {
-              "type" : "runtime_data",
-              "value" : 1
-            }
-          ],
-          "source_info" : {
-            "filename" : "main.p4",
-            "line" : 112,
+            "line" : 91,
             "column" : 4,
             "source_fragment" : "meta.map_get_35_tag = map_get_35_tag"
           }
@@ -347,12 +286,12 @@
             },
             {
               "type" : "runtime_data",
-              "value" : 2
+              "value" : 1
             }
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 113,
+            "line" : 92,
             "column" : 4,
             "source_fragment" : "meta.map_get_53_tag = map_get_53_tag"
           }
@@ -361,7 +300,7 @@
     },
     {
       "name" : "SyNAPSE_Ingress.forward",
-      "id" : 6,
+      "id" : 4,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -448,7 +387,7 @@
     },
     {
       "name" : "SyNAPSE_Ingress.send_to_controller",
-      "id" : 7,
+      "id" : 5,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -465,7 +404,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 141,
+            "line" : 120,
             "column" : 4,
             "source_fragment" : "standard_metadata.egress_spec = 509"
           }
@@ -480,7 +419,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 143,
+            "line" : 122,
             "column" : 4,
             "source_fragment" : "hdr.packet_in.setValid()"
           }
@@ -499,7 +438,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 144,
+            "line" : 123,
             "column" : 4,
             "source_fragment" : "hdr.packet_in.code_id = code_id; ..."
           }
@@ -518,7 +457,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 145,
+            "line" : 124,
             "column" : 4,
             "source_fragment" : "hdr.packet_in.src_device = standard_metadata.ingress_port"
           }
@@ -527,7 +466,7 @@
     },
     {
       "name" : "SyNAPSE_Ingress.send_to_controller",
-      "id" : 8,
+      "id" : 6,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -544,7 +483,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 141,
+            "line" : 120,
             "column" : 4,
             "source_fragment" : "standard_metadata.egress_spec = 509"
           }
@@ -559,7 +498,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 143,
+            "line" : 122,
             "column" : 4,
             "source_fragment" : "hdr.packet_in.setValid()"
           }
@@ -578,7 +517,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 144,
+            "line" : 123,
             "column" : 4,
             "source_fragment" : "hdr.packet_in.code_id = code_id; ..."
           }
@@ -597,7 +536,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 145,
+            "line" : 124,
             "column" : 4,
             "source_fragment" : "hdr.packet_in.src_device = standard_metadata.ingress_port"
           }
@@ -606,7 +545,7 @@
     },
     {
       "name" : "SyNAPSE_Ingress.map_get_35_populate",
-      "id" : 9,
+      "id" : 7,
       "runtime_data" : [
         {
           "name" : "param_0",
@@ -628,7 +567,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 158,
+            "line" : 137,
             "column" : 4,
             "source_fragment" : "meta.map_get_35_0 = param_0"
           }
@@ -637,7 +576,7 @@
     },
     {
       "name" : "SyNAPSE_Ingress.map_get_53_populate",
-      "id" : 10,
+      "id" : 8,
       "runtime_data" : [
         {
           "name" : "param_0",
@@ -659,7 +598,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 182,
+            "line" : 163,
             "column" : 4,
             "source_fragment" : "meta.map_get_53_0 = param_0"
           }
@@ -668,7 +607,7 @@
     },
     {
       "name" : "act",
-      "id" : 11,
+      "id" : 9,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -697,8 +636,8 @@
       ]
     },
     {
-      "name" : "main211",
-      "id" : 12,
+      "name" : "main191",
+      "id" : 10,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -725,7 +664,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 211,
+            "line" : 191,
             "column" : 6,
             "source_fragment" : "return"
           }
@@ -733,8 +672,8 @@
       ]
     },
     {
-      "name" : "main215",
-      "id" : 13,
+      "name" : "main195",
+      "id" : 11,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -774,7 +713,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 215,
+            "line" : 195,
             "column" : 6,
             "source_fragment" : "key_byte_0 = (bit<8>) (hdr.ethernet.dstAddr & 0xff)"
           }
@@ -836,7 +775,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 216,
+            "line" : 196,
             "column" : 6,
             "source_fragment" : "key_byte_1 = (bit<8>) ((hdr.ethernet.dstAddr >> 8) & 0xff)"
           }
@@ -898,7 +837,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 217,
+            "line" : 197,
             "column" : 6,
             "source_fragment" : "key_byte_2 = (bit<8>) ((hdr.ethernet.dstAddr >> 16) & 0xff)"
           }
@@ -960,7 +899,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 218,
+            "line" : 198,
             "column" : 6,
             "source_fragment" : "key_byte_3 = (bit<8>) ((hdr.ethernet.dstAddr >> 24) & 0xff)"
           }
@@ -1022,7 +961,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 219,
+            "line" : 199,
             "column" : 6,
             "source_fragment" : "key_byte_4 = (bit<8>) ((hdr.ethernet.dstAddr >> 32) & 0xff)"
           }
@@ -1084,7 +1023,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 220,
+            "line" : 200,
             "column" : 6,
             "source_fragment" : "key_byte_5 = (bit<8>) ((hdr.ethernet.dstAddr >> 40) & 0xff)"
           }
@@ -1103,7 +1042,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 221,
+            "line" : 201,
             "column" : 6,
             "source_fragment" : "key_byte_6 = (bit<8>) (1"
           }
@@ -1122,7 +1061,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 222,
+            "line" : 202,
             "column" : 6,
             "source_fragment" : "key_byte_7 = (bit<8>) (0"
           }
@@ -1130,8 +1069,8 @@
       ]
     },
     {
-      "name" : "main227",
-      "id" : 14,
+      "name" : "main207",
+      "id" : 12,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -1171,7 +1110,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 227,
+            "line" : 207,
             "column" : 6,
             "source_fragment" : "key_byte_0 = (bit<8>) (hdr.ethernet.dstAddr & 0xff)"
           }
@@ -1233,7 +1172,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 228,
+            "line" : 208,
             "column" : 6,
             "source_fragment" : "key_byte_1 = (bit<8>) ((hdr.ethernet.dstAddr >> 8) & 0xff)"
           }
@@ -1295,7 +1234,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 229,
+            "line" : 209,
             "column" : 6,
             "source_fragment" : "key_byte_2 = (bit<8>) ((hdr.ethernet.dstAddr >> 16) & 0xff)"
           }
@@ -1357,7 +1296,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 230,
+            "line" : 210,
             "column" : 6,
             "source_fragment" : "key_byte_3 = (bit<8>) ((hdr.ethernet.dstAddr >> 24) & 0xff)"
           }
@@ -1419,7 +1358,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 231,
+            "line" : 211,
             "column" : 6,
             "source_fragment" : "key_byte_4 = (bit<8>) ((hdr.ethernet.dstAddr >> 32) & 0xff)"
           }
@@ -1481,7 +1420,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 232,
+            "line" : 212,
             "column" : 6,
             "source_fragment" : "key_byte_5 = (bit<8>) ((hdr.ethernet.dstAddr >> 40) & 0xff)"
           }
@@ -1500,7 +1439,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 233,
+            "line" : 213,
             "column" : 6,
             "source_fragment" : "key_byte_6 = (bit<8>) (0"
           }
@@ -1519,7 +1458,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 234,
+            "line" : 214,
             "column" : 6,
             "source_fragment" : "key_byte_7 = (bit<8>) (0"
           }
@@ -1528,7 +1467,7 @@
     },
     {
       "name" : "SyNAPSE_Egress.drop",
-      "id" : 15,
+      "id" : 13,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -1545,7 +1484,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 249,
+            "line" : 229,
             "column" : 4,
             "source_fragment" : "standard_metadata.egress_spec = 510"
           }
@@ -1559,7 +1498,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "main.p4",
-        "line" : 85,
+        "line" : 84,
         "column" : 8,
         "source_fragment" : "SyNAPSE_Ingress"
       },
@@ -1575,68 +1514,25 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [11],
+          "action_ids" : [9],
           "actions" : ["act"],
-          "base_default_next" : "SyNAPSE_Ingress.example_tbl",
+          "base_default_next" : "SyNAPSE_Ingress.tag_control",
           "next_tables" : {
-            "act" : "SyNAPSE_Ingress.example_tbl"
+            "act" : "SyNAPSE_Ingress.tag_control"
           },
           "default_entry" : {
-            "action_id" : 11,
+            "action_id" : 9,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
           }
         },
         {
-          "name" : "SyNAPSE_Ingress.example_tbl",
+          "name" : "SyNAPSE_Ingress.tag_control",
           "id" : 1,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 93,
-            "column" : 8,
-            "source_fragment" : "example_tbl"
-          },
-          "key" : [
-            {
-              "match_type" : "range",
-              "name" : "meta.example_tbl_tag",
-              "target" : ["scalars", "userMetadata.example_tbl_tag"],
-              "mask" : null
-            },
-            {
-              "match_type" : "exact",
-              "name" : "hdr.ethernet.dstAddr",
-              "target" : ["ethernet", "dstAddr"],
-              "mask" : null
-            }
-          ],
-          "match_type" : "range",
-          "type" : "simple",
-          "max_size" : 1024,
-          "with_counters" : false,
-          "support_timeout" : false,
-          "direct_meters" : null,
-          "action_ids" : [4, 0],
-          "actions" : ["SyNAPSE_Ingress.forward_act", "NoAction"],
-          "base_default_next" : "SyNAPSE_Ingress.tag_control",
-          "next_tables" : {
-            "SyNAPSE_Ingress.forward_act" : "SyNAPSE_Ingress.tag_control",
-            "NoAction" : "SyNAPSE_Ingress.tag_control"
-          },
-          "default_entry" : {
-            "action_id" : 0,
-            "action_const" : false,
-            "action_data" : [],
-            "action_entry_const" : false
-          }
-        },
-        {
-          "name" : "SyNAPSE_Ingress.tag_control",
-          "id" : 2,
-          "source_info" : {
-            "filename" : "main.p4",
-            "line" : 116,
+            "line" : 95,
             "column" : 8,
             "source_fragment" : "tag_control"
           },
@@ -1647,15 +1543,15 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [5, 1],
+          "action_ids" : [3, 0],
           "actions" : ["SyNAPSE_Ingress.tag_versions", "NoAction"],
-          "base_default_next" : "node_5",
+          "base_default_next" : "node_4",
           "next_tables" : {
-            "SyNAPSE_Ingress.tag_versions" : "node_5",
-            "NoAction" : "node_5"
+            "SyNAPSE_Ingress.tag_versions" : "node_4",
+            "NoAction" : "node_4"
           },
           "default_entry" : {
-            "action_id" : 1,
+            "action_id" : 0,
             "action_const" : false,
             "action_data" : [],
             "action_entry_const" : false
@@ -1663,10 +1559,10 @@
         },
         {
           "name" : "tbl_forward",
-          "id" : 3,
+          "id" : 2,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 210,
+            "line" : 190,
             "column" : 6,
             "source_fragment" : "forward(hdr.packet_out.dst_device)"
           },
@@ -1677,25 +1573,25 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [6],
+          "action_ids" : [4],
           "actions" : ["SyNAPSE_Ingress.forward"],
-          "base_default_next" : "tbl_main211",
+          "base_default_next" : "tbl_main191",
           "next_tables" : {
-            "SyNAPSE_Ingress.forward" : "tbl_main211"
+            "SyNAPSE_Ingress.forward" : "tbl_main191"
           },
           "default_entry" : {
-            "action_id" : 6,
+            "action_id" : 4,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
           }
         },
         {
-          "name" : "tbl_main211",
-          "id" : 4,
+          "name" : "tbl_main191",
+          "id" : 3,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 211,
+            "line" : 191,
             "column" : 6,
             "source_fragment" : "return"
           },
@@ -1706,25 +1602,25 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [12],
-          "actions" : ["main211"],
-          "base_default_next" : "node_8",
+          "action_ids" : [10],
+          "actions" : ["main191"],
+          "base_default_next" : "node_7",
           "next_tables" : {
-            "main211" : "node_8"
+            "main191" : "node_7"
           },
           "default_entry" : {
-            "action_id" : 12,
+            "action_id" : 10,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
           }
         },
         {
-          "name" : "tbl_main215",
-          "id" : 5,
+          "name" : "tbl_main195",
+          "id" : 4,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 215,
+            "line" : 195,
             "column" : 17,
             "source_fragment" : "= (bit<8>) (hdr.ethernet.dstAddr & 0xff); ..."
           },
@@ -1735,14 +1631,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [13],
-          "actions" : ["main215"],
+          "action_ids" : [11],
+          "actions" : ["main195"],
           "base_default_next" : "SyNAPSE_Ingress.map_get_35",
           "next_tables" : {
-            "main215" : "SyNAPSE_Ingress.map_get_35"
+            "main195" : "SyNAPSE_Ingress.map_get_35"
           },
           "default_entry" : {
-            "action_id" : 13,
+            "action_id" : 11,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -1750,10 +1646,10 @@
         },
         {
           "name" : "SyNAPSE_Ingress.map_get_35",
-          "id" : 6,
+          "id" : 5,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 161,
+            "line" : 140,
             "column" : 8,
             "source_fragment" : "map_get_35"
           },
@@ -1817,9 +1713,9 @@
           "type" : "simple",
           "max_size" : 256,
           "with_counters" : false,
-          "support_timeout" : false,
+          "support_timeout" : true,
           "direct_meters" : null,
-          "action_ids" : [9, 2],
+          "action_ids" : [7, 1],
           "actions" : ["SyNAPSE_Ingress.map_get_35_populate", "NoAction"],
           "base_default_next" : "tbl_send_to_controller",
           "next_tables" : {
@@ -1827,7 +1723,7 @@
             "NoAction" : "tbl_send_to_controller"
           },
           "default_entry" : {
-            "action_id" : 2,
+            "action_id" : 1,
             "action_const" : false,
             "action_data" : [],
             "action_entry_const" : false
@@ -1835,10 +1731,10 @@
         },
         {
           "name" : "tbl_send_to_controller",
-          "id" : 7,
+          "id" : 6,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 224,
+            "line" : 204,
             "column" : 6,
             "source_fragment" : "send_to_controller(36)"
           },
@@ -1849,25 +1745,25 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [7],
+          "action_ids" : [5],
           "actions" : ["SyNAPSE_Ingress.send_to_controller"],
           "base_default_next" : null,
           "next_tables" : {
             "SyNAPSE_Ingress.send_to_controller" : null
           },
           "default_entry" : {
-            "action_id" : 7,
+            "action_id" : 5,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
           }
         },
         {
-          "name" : "tbl_main227",
-          "id" : 8,
+          "name" : "tbl_main207",
+          "id" : 7,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 227,
+            "line" : 207,
             "column" : 17,
             "source_fragment" : "= (bit<8>) (hdr.ethernet.dstAddr & 0xff); ..."
           },
@@ -1878,14 +1774,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [14],
-          "actions" : ["main227"],
+          "action_ids" : [12],
+          "actions" : ["main207"],
           "base_default_next" : "SyNAPSE_Ingress.map_get_53",
           "next_tables" : {
-            "main227" : "SyNAPSE_Ingress.map_get_53"
+            "main207" : "SyNAPSE_Ingress.map_get_53"
           },
           "default_entry" : {
-            "action_id" : 14,
+            "action_id" : 12,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -1893,10 +1789,10 @@
         },
         {
           "name" : "SyNAPSE_Ingress.map_get_53",
-          "id" : 9,
+          "id" : 8,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 185,
+            "line" : 166,
             "column" : 8,
             "source_fragment" : "map_get_53"
           },
@@ -1962,7 +1858,7 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [10, 3],
+          "action_ids" : [8, 2],
           "actions" : ["SyNAPSE_Ingress.map_get_53_populate", "NoAction"],
           "base_default_next" : "tbl_send_to_controller_0",
           "next_tables" : {
@@ -1970,7 +1866,7 @@
             "NoAction" : "tbl_send_to_controller_0"
           },
           "default_entry" : {
-            "action_id" : 3,
+            "action_id" : 2,
             "action_const" : false,
             "action_data" : [],
             "action_entry_const" : false
@@ -1978,10 +1874,10 @@
         },
         {
           "name" : "tbl_send_to_controller_0",
-          "id" : 10,
+          "id" : 9,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 236,
+            "line" : 216,
             "column" : 6,
             "source_fragment" : "send_to_controller(54)"
           },
@@ -1992,14 +1888,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [8],
+          "action_ids" : [6],
           "actions" : ["SyNAPSE_Ingress.send_to_controller"],
           "base_default_next" : null,
           "next_tables" : {
             "SyNAPSE_Ingress.send_to_controller" : null
           },
           "default_entry" : {
-            "action_id" : 8,
+            "action_id" : 6,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -2009,11 +1905,11 @@
       "action_profiles" : [],
       "conditionals" : [
         {
-          "name" : "node_5",
+          "name" : "node_4",
           "id" : 0,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 209,
+            "line" : 189,
             "column" : 8,
             "source_fragment" : "standard_metadata.ingress_port == 509"
           },
@@ -2032,10 +1928,10 @@
             }
           },
           "true_next" : "tbl_forward",
-          "false_next" : "node_8"
+          "false_next" : "node_7"
         },
         {
-          "name" : "node_8",
+          "name" : "node_7",
           "id" : 1,
           "expression" : {
             "type" : "expression",
@@ -2056,14 +1952,14 @@
             }
           },
           "false_next" : null,
-          "true_next" : "node_9"
+          "true_next" : "node_8"
         },
         {
-          "name" : "node_9",
+          "name" : "node_8",
           "id" : 2,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 214,
+            "line" : 194,
             "column" : 19,
             "source_fragment" : "0) == (standard_metadata.ingress_port"
           },
@@ -2081,8 +1977,8 @@
               }
             }
           },
-          "true_next" : "tbl_main215",
-          "false_next" : "tbl_main227"
+          "true_next" : "tbl_main195",
+          "false_next" : "tbl_main207"
         }
       ]
     },
@@ -2091,18 +1987,18 @@
       "id" : 1,
       "source_info" : {
         "filename" : "main.p4",
-        "line" : 245,
+        "line" : 225,
         "column" : 8,
         "source_fragment" : "SyNAPSE_Egress"
       },
-      "init_table" : "node_18",
+      "init_table" : "node_17",
       "tables" : [
         {
           "name" : "tbl_drop",
-          "id" : 11,
+          "id" : 10,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 255,
+            "line" : 235,
             "column" : 6,
             "source_fragment" : "drop()"
           },
@@ -2113,14 +2009,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [15],
+          "action_ids" : [13],
           "actions" : ["SyNAPSE_Egress.drop"],
           "base_default_next" : null,
           "next_tables" : {
             "SyNAPSE_Egress.drop" : null
           },
           "default_entry" : {
-            "action_id" : 15,
+            "action_id" : 13,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -2130,11 +2026,11 @@
       "action_profiles" : [],
       "conditionals" : [
         {
-          "name" : "node_18",
+          "name" : "node_17",
           "id" : 3,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 253,
+            "line" : 233,
             "column" : 8,
             "source_fragment" : "standard_metadata.ingress_port == 509 ..."
           },
