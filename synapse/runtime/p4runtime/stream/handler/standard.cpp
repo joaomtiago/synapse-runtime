@@ -61,71 +61,71 @@ bool mustParseIdleTimeoutNotification(
 
 bool parseIdleTimeoutNotification(env_ptr_t &env,
                                   p4_idle_timeout_notification_ptr_t notif) {
-  auto helper = env->helper;
+  // auto helper = env->helper;
 
-  /**
-   * <table_name, <key_sz, <field_name, field_value>>>
-   * key = string_ptr_t
-   */
+  // /**
+  //  * <table_name, <key_sz, <field_name, field_value>>>
+  //  * key = string_ptr_t
+  //  */
 
-  size_t entriesSz = (size_t)notif->table_entry_size();
-  pair_ptr_t *entries = nullptr;
+  // size_t entriesSz = (size_t)notif->table_entry_size();
+  // pair_ptr_t *entries = nullptr;
 
-  if (nullptr == (entries = MALLOC(pair_ptr_t, entriesSz))) {
-    SYNAPSE_ERROR("Could not allocate memory for the keys");
-    return false;
-  }
+  // if (nullptr == (entries = MALLOC(pair_ptr_t, entriesSz))) {
+  //   SYNAPSE_ERROR("Could not allocate memory for the keys");
+  //   return false;
+  // }
 
-  for (size_t i = 0; i < entriesSz; i++) {
-    auto entry = notif->mutable_table_entry(S_CAST(int, i));
+  // for (size_t i = 0; i < entriesSz; i++) {
+  //   auto entry = notif->mutable_table_entry(S_CAST(int, i));
 
-    // Get table name from table ID
-    auto tableInfo = helper->p4InfoTableById(entry->table_id());
-    auto tableName = new string_t( tableInfo->preamble().name());
+  //   // Get table name from table ID
+  //   auto tableInfo = helper->p4InfoTableById(entry->table_id());
+  //   auto tableName = new string_t( tableInfo->preamble().name());
 
-    size_t keySz = entry->match_size();
-    VAR_MALLOC(pair_ptr_t, fields, keySz);
+  //   size_t keySz = entry->match_size();
+  //   VAR_MALLOC(pair_ptr_t, fields, keySz);
 
-    for(auto it = entry->mutable_match()->begin(); it != entry->mutable_match()->end(); it++) {
-      helper->p4InfoMatchField
-    }
+  //   for(auto it = entry->mutable_match()->begin(); it != entry->mutable_match()->end(); it++) {
+  //     helper->p4InfoMatchField
+  //   }
 
-    auto it = ;
-    while (it != entry->mutable_match()->end()) {
-      auto fieldId = it->field_id();
+  //   auto it = ;
+  //   while (it != entry->mutable_match()->end()) {
+  //     auto fieldId = it->field_id();
 
-      // Get field name from field ID
+  //     // Get field name from field ID
 
-      switch (it->field_match_type_case()) {
-      case p4_field_match_field_match_type_case_t::kExact: {
-        matches[matches_sz++] =
-            new string_t(it->mutable_exact()->mutable_value());
+  //     switch (it->field_match_type_case()) {
+  //     case p4_field_match_field_match_type_case_t::kExact: {
+  //       matches[matches_sz++] =
+  //           new string_t(it->mutable_exact()->mutable_value());
 
-      } break;
+  //     } break;
 
-      case p4_field_match_field_match_type_case_t::kRange: {
-        auto match = it->mutable_range();
-        matches[matches_sz++] = new string_t(match->mutable_low());
-        matches[matches_sz++] = new string_t(match->mutable_high());
+  //     case p4_field_match_field_match_type_case_t::kRange: {
+  //       auto match = it->mutable_range();
+  //       matches[matches_sz++] = new string_t(match->mutable_low());
+  //       matches[matches_sz++] = new string_t(match->mutable_high());
 
-      } break;
+  //     } break;
 
-      default: {
-        SYNAPSE_ERROR("Unsupported type of field match");
-        return false;
+  //     default: {
+  //       SYNAPSE_ERROR("Unsupported type of field match");
+  //       return false;
 
-      } break;
-      }
+  //     } break;
+  //     }
 
-      it++;
-    }
+  //     it++;
+  //   }
 
-    entries[i] =
-        new pair_t(tableName, new pair_t(new size_t(matches_sz), matches));
-  }
+  //   entries[i] =
+  //       new pair_t(tableName, new pair_t(new size_t(matches_sz), matches));
+  // }
 
-  env->stack->push(entries);
-  env->stack->push(new size_t(entriesSz));
+  // env->stack->push(entries);
+  // env->stack->push(new size_t(entriesSz));
 
   return true;
 }

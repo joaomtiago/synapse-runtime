@@ -107,13 +107,14 @@ p4_info_match_field_ptr_t
 RuntimeHelper::p4InfoMatchFieldById(p4_info_table_ptr_t table,
                                     const uint32_t &matchFieldId) {
   ITER(table->mutable_match_fields()) {
-    if (matchFieldName == it->name()) {
+    if (matchFieldId == it->id()) {
       return new p4_info_match_field_t(*it);
     }
   }
 
-  throw RuntimeException("Unknown match field `" + matchFieldName +
-                         "` for table `" + table->preamble().name() + "`");
+  throw RuntimeException("Unknown match field with ID `" +
+                         std::to_string(matchFieldId) + "` for table `" +
+                         table->preamble().name() + "`");
 }
 
 p4_info_p4_info_ptr_t RuntimeHelper::p4InfoP4Info() { return p4Info_.get(); }
