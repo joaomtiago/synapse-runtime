@@ -35,6 +35,11 @@ String::String(const char *value, size_t size) {
   }
 }
 
+bool String::equals(string_ptr_t cmp) {
+  return 0 ==
+         strncmp(this->str, cmp->str, this->sz < cmp->sz ? this->sz : cmp->sz);
+}
+
 std::string String::toStdString() { return std::string(str, sz); }
 
 // IP Adresss
@@ -297,6 +302,8 @@ size_t Stack::clear() {
 }
 
 // Pair
+
+Pair::Pair() : Pair::Pair(nullptr, nullptr) {}
 
 Pair::Pair(void *left, void *right) {
   if (nullptr == left) {

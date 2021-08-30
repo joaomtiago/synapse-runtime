@@ -61,25 +61,71 @@ bool mustParseIdleTimeoutNotification(
 
 bool parseIdleTimeoutNotification(env_ptr_t &env,
                                   p4_idle_timeout_notification_ptr_t notif) {
-  auto entriesSz = notif->table_entry_size();
-  p4_table_entry_ptr_t *entries = nullptr;
+  auto helper = env->helper;
 
-  if (entriesSz > 0) {
-    if (nullptr == (entries = MALLOC(p4_table_entry_ptr_t, entriesSz))) {
-      return false;
-    }
+  /**
+   * <table_name, <key_sz, <field_name, field_value>>>
+   * key = string_ptr_t
+   */
 
-    p4_table_entry_ptr_t entry = nullptr;
-    for (size_t i = 0;
-         0 < entriesSz - i &&
-         nullptr != (entry = notif->mutable_table_entry(S_CAST(int, i)));
-         i++) {
-      entries[i] = entry;
-    }
+  size_t entriesSz = (size_t)notif->table_entry_size();
+  pair_ptr_t *entries = nullptr;
 
-    env->stack->push(entries);
-    env->stack->push(new size_t(entriesSz));
+  if (nullptr == (entries = MALLOC(pair_ptr_t, entriesSz))) {
+    SYNAPSE_ERROR("Could not allocate memory for the keys");
+    return false;
   }
+
+  for (size_t i = 0; i < entriesSz; i++) {
+    auto entry = notif->mutable_table_entry(S_CAST(int, i));
+
+    // Get table name from table ID
+    auto tableInfo = helper->p4InfoTableById(entry->table_id());
+    auto tableName = new string_t( tableInfo->preamble().name());
+
+    size_t keySz = entry->match_size();
+    VAR_MALLOC(pair_ptr_t, fields, keySz);
+
+    for(auto it = entry->mutable_match()->begin(); it != entry->mutable_match()->end(); it++) {
+      helper->p4InfoMatchField
+    }
+
+    auto it = ;
+    while (it != entry->mutable_match()->end()) {
+      auto fieldId = it->field_id();
+
+      // Get field name from field ID
+
+      switch (it->field_match_type_case()) {
+      case p4_field_match_field_match_type_case_t::kExact: {
+        matches[matches_sz++] =
+            new string_t(it->mutable_exact()->mutable_value());
+
+      } break;
+
+      case p4_field_match_field_match_type_case_t::kRange: {
+        auto match = it->mutable_range();
+        matches[matches_sz++] = new string_t(match->mutable_low());
+        matches[matches_sz++] = new string_t(match->mutable_high());
+
+      } break;
+
+      default: {
+        SYNAPSE_ERROR("Unsupported type of field match");
+        return false;
+
+      } break;
+      }
+
+      it++;
+    }
+
+    entries[i] =
+        new pair_t(tableName, new pair_t(new size_t(matches_sz), matches));
+  }
+
+  env->stack->push(entries);
+  env->stack->push(new size_t(entriesSz));
 
   return true;
 }
@@ -152,6 +198,37 @@ bool flushUpdates(update_queue_ptr_t &queue, p4runtime_stub_ptr_t &stub) {
   }
 
   return true;
+}
+
+bool mustDeleteEntries(stack_ptr_t &stack, size_t *entriesSz,
+                       p4_table_entry_ptr_t **entries) {
+  if (stack->size() < 2) {
+    return false;
+  }
+
+  if (0 == (*entriesSz = *S_CAST(size_t *, stack->pop()))) {
+    stack->pop();
+    return false;
+  }
+
+  return nullptr != (*entries = S_CAST(p4_table_entry_ptr_t *, stack->pop()));
+}
+
+bool deleteEntries(env_ptr_t &env, p4runtime_stub_ptr_t &stub, size_t entriesSz,
+                   p4_table_entry_ptr_t *entries) {
+  auto helper = env->helper;
+  auto queue = env->queue;
+
+  for (size_t i = 0; i < entriesSz; i++) {
+    if (!queue->queue(helper->p4Update(p4_update_type_t::Update_Type_DELETE,
+                                       helper->p4Entity(entries[i])))) {
+
+      SYNAPSE_ERROR("Could not queue table entry deletion");
+      return false;
+    }
+  }
+
+  return mustFlushUpdates(queue) && flushUpdates(queue, stub);
 }
 
 bool mustUpdateTags(stack_ptr_t &stack, size_t *tagsSz, pair_ptr_t **tags) {
@@ -406,7 +483,7 @@ bool handleMessageReceived(env_ptr_t &env, stack_ptr_t &stack,
   case p4_stream_message_response_t::UpdateCase::kIdleTimeoutNotification: {
     env->stack->clear();
 
-    if (mustParseIdleTimeoutNotification(response) &&
+    if (!mustParseIdleTimeoutNotification(response) ||
         !parseIdleTimeoutNotification(
             env, response->mutable_idle_timeout_notification())) {
       SYNAPSE_ERROR("Could not extract payload and/or metadata from packet");
@@ -418,8 +495,14 @@ bool handleMessageReceived(env_ptr_t &env, stack_ptr_t &stack,
       return false;
     }
 
-    env->stack->clear();
-    // TODO The stack must be populated with all entries to remove
+    size_t entriesSz;
+    p4_table_entry_ptr_t *entries = NULL;
+
+    if (mustDeleteEntries(env->stack, &entriesSz, &entries) &&
+        !deleteEntries(env, stub, entriesSz, entries)) {
+      SYNAPSE_ERROR("Could not delete table entries");
+      return false;
+    }
 
   } break;
 

@@ -72,6 +72,8 @@ typedef struct String {
   size_t sz;
 
 #ifdef __cplusplus
+  bool equals(String *cmp);
+
   std::string toStdString();
 #endif // __cplusplus
 
@@ -188,6 +190,8 @@ typedef stack_t *stack_ptr_t;
 
 typedef struct Pair {
 #ifdef __cplusplus
+  Pair();
+
   Pair(void *left, void *right);
 #endif // __cplusplus
 

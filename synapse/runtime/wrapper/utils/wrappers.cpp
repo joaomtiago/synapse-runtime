@@ -7,6 +7,11 @@ namespace synapse::runtime {
 
 // String
 
+bool synapse_runtime_wrappers_string_equals(string_ptr_t str1,
+                                            string_ptr_t str2) {
+  return str1->equals(str2);
+}
+
 string_ptr_t synapse_runtime_wrappers_string_new(const char *value,
                                                  size_t value_sz) {
   return new string_t(value, value_sz);

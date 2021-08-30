@@ -37,9 +37,14 @@ public:
   p4_info_match_field_ptr_t p4InfoMatchField(p4_info_table_ptr_t table,
                                              const std::string &matchFieldName);
 
+  p4_info_match_field_ptr_t p4InfoMatchFieldById(p4_info_table_ptr_t table,
+                                                 const uint32_t &matchFieldId);
+
   p4_info_p4_info_ptr_t p4InfoP4Info();
 
   p4_info_table_ptr_t p4InfoTable(const std::string &tableName);
+
+  p4_info_table_ptr_t p4InfoTableById(const uint32_t &tableId);
 
   // P4Runtime helpers go below
 

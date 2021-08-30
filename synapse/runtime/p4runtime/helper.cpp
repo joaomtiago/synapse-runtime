@@ -103,6 +103,19 @@ RuntimeHelper::p4InfoMatchField(p4_info_table_ptr_t table,
                          "` for table `" + table->preamble().name() + "`");
 }
 
+p4_info_match_field_ptr_t
+RuntimeHelper::p4InfoMatchFieldById(p4_info_table_ptr_t table,
+                                    const uint32_t &matchFieldId) {
+  ITER(table->mutable_match_fields()) {
+    if (matchFieldName == it->name()) {
+      return new p4_info_match_field_t(*it);
+    }
+  }
+
+  throw RuntimeException("Unknown match field `" + matchFieldName +
+                         "` for table `" + table->preamble().name() + "`");
+}
+
 p4_info_p4_info_ptr_t RuntimeHelper::p4InfoP4Info() { return p4Info_.get(); }
 
 p4_info_table_ptr_t RuntimeHelper::p4InfoTable(const std::string &tableName) {
@@ -113,6 +126,14 @@ p4_info_table_ptr_t RuntimeHelper::p4InfoTable(const std::string &tableName) {
   }
 
   throw RuntimeException("Unknown table `" + tableName + "`");
+}
+
+p4_info_table_ptr_t RuntimeHelper::p4InfoTableById(const uint32_t &tableId) {
+  ITER(p4Info_->mutable_tables()) {
+    if (tableId == it->mutable_preamble()->id()) {
+      return new p4_info_table_t(*it);
+    }
+  }
 }
 
 // P4Runtime helpers go below
