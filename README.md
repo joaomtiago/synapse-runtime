@@ -14,7 +14,7 @@ $ sudo apt-get install autoconf automake libtool curl make g++ unzip
 
 Build the runtime environment from source:
 ```shellscript
-$ git clone https://github.com/grpc/grpc.git --recursive
+$ git clone https://github.com/protocolbuffers/protobuf.git --recursive
 $ cd protobuf/
 $ ./autogen.sh
 $ ./configure
@@ -25,8 +25,8 @@ $ sudo ldconfig
 
 ## gRPC C++
 
-```shellscript
-$ git clone https://github.com/protocolbuffers/protobuf.git --recursive
+```shellscrip
+$ git clone https://github.com/grpc/grpc.git --recursive
 $ cd grpc/
 $ mkdir -p cmake/build
 $ cd cmake/build
