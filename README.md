@@ -7,8 +7,12 @@ To build the library from source, install these dependencies on the host machine
 2. **gRPC C++** — the C++ implementation of gRPC, a high-performance remote procedure call (RPC) framework
 
 ## Protobuf (Runtime)
-Start by installing [these tools](https://github.com/protocolbuffers/protobuf/tree/master/src#c-installation---unix) required by Protobuf, and then build the runtime environment from source:
+Start by installing [these tools](https://github.com/protocolbuffers/protobuf/tree/master/src#c-installation---unix) required by Protobuf:
+```shellscript
+$ sudo apt-get install autoconf automake libtool curl make g++ unzip
+```
 
+Build the runtime environment from source:
 ```shellscript
 $ git clone https://github.com/grpc/grpc.git --recursive
 $ cd protobuf/
