@@ -10,7 +10,7 @@ To build the library from source, install these dependencies on the host machine
 Start by installing [these tools](https://github.com/protocolbuffers/protobuf/tree/master/src#c-installation---unix) required by Protobuf, and then build the runtime environment from source:
 
 ```shellscript
-$ git clone git@github.com:protocolbuffers/protobuf.git --recursive
+$ git clone https://github.com/grpc/grpc.git --recursive
 $ cd protobuf/
 $ ./autogen.sh
 $ ./configure
@@ -22,7 +22,7 @@ $ sudo ldconfig
 ## gRPC C++
 
 ```shellscript
-$ git clone git@github.com:grpc/grpc --recursive
+$ git clone https://github.com/protocolbuffers/protobuf.git --recursive
 $ cd grpc/
 $ mkdir -p cmake/build
 $ cd cmake/build
