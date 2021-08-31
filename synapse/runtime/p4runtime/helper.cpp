@@ -135,6 +135,8 @@ p4_info_table_ptr_t RuntimeHelper::p4InfoTableById(const uint32_t &tableId) {
       return new p4_info_table_t(*it);
     }
   }
+
+  throw RuntimeException("Unknown table with ID " + std::to_string(tableId));
 }
 
 // P4Runtime helpers go below

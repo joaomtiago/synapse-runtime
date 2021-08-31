@@ -15,7 +15,7 @@ find_package(gRPC CONFIG REQUIRED)
 get_target_property(grpc_cpp_plugin_location gRPC::grpc_cpp_plugin LOCATION)
 
 # p4runtime uses proto files from the googleapis, which also need to be compiled
-set(googleapis_path /home/user/googleapis) # fixme do not use absolute paths
+set(googleapis_path $ENV{GRPC_DIR}/third_party/googleapis)
 
 # Make directories `p4runtime_cpp_{grpc, pb}_path` at build time
 add_custom_target(
